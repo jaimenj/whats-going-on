@@ -1,0 +1,44 @@
+.wgo-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+}
+
+.span-pagination {
+    float: right;
+    border: 1px dashed gray;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.span-install {
+    float: right;
+}
+
+.span-install .button {
+    color: red;
+    border-color: red;
+}
+
+.button-green {
+    background-color: green !important;
+    border-color: green !important;
+    color: white !important;
+}
+
+.button-red {
+    background-color: red !important;
+    border-color: red !important;
+    color: white !important;
+}
+
+.wrap-block-and-allow-lists {
+    display: flex;
+}
+#wrap-block-list, #wrap-allow-list {
+    width: 50%;
+}
+
+.waf-textarea-config {
+    width: 100%;
+}
