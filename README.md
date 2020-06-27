@@ -1,6 +1,6 @@
-# What's going on for Wordpress, a simple WAF
+# What's going on for WordPress, a simple WAF
 
-What's going on for Wordpress is a simple Web Application Firewall for Wordpress.
+What's going on for WordPress is a simple Web Application Firewall for WordPress.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-1.png)
 
@@ -22,7 +22,7 @@ What's going on for Wordpress is a simple Web Application Firewall for Wordpress
 
 A very simple plugin for WordPress that allows you to see all real requests to your website. 
 
-It's installed in front of every PHP file, in the aplication layer of Wordpress. With this plugin you can see all individual requests made to every PHP files. It works in front of every cached PHP response also. 
+It's installed in front of every PHP file, in the aplication layer of WordPress. With this plugin you can see all individual requests made to every PHP files. It works in front of every cached PHP response also. 
 
 Plugin website: \
 <a href="https://jnjsite.com/whats-going-on-for-wordpress-a-simple-waf/">https://jnjsite.com/whats-going-on-for-wordpress-a-simple-waf/</a>
@@ -33,13 +33,13 @@ Plugin website: \
 ## Installation
 
 1. Install the plugin uploading files intto the directory /wp-content/plugins/whats-going-on/ like others plugins.
-2. Activate the plugin into the Plugins menu in the admin panel of Wordpress.
+2. Activate the plugin into the Plugins menu in the admin panel of WordPress.
 3. Got to Tools > What's going on, or click on the topbar link, and set all the configs that you want.
 4. Save and flush cache of the frontend if needed.
 
 ## Uninstall
 
-1. Deactivate the plugin into the Plugins menu in the admin panel of Wordpress.
+1. Deactivate the plugin into the Plugins menu in the admin panel of WordPress.
 2. Delete into the Plugins menu.
 
 All the options configured into the plugin are removed when plugin is deleted, not when plugin is deactivated. All data records of requests are stored into database in separate tables for a better performance. Those database tables are removed when plugin is deactivated. If you remove the plugin whithout deactivating it before, those tables will remain into the database.
