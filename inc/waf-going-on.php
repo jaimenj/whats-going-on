@@ -58,7 +58,7 @@ if ($max_per_hour > 0 and $request_last_hour > $max_per_hour) {
     $retry_time = 3600;
 }
 if (file_exists($blockListFilePath)) {
-    if (in_array($_SERVER['REMOTE_ADDR'].PHP_EOL, file($blockListFilePath))) {
+    if (in_array(waf_current_remote_ips().PHP_EOL, file($blockListFilePath))) {
         $comments .= 'IP in the block-list. ';
         $retry_time = 86400;
     }
@@ -67,7 +67,7 @@ if (!empty($comments)) {
     $bypassed = false;
 
     if (file_exists($allowListFilePath)) {
-        if (in_array($_SERVER['REMOTE_ADDR'].PHP_EOL, file($allowListFilePath))) {
+        if (in_array(waf_current_remote_ips().PHP_EOL, file($allowListFilePath))) {
             $comments .= 'IP in the allow-list. Bypassed..';
             $bypassed = true;
         }
@@ -99,7 +99,7 @@ function waf_save_the_blocking($mysqlConnection, $comments, $the_table_full_pref
         .'(time, remote_ip, remote_port, user_agent, comments) '
         .'VALUES ('
         ."now(), '"
-        .$_SERVER['REMOTE_ADDR']."', '"
+        .waf_current_remote_ips()."', '"
         .$_SERVER['REMOTE_PORT']."', '"
         .$_SERVER['HTTP_USER_AGENT']."','"
         .$comments."'"
@@ -115,7 +115,7 @@ function waf_save_my_request($mysqlConnection, $url, $requests_last_minute, $req
         .'VALUES ('
         ."now(), '"
         .$url."', '"
-        .$_SERVER['REMOTE_ADDR']."', '"
+        .$_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR']."', '"
         .$_SERVER['REMOTE_PORT']."', '"
         .$_SERVER['HTTP_USER_AGENT']."', '"
         .$_SERVER['REQUEST_METHOD']."', "
@@ -132,7 +132,7 @@ function waf_get_requests_per_minutes($minutes, $mysqlConnection, $the_table_ful
     $return_value = -1;
 
     $sql = 'SELECT count(*) FROM '.$the_table_full_prefix.'whats_going_on '
-        ."WHERE remote_ip = '".$_SERVER['REMOTE_ADDR']." '"
+        ."WHERE remote_ip = '".waf_current_remote_ips()." '"
         .'AND time > NOW() - INTERVAL '.$minutes.' MINUTE;';
     if ($result = mysqli_query($mysqlConnection, $sql)) {
         //var_dump($result);
@@ -165,6 +165,11 @@ function waf_get_options($mysqlConnection, $the_table_full_prefix, &$max_per_min
             mysqli_free_result($result);
         }
     }
+}
+
+function waf_current_remote_ips()
+{
+    return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
 }
 
 //die;
