@@ -1,22 +1,22 @@
 # What's going on for WordPress, a simple WAF
 
-What's going on for WordPress is a simple Web Application Firewall for WordPress.
+What's going on for WordPress is a simple Web Application Firewall, a WAF, for WordPress.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-1.png)
 
 ## Main info
 
-* Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress-a-simple-waf/
+* Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
 * Contributors: jaimenj
 * Tags: wordpress, security, waf, frontend
 * Requires at least: 5.0
 * Tested up to: 5.4
 * Requires PHP: 7.2
-* Stable tag: 1.1
+* Stable tag: 1.0
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
 * Donate link: https://www.paypal.me/jaimeninoles
-* Repository URL: https://jnjsite.com/whats-going-on-for-wordpress-a-simple-waf/
+* Repository URL: https://github.com/jaimenj/whats-going-on
 
 ## Description
 
@@ -25,10 +25,13 @@ A very simple plugin for WordPress that allows you to see all real requests to y
 It's installed in front of every PHP file, in the aplication layer of WordPress. With this plugin you can see all individual requests made to every PHP files. It works in front of every cached PHP response also. 
 
 Plugin website: \
-<a href="https://jnjsite.com/whats-going-on-for-wordpress-a-simple-waf/">https://jnjsite.com/whats-going-on-for-wordpress-a-simple-waf/</a>
+<a href="https://jnjsite.com/whats-going-on-for-wordpress/">https://jnjsite.com/whats-going-on-for-wordpress/</a>
+
+## Features
 
 * Really easy to use and very powerfull.
 * Very small, it doesn't slows down the performance of your site.
+*
 
 ## Installation
 
