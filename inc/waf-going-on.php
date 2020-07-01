@@ -18,7 +18,6 @@ foreach ($configFileContent as $line) {
 $blockListFilePath = __DIR__.'/../block-list.php';
 $allowListFilePath = __DIR__.'/../allow-list.php';
 $blockRegexesFilePath = __DIR__.'/../block-regexes.php';
-$allowRegexesFilePath = __DIR__.'/../allow-regexes.php';
 //var_dump($configsArray); die;
 
 // Connect to database

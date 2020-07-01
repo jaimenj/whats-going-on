@@ -83,23 +83,14 @@ function wgojnj_whats_going_on_controller()
                     ."WHERE remote_ip = '".$_REQUEST['txt_this_ip']."';";
                 $results = $wpdb->get_results($sql);
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Records with IP '.$_REQUEST['txt_this_ip'].' removed!</p></div>';
-            } elseif (isset($_REQUEST['submit-permanently-block-this-ip'])) {
-                // Add IP block list
-                $wgojnjSms = wgojnj_add_ip_to_the_block_list($_REQUEST['txt_this_ip']);
-            } elseif (isset($_REQUEST['submit-unblock-this-ip'])) {
-                // Remove IP bloc list
-                $wgojnjSms = wgojnj_remove_ip_from_the_block_list($_REQUEST['txt_this_ip']);
-            } elseif (isset($_REQUEST['submit-permanently-bypass-this-ip'])) {
-                // Add IP bypass list
-                $wgojnjSms = wgojnj_add_ip_to_the_allow_list($_REQUEST['txt_this_ip']);
-            } elseif (isset($_REQUEST['submit-unbypass-this-ip'])) {
-                // Remove IP bypass list
-                $wgojnjSms = wgojnj_remove_ip_from_the_allow_list($_REQUEST['txt_this_ip']);
-
+            } elseif (isset($_REQUEST['submit-save-ips-lists'])) {
+                wgojnj_save_clean_file($_REQUEST['txt-block-list'], WGOJNJ_PATH.'block-list.php');
+                wgojnj_save_clean_file($_REQUEST['txt-allow-list'], WGOJNJ_PATH.'allow-list.php');
+                $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
             } elseif (isset($_REQUEST['submit-save-regexes'])) {
                 // Save Regexes
-                $wgojnjSms = wgojnj_save_regexes($_REQUEST['txt_this_regex']);
-
+                wgojnj_save_clean_file($_REQUEST['txt-regexes-block'], WGOJNJ_PATH.'block-regexes.php');
+                $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes saved!</p></div>';
             } elseif (isset($_REQUEST['submit-install-full-waf'])) {
                 file_put_contents(
                     $userIniFilePath,
@@ -235,4 +226,20 @@ function wgojnj_remove_ip_from_the_allow_list($the_ip)
     } else {
         return '<div id="message" class="notice notice-success is-dismissible"><p>IP not found!</p></div>';
     }
+}
+
+function wgojnj_save_clean_file($txt_regexes_block, $file_path)
+{
+    //var_dump($txt_regexes_block); die;
+    $final_array = [];
+    $final_array[] = '<?php'.PHP_EOL;
+    $array = explode("\r\n", $txt_regexes_block);
+    foreach ($array as $item) {
+        $item = trim($item);
+        if (!empty($item)) {
+            $final_array[] = $item.PHP_EOL;
+        }
+    }
+
+    file_put_contents($file_path, $final_array);
 }

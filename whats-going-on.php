@@ -20,12 +20,12 @@ include_once WGOJNJ_PATH.'inc/filters.php';
 
 function wpdocs_selectively_enqueue_admin_script($hook)
 {
-    wp_enqueue_style('wgojnj_custom_style', plugin_dir_url( __FILE__ ).'lib/wgojnj.css', false, '1.0.1');
-    wp_enqueue_script('wgojnj_custom_script', plugin_dir_url( __FILE__ ).'lib/wgojnj.js', [], '1.0.1');
+    wp_enqueue_style('wgojnj_custom_style', plugin_dir_url(__FILE__).'lib/wgojnj.css', false, '1.0.1');
+    wp_enqueue_script('wgojnj_custom_script', plugin_dir_url(__FILE__).'lib/wgojnj.js', [], '1.0.1');
 }
 add_action('admin_enqueue_scripts', 'wpdocs_selectively_enqueue_admin_script');
 
-function wgojnj_current_remote_ips() {
+function wgojnj_current_remote_ips()
 {
     return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
 }

@@ -80,7 +80,6 @@ echo $_SERVER['REQUEST_URI'];
     }
     ?>
     
-    
     <?php settings_fields('wgojnj_options_group'); ?>
     <?php do_settings_sections('wgojnj_options_group'); ?>
 
@@ -174,14 +173,7 @@ echo $_SERVER['REQUEST_URI'];
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
                 <?php
-                if ('127.0.0.1' != $result->remote_ip) {
-                    try {
-                        $record = $reader->city($result->remote_ip);
-                        echo $record->country->isoCode.' - '.$record->country->name;
-                    } catch (\Throwable $th) {
-                        echo 'Cannot find..';
-                    }
-                } ?></a></td>
+                    wgo_print_countries($result->remote_ip); ?></a></td>
                 <td><?= $result->remote_port; ?></td>
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
@@ -203,11 +195,11 @@ echo $_SERVER['REQUEST_URI'];
             <?php
             if (!file_exists(ABSPATH.'.user.ini')) {
                 ?>
-                <input type="submit" name="submit-install-full-waf" id="submit-install-full-waf" class="button" value="Instalar .user.ini">
+                <input type="submit" name="submit-install-full-waf" id="submit-install-full-waf" class="button" value="Install .user.ini">
             <?php
             } else {
                 ?>
-                <input type="submit" name="submit-uninstall-full-waf" id="submit-uninstall-full-waf" class="button" value="Desinstalar .user.ini">
+                <input type="submit" name="submit-uninstall-full-waf" id="submit-uninstall-full-waf" class="button" value="Uninstall .user.ini">
             <?php
             }
             ?>
@@ -221,12 +213,8 @@ echo $_SERVER['REQUEST_URI'];
     <h2>Administration of unique IPs</h2>
 
     <p>
-        With this IP.. <input type="text" name="txt_this_ip" id="txt_this_ip" class="regular-text">
-        <input type="submit" name="submit-remove-this-ip" id="submit-remove-this-ip" class="button button-green" value="Remove records">
-        <input type="submit" name="submit-permanently-block-this-ip" id="submit-permanently-block-this-ip" class="button button-red" value="Permanently block">
-        <input type="submit" name="submit-unblock-this-ip" id="submit-unblock-this-ip" class="button button-red" value="Unblock">
-        <input type="submit" name="submit-permanently-bypass-this-ip" id="submit-permanently-bypass-this-ip" class="button button-green" value="Permanently bypass">
-        <input type="submit" name="submit-unbypass-this-ip" id="submit-unbypass-this-ip" class="button button-green" value="Unbypass">
+        This IP.. <input type="text" name="txt_this_ip" id="txt_this_ip" class="regular-text">
+        <input type="submit" name="submit-remove-this-ip" id="submit-remove-this-ip" class="button button-green" value="Remove all records">
     </p>
 
     <div class="wrap-block-and-allow-lists">
@@ -238,23 +226,26 @@ echo $_SERVER['REQUEST_URI'];
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $file_path = WGOJNJ_PATH.'block-list.php';
-                    if (file_exists($file_path)) {
-                        $the_file = file($file_path);
-                        if (count($the_file) > 1) {
-                            for ($i = 1; $i < count($the_file); ++$i) {
-                                if (trim($the_ip) != trim($the_file[$i])) {
-                                    echo '<tr><td>'.trim($the_file[$i]).'</td></tr>';
+                    <tr>
+                        <td>
+                            <textarea name="txt-block-list" id="txt-block-list" class="waf-textarea-config"><?php
+                            $file_path = WGOJNJ_PATH.'block-list.php';
+                            if (file_exists($file_path)) {
+                                $the_file = file($file_path);
+                                if (count($the_file) > 1) {
+                                    for ($i = 1; $i < count($the_file); ++$i) {
+                                        echo $the_file[$i];
+                                    }
                                 }
                             }
-                        } else {
-                            echo '<td>No IPs found.</td>';
-                        }
-                    } else {
-                        echo '<td>No IPs found.</td>';
-                    }
-                    ?>
+                            ?></textarea>
+                            <?php
+                            if (empty($the_file)) {
+                                echo '<p>No IPs found.</p>';
+                            }
+                            ?>
+                        </td>
+                    </tr>
                 </tbody>
             </table> 
         </div>
@@ -267,93 +258,123 @@ echo $_SERVER['REQUEST_URI'];
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $file_path = WGOJNJ_PATH.'allow-list.php';
-                    if (file_exists($file_path)) {
-                        $the_file = file($file_path);
-                        if (count($the_file) > 1) {
-                            for ($i = 1; $i < count($the_file); ++$i) {
-                                if (trim($the_ip) != trim($the_file[$i])) {
-                                    echo '<tr><td>'.trim($the_file[$i]).'</td></tr>';
+                    <tr>
+                        <td>
+                            <textarea name="txt-allow-list" id="txt-allow-list" class="waf-textarea-config"><?php
+                            $file_path = WGOJNJ_PATH.'allow-list.php';
+                            if (file_exists($file_path)) {
+                                $the_file = file($file_path);
+                                if (count($the_file) > 1) {
+                                    for ($i = 1; $i < count($the_file); ++$i) {
+                                        echo $the_file[$i];
+                                    }
                                 }
                             }
-                        } else {
-                            echo '<td>No IPs found.</td>';
-                        }
-                    } else {
-                        echo '<td>No IPs found.</td>';
-                    }
-                    ?>
-                </tbody>
-            </table> 
-        </div>
-    </div>
-</div>
-
-<div class="wrap-permanent-regexes">
-    <h2>Administration of Regex detections</h2>
-
-    <div class="wrap-block-and-allow-lists">
-        <div class="wrap" id="wrap-block-regexes">
-            <table class="wp-list-table widefat fixed striped posts">
-                <thead>
-                    <tr>
-                        <td>Block Regexes</td>
+                            ?></textarea>
+                            <?php
+                            if (empty($the_file)) {
+                                echo '<p>No IPs found.</p>';
+                            }
+                            ?>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                <tr><td><textarea name="txt-regexes-allow" id="txt-regexes-allow" class="waf-textarea-config"><?php
-                    $file_path = WGOJNJ_PATH.'block-regexes.php';
-                    if (file_exists($file_path)) {
-                        $the_file = file($file_path);
-                        echo $the_file;
-                    }
-                    ?></textarea>
-                    <?php
-                    if (empty($the_file)) {
-                        echo '<p>No Regexes found.</p>';
-                    }
-                    ?>
-                    </td></tr>
-                </tbody>
-            </table> 
-        </div>
-
-        <div class="wrap" id="wrap-allow-regexes">
-            <table class="wp-list-table widefat fixed striped posts">
-                <thead>
-                    <tr>
-                        <td>Allow Regexes</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td><textarea name="txt-regexes-allow" id="txt-regexes-allow" class="waf-textarea-config"><?php
-                    $file_path = WGOJNJ_PATH.'allow-regexes.php';
-                    if (file_exists($file_path)) {
-                        $the_file = file($file_path);
-                        echo $the_file;
-                    }
-                    ?></textarea>
-                    <?php
-                    if (empty($the_file)) {
-                        echo '<p>No Regexes found.</p>';
-                    }
-                    ?>
-                    </td></tr>
                 </tbody>
             </table> 
         </div>
     </div>
 
     <p>
-        <input type="submit" name="submit-save-refexes" id="submit-save-regexes" class="button button-red" value="Save Regexes">
+        <input type="submit" name="submit-save-ips-lists" id="submit-save-ips-lists" class="button button-red" value="Save IPs">
     </p>
 </div>
 
-<div class="wrap-permanent-lists">
-    <h2>Administration of 404 detections</h2>
+<div class="wrap-permanent-regexes">
+    <h2>Administration of Regex detections</h2>
 
-    <p>Under contruction.</p>
+    <p>This regexes are user for detecting requests with exploits, SQL injection, etc.. searching in query strings and post data.</p>
+
+    <div class="wrap" id="wrap-block-regexes">
+        <table class="wp-list-table widefat fixed striped posts">
+            <thead>
+                <tr>
+                    <td>Block Regexes, one per line, it allows preg_match regular expresions:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <textarea name="txt-regexes-block" id="txt-regexes-block" class="waf-textarea-config"><?php
+                        $file_path = WGOJNJ_PATH.'block-regexes.php';
+                        if (file_exists($file_path)) {
+                            $the_file = file($file_path);
+                            if (count($the_file) > 1) {
+                                for ($i = 1; $i < count($the_file); ++$i) {
+                                    echo $the_file[$i];
+                                }
+                            }
+                        }
+                        ?></textarea>
+                        <?php
+                        if (empty($the_file)) {
+                            echo '<p>No Regexes found.</p>';
+                        }
+                        ?>
+                    </td>
+                </tr>
+            </tbody>
+        </table> 
+    </div>
+
+    <p>
+        <input type="submit" name="submit-save-regexes" id="submit-save-regexes" class="button button-red" value="Save Regexes">
+    </p>
+</div>
+
+<?php
+// Results for 404s..
+$sql_404s = 'SELECT * '
+.' FROM '.$wpdb->prefix.'whats_going_on_404s wgo4'
+.' ORDER BY time DESC LIMIT 10';
+$results = $wpdb->get_results($sql_404s);
+?>
+
+<div class="wrap-permanent-lists">
+    <h2>Last detected 404s</h2>
+
+    <div class="wrap" id="wrap-block-404s">
+        <table class="wp-list-table widefat fixed striped posts">
+            <thead>
+                <tr>
+                    <td>Time</td>
+                    <td>URL</td>
+                    <td>Remote IP</td>
+                    <td>Remote Port</td>
+                    <td>User Agent</td>
+                    <td>Method</td>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+            foreach ($results as $key => $result) {
+                ?>
+
+                <tr>
+                    <td><?= $result->time; ?></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
+                    <?php
+                        wgo_print_countries($result->remote_ip); ?></a></td>
+                    <td><?= $result->remote_port; ?></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
+                </tr>
+
+                <?php
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div class="wrap-permanent-lists">
@@ -363,6 +384,7 @@ echo $_SERVER['REQUEST_URI'];
 </div>
 
 <?php
+// Results for blocks..
 $block_sql = 'SELECT max(wgob.time) time, wgob.remote_ip, wgob.remote_port, wgob.user_agent, wgob.comments '
 .' FROM '.$wpdb->prefix.'whats_going_on_block wgob'
 .' GROUP BY remote_ip ORDER BY time DESC';
@@ -392,14 +414,7 @@ $results = $wpdb->get_results($block_sql);
                     <td><?= $result->time; ?></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
                     <?php
-                    if ('127.0.0.1' != $result->remote_ip) {
-                        try {
-                            $record = $reader->city($result->remote_ip);
-                            echo $record->country->isoCode.' - '.$record->country->name;
-                        } catch (\Throwable $th) {
-                            echo 'Cannot find..';
-                        }
-                    } ?></a></td>
+                        wgo_print_countries($result->remote_ip); ?></a></td>
                     <td><?= $result->remote_port; ?></td></td>
                     <td><?= $result->user_agent; ?></td></td>
                     <td><?= $result->comments; ?></td></td>
@@ -438,14 +453,7 @@ $results = $wpdb->get_results($block_sql);
                     <td><?= $result->times; ?></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
                     <?php
-                    if ('127.0.0.1' != $result->remote_ip) {
-                        try {
-                            $record = $reader->city($result->remote_ip);
-                            echo $record->country->isoCode.' - '.$record->country->name;
-                        } catch (\Throwable $th) {
-                            echo 'Cannot find..';
-                        }
-                    } ?></a></td>
+                        wgo_print_countries($result->remote_ip); ?></a></td>
                 </tr>
 
             <?php
@@ -459,3 +467,27 @@ $results = $wpdb->get_results($block_sql);
 </form>
 
 <p>This plugin includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.</p>
+
+<?php
+
+function wgo_print_countries($remote_ips)
+{
+    $remote_ip_array = explode('-', $remote_ips);
+    try {
+        $record = $reader->city($remote_ip_array[0]);
+        echo $record->country->isoCode.' - '.$record->country->name;
+    } catch (\Throwable $th) {
+    }
+    echo '-';
+    try {
+        $record = $reader->city($remote_ip_array[1]);
+        echo $record->country->isoCode.' - '.$record->country->name;
+    } catch (\Throwable $th) {
+    }
+    echo '-';
+    try {
+        $record = $reader->city($remote_ip_array[2]);
+        echo $record->country->isoCode.' - '.$record->country->name;
+    } catch (\Throwable $th) {
+    }
+}
