@@ -114,7 +114,7 @@ function waf_save_my_request($mysqlConnection, $url, $requests_last_minute, $req
         .'VALUES ('
         ."now(), '"
         .$url."', '"
-        .$_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR']."', '"
+        .waf_current_remote_ips()."', '"
         .$_SERVER['REMOTE_PORT']."', '"
         .$_SERVER['HTTP_USER_AGENT']."', '"
         .$_SERVER['REQUEST_METHOD']."', "
