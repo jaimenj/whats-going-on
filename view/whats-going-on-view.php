@@ -176,7 +176,7 @@ echo $_SERVER['REQUEST_URI'];
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
                 <?php
-                    wgo_print_countries($result->remote_ip); ?></a></td>
+                    wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
                 <td><?= $result->remote_port; ?></td>
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
                 <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
@@ -366,7 +366,7 @@ $results = $wpdb->get_results($sql_404s);
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
                     <?php
-                        wgo_print_countries($result->remote_ip); ?></a></td>
+                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
                     <td><?= $result->remote_port; ?></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
@@ -417,7 +417,7 @@ $results = $wpdb->get_results($block_sql);
                     <td><?= $result->time; ?></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
                     <?php
-                        wgo_print_countries($result->remote_ip); ?></a></td>
+                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
                     <td><?= $result->remote_port; ?></td></td>
                     <td><?= $result->user_agent; ?></td></td>
                     <td><?= $result->comments; ?></td></td>
@@ -456,7 +456,7 @@ $results = $wpdb->get_results($block_sql);
                     <td><?= $result->times; ?></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
                     <?php
-                        wgo_print_countries($result->remote_ip); ?></a></td>
+                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
                 </tr>
 
             <?php
@@ -471,26 +471,4 @@ $results = $wpdb->get_results($block_sql);
 
 <p>This plugin includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.</p>
 
-<?php
 
-function wgo_print_countries($remote_ips)
-{
-    $remote_ip_array = explode('-', $remote_ips);
-    try {
-        $record = $reader->city($remote_ip_array[0]);
-        echo $record->country->isoCode.' - '.$record->country->name;
-    } catch (\Throwable $th) {
-    }
-    echo '-';
-    try {
-        $record = $reader->city($remote_ip_array[1]);
-        echo $record->country->isoCode.' - '.$record->country->name;
-    } catch (\Throwable $th) {
-    }
-    echo '-';
-    try {
-        $record = $reader->city($remote_ip_array[2]);
-        echo $record->country->isoCode.' - '.$record->country->name;
-    } catch (\Throwable $th) {
-    }
-}

@@ -29,3 +29,18 @@ function wgojnj_current_remote_ips()
 {
     return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
 }
+
+function wgojnj_print_countries($remote_ips, $reader)
+{
+    $remote_ip_array = explode('-', $remote_ips);
+    $remote_country_array = [];
+    foreach ($remote_ip_array as $key => $remote_ip) {
+        try {
+            $record = $reader->city($remote_ip);
+            $remote_country_array[] = $record->country->isoCode.'::'.$record->country->name;
+        } catch (\Throwable $th) {
+        }
+    }
+    
+    echo implode('-', $remote_country_array);
+}
