@@ -4,13 +4,16 @@ defined('ABSPATH') or die('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 } else {
-    if ('127.0.0.1' != $_SERVER['REMOTE_ADDR']) {
+    if ('127.0.0.1' != wgojnj_current_remote_ips()) {
         // Remove administrator IP from records..
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-            ."WHERE remote_ip = '".$_SERVER['REMOTE_ADDR']."';";
+            ."WHERE remote_ip = '".wgojnj_current_remote_ips()."';";
         $results = $wpdb->get_results($sql);
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-            ."WHERE remote_ip = '".$_SERVER['REMOTE_ADDR']."';";
+            ."WHERE remote_ip = '".wgojnj_current_remote_ips()."';";
+        $results = $wpdb->get_results($sql);
+        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
+            ."WHERE remote_ip = '".wgojnj_current_remote_ips()."';";
         $results = $wpdb->get_results($sql);
     }
 }
