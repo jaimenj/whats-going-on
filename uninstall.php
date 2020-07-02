@@ -8,3 +8,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 delete_option('wgojnj_limit_requests_per_minute');
 delete_option('wgojnj_limit_requests_per_hour');
 delete_option('wgojnj_items_per_page');
+
+if (file_exists(ABSPATH.'.user.ini')) {
+    unlink(ABSPATH.'.user.ini');
+}
