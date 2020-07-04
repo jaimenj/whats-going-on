@@ -62,8 +62,8 @@ if ($max_per_hour > 0 and $request_last_hour > $max_per_hour) {
 if (file_exists($blockListFilePath)) {
     $file_content = file($blockListFilePath);
     $to_block = false;
-    foreach ($file_content as $value) {
-        $value = str_replace(PHP_EOL, '', $value);
+    for ($i = 1; $i < count($file_content); ++$i) {
+        $value = str_replace(PHP_EOL, '', $file_content[$i]);
         if (preg_match('/'.$value.'/', waf_current_remote_ips())) {
             $to_block = true;
         }
@@ -73,13 +73,37 @@ if (file_exists($blockListFilePath)) {
         $retry_time = 86400;
     }
 }
+// If hits a regex for query string or post data..
+if (file_exists($blockRegexesFilePath)) {
+    $file_content = file($blockRegexesFilePath);
+    $to_block = false;
+    for ($i = 1; $i < count($file_content); ++$i) {
+        $value = str_replace(PHP_EOL, '', $file_content[$i]);
+        // Check query string..
+        if (preg_match('/'.$value.'/', $_SERVER['QUERY_STRING'])) {
+            $to_block = true;
+        }
+        // Check post data..
+        foreach ($_POST as $psot_key => $post_value) {
+            if (preg_match('/'.$value.'/', $post_value)) {
+                $to_block = true;
+            }
+        }
+    }
+    if ($to_block) {
+        $comments .= 'Request blocking by regexes. ';
+        $retry_time = 86400;
+    }
+}
+// If we are blocking..
 if (!empty($comments)) {
     $bypassed = false;
 
+    // If it's in the allow list..
     if (file_exists($allowListFilePath)) {
         $file_content = file($allowListFilePath);
-        foreach ($file_content as $value) {
-            $value = str_replace(PHP_EOL, '', $value);
+        for ($i = 1; $i < count($file_content); ++$i) {
+            $value = str_replace(PHP_EOL, '', $file_content[$i]);
             if (preg_match('/'.$value.'/', waf_current_remote_ips())) {
                 $bypassed = true;
             }
