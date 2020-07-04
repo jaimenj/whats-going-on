@@ -48,16 +48,27 @@ waf_save_my_request($mysqlConnection, $url, $requests_last_minute, $requests_las
 // To block or not to block, that's the matter..
 $comments = '';
 $retry = 30;
+// If it achieves max requests per minute..
 if ($max_per_minute > 0 and $requests_last_minute > $max_per_minute) {
     $comments .= 'Reached max requests per minute: '.$max_per_minute.' ';
     $retry_time = 60;
 }
+// If it achieves max requests per hour..
 if ($max_per_hour > 0 and $request_last_hour > $max_per_hour) {
     $comments .= 'Reached max requests per hour: '.$max_per_hour.' ';
     $retry_time = 3600;
 }
+// If it's in the block list..
 if (file_exists($blockListFilePath)) {
-    if (in_array(waf_current_remote_ips().PHP_EOL, file($blockListFilePath))) {
+    $file_content = file($blockListFilePath);
+    $to_block = false;
+    foreach ($file_content as $value) {
+        $value = str_replace(PHP_EOL, '', $value);
+        if (preg_match('/'.$value.'/', waf_current_remote_ips())) {
+            $to_block = true;
+        }
+    }
+    if ($to_block) {
         $comments .= 'IP in the block-list. ';
         $retry_time = 86400;
     }
@@ -66,11 +77,18 @@ if (!empty($comments)) {
     $bypassed = false;
 
     if (file_exists($allowListFilePath)) {
-        if (in_array(waf_current_remote_ips().PHP_EOL, file($allowListFilePath))) {
+        $file_content = file($allowListFilePath);
+        foreach ($file_content as $value) {
+            $value = str_replace(PHP_EOL, '', $value);
+            if (preg_match('/'.$value.'/', waf_current_remote_ips())) {
+                $bypassed = true;
+            }
+        }
+        if ($bypassed) {
             $comments .= 'IP in the allow-list. Bypassed..';
-            $bypassed = true;
         }
     }
+
     waf_save_the_blocking($mysqlConnection, $comments, $the_table_full_prefix);
 
     if (!$bypassed) {

@@ -215,6 +215,9 @@ echo $_SERVER['REQUEST_URI'];
 <div class="wrap-permanent-lists">
     <h2>Administration of unique IPs</h2>
 
+    <p>The format of IPs is: HTTP_X_FORWARDED_FOR-HTTP_CLIENT_IP-REMOTE_ADDR<br>
+    If you see something like --127.0.0.1 it's becaouse the web is not behind a proxy.</p>
+
     <p>
         This IP.. <input type="text" name="txt_this_ip" id="txt_this_ip" class="regular-text">
         <input type="submit" name="submit-remove-this-ip" id="submit-remove-this-ip" class="button button-green" value="Remove all records">
@@ -335,6 +338,9 @@ echo $_SERVER['REQUEST_URI'];
 
 <?php
 // Results for 404s..
+$total_404s = $wpdb->get_var(
+    'SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_404s wgo4'
+);
 $sql_404s = 'SELECT * '
 .' FROM '.$wpdb->prefix.'whats_going_on_404s wgo4'
 .' ORDER BY time DESC LIMIT 10';
@@ -342,7 +348,7 @@ $results = $wpdb->get_results($sql_404s);
 ?>
 
 <div class="wrap-permanent-lists">
-    <h2>Last detected 404s</h2>
+    <h2>Last detected 404s (<?= $total_404s ?>)</h2>
 
     <div class="wrap" id="wrap-block-404s">
         <table class="wp-list-table widefat fixed striped posts">
