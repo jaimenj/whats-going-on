@@ -89,7 +89,7 @@ echo $_SERVER['REQUEST_URI'];
     <?php wp_nonce_field('wgojnj', 'wgojnj_nonce'); ?>
 
     <p>
-        <input type="submit" name="submit" id="submit" class="button button-primary" value="Save changes">
+        <input type="submit" name="submit" id="submit" class="button button-primary" value="Save config">
 
         <label for="limit_requests_per_minute">Max requests per minute</label>
         <select name="limit_requests_per_minute" id="limit_requests_per_minute">
