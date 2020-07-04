@@ -215,8 +215,9 @@ echo $_SERVER['REQUEST_URI'];
 <div class="wrap-permanent-lists">
     <h2>Administration of unique IPs</h2>
 
-    <p>The format of IPs is: HTTP_X_FORWARDED_FOR-HTTP_CLIENT_IP-REMOTE_ADDR<br>
-    If you see something like --127.0.0.1 it's becaouse the web is not behind a proxy.</p>
+    <p>The format of IPs is: HTTP_X_FORWARDED_FOR-HTTP_CLIENT_IP-REMOTE_ADDR
+    If you see something like --127.0.0.1 it's because the web is not behind a proxy.
+    You can use a Regular Expresions to check IPs.</p>
 
     <p>
         This IP.. <input type="text" name="txt_this_ip" id="txt_this_ip" class="regular-text">
@@ -228,7 +229,7 @@ echo $_SERVER['REQUEST_URI'];
             <table class="wp-list-table widefat fixed striped posts">
                 <thead>
                     <tr>
-                        <td>Block list</td>
+                        <td>Block list, one per line</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -260,7 +261,7 @@ echo $_SERVER['REQUEST_URI'];
             <table class="wp-list-table widefat fixed striped posts">
                 <thead>
                     <tr>
-                        <td>Allow list</td>
+                        <td>Allow list, one per line</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -297,13 +298,13 @@ echo $_SERVER['REQUEST_URI'];
 <div class="wrap-permanent-regexes">
     <h2>Administration of Regex detections</h2>
 
-    <p>This regexes are user for detecting requests with exploits, SQL injection, etc.. searching in query strings and post data.</p>
+    <p>This Regular Expresions are user for detecting requests with exploits, SQL injection.. searching in query strings and post data.</p>
 
     <div class="wrap" id="wrap-block-regexes">
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
-                    <td>Block Regexes, one per line, it allows preg_match regular expresions:</td>
+                    <td>Block Regexes, one per line</td>
                 </tr>
             </thead>
             <tbody>
