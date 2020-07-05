@@ -41,6 +41,32 @@ function wgojnj_print_countries($remote_ips, $reader)
         } catch (\Throwable $th) {
         }
     }
-    
+
     echo implode('-', $remote_country_array);
+}
+
+function wgojnj_remove_older_than_a_week_data(){
+    global $wpdb;
+    
+    $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
+        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
+    $results = $wpdb->get_results($sql);
+    $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
+        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
+    $results = $wpdb->get_results($sql);
+    $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
+        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
+    $results = $wpdb->get_results($sql);
+}
+
+/*
+ * Clean records older than one week..
+ */
+function wgojnj_cron_remove_old_data()
+{
+    wgojnj_remove_older_than_a_week_data();
+}
+add_action('wgojnj_cron_remove_old_data_hook', 'wgojnj_cron_remove_old_data');
+if (!wp_next_scheduled('wgojnj_cron_remove_old_data_hook')) {
+    wp_schedule_event(time(), 'hourly', 'wgojnj_cron_remove_old_data_hook');
 }
