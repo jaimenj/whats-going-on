@@ -391,7 +391,7 @@ echo $_SERVER['REQUEST_URI'];
     </p>
 </div>
 
-<div class="wrap-permanent-lists">
+<div class="wrap-permanent-lists wrap">
     <h2>Administration of DDoS detections</h2>
 
     <?php
