@@ -19,10 +19,10 @@ if (!current_user_can('administrator')) {
 }
 
 // GEOIP
-require __DIR__.'/../lib/geoip2.phar';
+require WGOJNJ_PATH.'lib/geoip2.phar';
 use GeoIp2\Database\Reader;
 
-$reader = new Reader(__DIR__.'/../lib/GeoLite2-City.mmdb');
+$reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb');
 
 $limit_requests_per_minute = get_option('wgojnj_limit_requests_per_minute');
 $limit_requests_per_hour = get_option('wgojnj_limit_requests_per_hour');
@@ -69,7 +69,7 @@ $maxs_reached = $wpdb->get_results(
 <form method="post" action="<?php
 //echo admin_url('tools.php?page=whats-going-on');
 echo $_SERVER['REQUEST_URI'];
-?>" id="this_form">
+?>" id="this_form" name="this_form">
 
 <div class="wrap">
     <span style="float: right">
@@ -83,15 +83,63 @@ echo $_SERVER['REQUEST_URI'];
     if (isset($wgojnjSms)) {
         echo $wgojnjSms;
     }
+
+    ////////////////
+    /////////////////////////////// START CHART
+    $chart_sql = 'SELECT count(*) hits FROM '.$wpdb->prefix.'whats_going_on wgo'
+        .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
+    $chart_results = $wpdb->get_results($chart_sql);
+    //var_dump($chart_results);
     ?>
-    
+
+    <script>
+    window.onload = () => {
+        var ctx = document.getElementById('mainChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [<?php
+                        echo "'0'";
+                        for($i = 1; $i < count($chart_results); $i++) {
+                            echo ", '".$i."'";
+                        }
+                    ?>],
+                datasets: [{
+                    label: '# of requests per hour in the last week',
+                    data: [<?php
+                        echo $chart_results[0];
+                        for($i = 1; $i < count($chart_results); $i++) {
+                            echo ','.$chart_results[$i]->hits;
+                        }
+                    ?>],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    }
+    </script>
+    <canvas id="mainChart" width="148" height="24"></canvas>
+    <?php
+    /////////////////////// END CHART
+    ////////////////////////////////////////////////////////
+    ?>
+
     <?php settings_fields('wgojnj_options_group'); ?>
     <?php do_settings_sections('wgojnj_options_group'); ?>
 
     <?php wp_nonce_field('wgojnj', 'wgojnj_nonce'); ?>
 
     <p>
-        <input type="submit" name="submit" id="submit" class="button button-primary" value="Save config">
+        <input type="submit" name="btn-submit" id="btn-submit" class="button button-primary" value="Save config">
 
         <label for="limit_requests_per_minute">Max requests per minute</label>
         <select name="limit_requests_per_minute" id="limit_requests_per_minute">
@@ -120,9 +168,9 @@ echo $_SERVER['REQUEST_URI'];
             <option value="10000"<?= (10000 == $limit_requests_per_hour ? ' selected' : ''); ?>>10000</option>
             <option value="-1"<?= (-1 == $limit_requests_per_hour ? ' selected' : ''); ?>>Unlimited</option>
         </select>
-        
+
         <label for="items_per_page">Items per page</label>
-        <select name="items_per_page" id="items_per_page" onchange="submitForm()">
+        <select name="items_per_page" id="items_per_page">
             <option value="10"<?= (10 == $items_per_page ? ' selected' : ''); ?>>10</option>
             <option value="20"<?= (20 == $items_per_page ? ' selected' : ''); ?>>20</option>
             <option value="50"<?= (50 == $items_per_page ? ' selected' : ''); ?>>50</option>
@@ -342,8 +390,6 @@ echo $_SERVER['REQUEST_URI'];
 <div class="wrap-permanent-lists">
     <h2>Administration of DDoS detections</h2>
 
-    <p>Under contruction.</p>
-
     <?php
     /**
      * 500 errors
@@ -351,6 +397,8 @@ echo $_SERVER['REQUEST_URI'];
      * spikes in traffic.
      */
     ?>
+
+    <p>Under contruction.</p>
 </div>
 
 <?php

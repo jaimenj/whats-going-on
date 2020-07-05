@@ -53,7 +53,7 @@ function wgojnj_whats_going_on_controller()
             /*
              * Handling actions..
              */
-            if (isset($_REQUEST['submit'])) {
+            if (isset($_REQUEST['btn-submit'])) {
                 update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
                 update_option('wgojnj_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
                 update_option('wgojnj_items_per_page', stripslashes($_REQUEST['items_per_page']));
