@@ -74,7 +74,7 @@ echo $_SERVER['REQUEST_URI'];
 <div class="wrap">
     <span style="float: right">
         Support the project, please donate <a href="https://paypal.me/jaimeninoles" target="_blank"><b>here</b></a>.<br>
-        Need help? Ask <a href="https://jnjsite.com/whats-going-on-for-wordpress-a-simple-waf/" target="_blank"><b>here</b></a>.
+        Need help? Ask <a href="https://jnjsite.com/whats-going-on-for-wordpress/" target="_blank"><b>here</b></a>.
     </span>
 
     <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simplified WAF</h1>
