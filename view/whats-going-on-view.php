@@ -358,7 +358,7 @@ echo $_SERVER['REQUEST_URI'];
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
-                    <td>Block Regexes, one per line</td>
+                    <td>Block Regexes, one per line, use full Regex here like /something/ix for example</td>
                 </tr>
             </thead>
             <tbody>

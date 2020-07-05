@@ -85,12 +85,12 @@ if (file_exists($blockRegexesFilePath)) {
         $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
         if (!empty($value)) {
             // Check query string..
-            if (preg_match('/'.$value.'/', $_SERVER['QUERY_STRING'])) {
+            if (preg_match($value, $_SERVER['QUERY_STRING'])) {
                 $to_block = true;
             }
             // Check post data..
-            foreach ($_POST as $psot_key => $post_value) {
-                if (preg_match('/'.$value.'/', $post_value)) {
+            foreach ($_POST as $post_key => $post_value) {
+                if (preg_match($value, $post_value)) {
                     $to_block = true;
                 }
             }
