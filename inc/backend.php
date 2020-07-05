@@ -68,18 +68,16 @@ function wgojnj_whats_going_on_controller()
                 $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on_block;');
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>All records removed!</p></div>';
             } elseif (isset($_REQUEST['submit-remove-old'])) {
-                $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-                    ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
-                $results = $wpdb->get_results($sql);
-                $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-                    ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
-                $results = $wpdb->get_results($sql);
+                wgojnj_remove_older_than_a_week_data();
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Old records removed!</p></div>';
             } elseif (isset($_REQUEST['submit-remove-this-ip'])) {
                 $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
                     ."WHERE remote_ip = '".$_REQUEST['txt_this_ip']."';";
                 $results = $wpdb->get_results($sql);
                 $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
+                    ."WHERE remote_ip = '".$_REQUEST['txt_this_ip']."';";
+                $results = $wpdb->get_results($sql);
+                $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
                     ."WHERE remote_ip = '".$_REQUEST['txt_this_ip']."';";
                 $results = $wpdb->get_results($sql);
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Records with IP '.$_REQUEST['txt_this_ip'].' removed!</p></div>';

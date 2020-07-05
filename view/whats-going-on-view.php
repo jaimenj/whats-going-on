@@ -27,11 +27,6 @@ $reader = new Reader(__DIR__.'/../lib/GeoLite2-City.mmdb');
 $limit_requests_per_minute = get_option('wgojnj_limit_requests_per_minute');
 $limit_requests_per_hour = get_option('wgojnj_limit_requests_per_hour');
 $items_per_page = get_option('wgojnj_items_per_page');
-$maxs_reached = $wpdb->get_results(
-    'SELECT max(last_minute) max_hits_minute_reached, max(last_hour) max_hits_hour_reached FROM '.$wpdb->prefix.'whats_going_on'
-);
-//var_dump($maxs_reached);
-//$current_page = (isset($_POST['current_page']) ? $_POST['current_page'] : 1);
 
 /*
  * Listing registers..
@@ -40,20 +35,21 @@ global $wpdb;
 global $current_page;
 $total_sql = 'SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on';
 $main_sql = 'SELECT * FROM '.$wpdb->prefix.'whats_going_on ';
+$maxs_reached_sql = 'SELECT max(last_minute) max_hits_minute_reached, max(last_hour) max_hits_hour_reached FROM '.$wpdb->prefix.'whats_going_on';
 
+$add_sql = '';
 if (isset($_GET['filter-url'])) {
-    $total_sql .= " WHERE url = '".urldecode($_GET['filter-url'])."'";
-    $main_sql .= " WHERE url = '".urldecode($_GET['filter-url'])."'";
+    $add_sql .= " WHERE url = '".urldecode($_GET['filter-url'])."'";
 } elseif (isset($_GET['filter-ip'])) {
-    $total_sql .= " WHERE remote_ip = '".urldecode($_GET['filter-ip'])."'";
-    $main_sql .= " WHERE remote_ip = '".urldecode($_GET['filter-ip'])."'";
+    $add_sql .= " WHERE remote_ip = '".urldecode($_GET['filter-ip'])."'";
 } elseif (isset($_GET['filter-uagent'])) {
-    $total_sql .= " WHERE user_agent = '".urldecode($_GET['filter-uagent'])."'";
-    $main_sql .= " WHERE user_agent = '".urldecode($_GET['filter-uagent'])."'";
+    $add_sql .= " WHERE user_agent = '".urldecode($_GET['filter-uagent'])."'";
 } elseif (isset($_GET['filter-method'])) {
-    $total_sql .= " WHERE method = '".urldecode($_GET['filter-method'])."'";
-    $main_sql .= " WHERE method = '".urldecode($_GET['filter-method'])."'";
+    $add_sql .= " WHERE method = '".urldecode($_GET['filter-method'])."'";
 }
+$total_sql .= $add_sql;
+$main_sql .= $add_sql;
+$maxs_reached_sql .= $add_sql;
 
 $total_registers = $wpdb->get_var($total_sql);
 $offset = ($current_page - 1) * $items_per_page;
@@ -61,6 +57,12 @@ $offset = ($current_page - 1) * $items_per_page;
 $main_sql .= 'ORDER BY time DESC LIMIT '.$items_per_page.' OFFSET '.$offset;
 $results = $wpdb->get_results($main_sql);
 //var_export($result);
+
+$maxs_reached = $wpdb->get_results(
+    $maxs_reached_sql
+);
+//var_dump($maxs_reached);
+//$current_page = (isset($_POST['current_page']) ? $_POST['current_page'] : 1);
 
 ?>
 
@@ -191,7 +193,7 @@ echo $_SERVER['REQUEST_URI'];
     </table>
 
     <p>
-        <input type="submit" name="submit-remove-old" id="submit-remove-old" class="button button-primary" value="Remove old records">
+        <input type="submit" name="submit-remove-old" id="submit-remove-old" class="button button-primary" value="Remove records of more than one week">
         <input type="submit" name="submit-remove-all" id="submit-remove-all" class="button" value="Remove all records">
         
         <span class="span-install">
@@ -220,7 +222,7 @@ echo $_SERVER['REQUEST_URI'];
     You can use a Regular Expresions to check IPs.</p>
 
     <p>
-        This IP.. <input type="text" name="txt_this_ip" id="txt_this_ip" class="regular-text">
+        With this IP.. <input type="text" name="txt_this_ip" id="txt_this_ip" class="regular-text">
         <input type="submit" name="submit-remove-this-ip" id="submit-remove-this-ip" class="button button-green" value="Remove all records">
     </p>
 
@@ -337,60 +339,18 @@ echo $_SERVER['REQUEST_URI'];
     </p>
 </div>
 
-<?php
-// Results for 404s..
-$total_404s = $wpdb->get_var(
-    'SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_404s wgo4'
-);
-$sql_404s = 'SELECT * '
-.' FROM '.$wpdb->prefix.'whats_going_on_404s wgo4'
-.' ORDER BY time DESC LIMIT 10';
-$results = $wpdb->get_results($sql_404s);
-?>
-
-<div class="wrap-permanent-lists">
-    <h2>Last detected 404s (<?= $total_404s ?>)</h2>
-
-    <div class="wrap" id="wrap-block-404s">
-        <table class="wp-list-table widefat fixed striped posts">
-            <thead>
-                <tr>
-                    <td>Time</td>
-                    <td>URL</td>
-                    <td>Remote IP</td>
-                    <td>Remote Port</td>
-                    <td>User Agent</td>
-                    <td>Method</td>
-                </tr>
-            </thead>
-            <tbody>
-            <?php
-            foreach ($results as $key => $result) {
-                ?>
-
-                <tr>
-                    <td><?= $result->time; ?></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
-                    <?php
-                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
-                    <td><?= $result->remote_port; ?></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
-                </tr>
-
-                <?php
-            }
-            ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-
 <div class="wrap-permanent-lists">
     <h2>Administration of DDoS detections</h2>
 
     <p>Under contruction.</p>
+
+    <?php
+    /**
+     * 500 errors
+     * TTL or processor usage
+     * spikes in traffic.
+     */
+    ?>
 </div>
 
 <?php
@@ -444,7 +404,7 @@ $results = $wpdb->get_results($block_sql);
 ?>
 
 <div class="wrap-ips-blocked">
-    <h2>IPs blocked(<?= count($results); ?>)</h2>
+    <h2>Last IPs blocked (<?= count($results); ?>)</h2>
 
     <div class="wrap" id="block-ips-blocked">
         <table class="wp-list-table widefat fixed striped posts">
@@ -467,6 +427,43 @@ $results = $wpdb->get_results($block_sql);
                 </tr>
 
             <?php
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<?php
+// Results for 404s..
+$sql_404s = 'SELECT count(*) as times, remote_ip FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC';
+$results = $wpdb->get_results($sql_404s);
+?>
+
+<div class="wrap-permanent-lists">
+    <h2>Last IPs doing 404s (<?= count($results); ?>)</h2>
+
+    <div class="wrap" id="wrap-block-404s">
+        <table class="wp-list-table widefat fixed striped posts">
+            <thead>
+                <tr>
+                    <td>Times</td>
+                    <td>Remote IP</td>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+            foreach ($results as $key => $result) {
+                ?>
+
+                <tr>
+                    <td><?= $result->times; ?></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
+                    <?php
+                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
+                </tr>
+
+                <?php
             }
             ?>
             </tbody>
