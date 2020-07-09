@@ -57,6 +57,7 @@ function wgojnj_whats_going_on_controller()
                 update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
                 update_option('wgojnj_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
                 update_option('wgojnj_items_per_page', stripslashes($_REQUEST['items_per_page']));
+                update_option('wgojnj_days_to_store', stripslashes($_REQUEST['days_to_store']));
 
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
             } elseif (isset($_REQUEST['submit-previous-page'])) {

@@ -27,6 +27,7 @@ $reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb');
 $limit_requests_per_minute = get_option('wgojnj_limit_requests_per_minute');
 $limit_requests_per_hour = get_option('wgojnj_limit_requests_per_hour');
 $items_per_page = get_option('wgojnj_items_per_page');
+$days_to_store = get_option('wgojnj_days_to_store');
 
 /*
  * Listing registers..
@@ -77,7 +78,7 @@ echo $_SERVER['REQUEST_URI'];
         Need help? Ask <a href="https://jnjsite.com/whats-going-on-for-wordpress/" target="_blank"><b>here</b></a>.
     </span>
 
-    <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simplified WAF</h1>
+    <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simple WAF</h1>
     
     <?php
     if (isset($wgojnjSms)) {
@@ -107,7 +108,13 @@ echo $_SERVER['REQUEST_URI'];
                         }
                     ?>],
                 datasets: [{
-                    label: '# of requests per hour in the last week',
+                    label: '# of requests per hour in the last <?php 
+                        if($days_to_store > 1) {
+                            echo $days_to_store.' days';
+                        } else {
+                            echo 'day';
+                        }
+                        ?>',
                     data: [<?php
                         if (count($chart_results) > 0) {
                             echo $chart_results[0]->hits;
@@ -182,6 +189,16 @@ echo $_SERVER['REQUEST_URI'];
             <option value="250"<?= (250 == $items_per_page ? ' selected' : ''); ?>>250</option>
             <option value="500"<?= (500 == $items_per_page ? ' selected' : ''); ?>>500</option>
             <option value="1000"<?= (1000 == $items_per_page ? ' selected' : ''); ?>>1000</option>
+        </select>
+
+        <label for="days_to_store">Days to store</label>
+        <select name="days_to_store" id="days_to_store">
+            <option value="1"<?= (1 == $days_to_store ? ' selected' : ''); ?>>1</option>
+            <option value="2"<?= (2 == $days_to_store ? ' selected' : ''); ?>>2</option>
+            <option value="3"<?= (3 == $days_to_store ? ' selected' : ''); ?>>3</option>
+            <option value="7"<?= (7 == $days_to_store ? ' selected' : ''); ?>>7</option>
+            <option value="14"<?= (14 == $days_to_store ? ' selected' : ''); ?>>14</option>
+            <option value="28"<?= (28 == $days_to_store ? ' selected' : ''); ?>>28</option>
         </select>
 
         <span class="span-pagination"><?php
