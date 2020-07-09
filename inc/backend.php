@@ -125,6 +125,7 @@ function wgojnj_register_options()
     register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_minute');
     register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_hour');
     register_setting('wgojnj_options_group', 'wgojnj_items_per_page');
+    register_setting('wgojnj_options_group', 'wgojnj_days_to_store');
 }
 
 function wgojnj_add_ip_to_the_block_list($the_ip)

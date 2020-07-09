@@ -49,15 +49,17 @@ function wgojnj_print_countries($remote_ips, $reader)
 
 function wgojnj_remove_older_than_a_week_data(){
     global $wpdb;
-    
+
+    $days_to_store = get_option('wgojnj_days_to_store');
+
     $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
+        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
     $results = $wpdb->get_results($sql);
     $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
+        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
     $results = $wpdb->get_results($sql);
     $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -7 day'))."';";
+        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
     $results = $wpdb->get_results($sql);
 }
 
