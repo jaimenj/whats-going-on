@@ -43,6 +43,9 @@ $total_sql = 'SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on';
 $main_sql = 'SELECT * FROM '.$wpdb->prefix.'whats_going_on ';
 $maxs_reached_sql = 'SELECT max(last_minute) max_hits_minute_reached, max(last_hour) max_hits_hour_reached FROM '.$wpdb->prefix.'whats_going_on';
 
+// All records for later study
+$all_records = $wpdb->get_results($main_sql);
+
 $add_sql = '';
 if (isset($_GET['filter-url'])) {
     $add_sql .= " WHERE url = '".urldecode($_GET['filter-url'])."'";
@@ -58,6 +61,7 @@ $main_sql .= $add_sql;
 $maxs_reached_sql .= $add_sql;
 
 $total_registers = $wpdb->get_var($total_sql);
+
 $offset = ($current_page - 1) * $items_per_page;
 
 $main_sql .= 'ORDER BY time DESC LIMIT '.$items_per_page.' OFFSET '.$offset;
@@ -69,7 +73,6 @@ $maxs_reached = $wpdb->get_results(
 );
 //var_dump($maxs_reached);
 //$current_page = (isset($_POST['current_page']) ? $_POST['current_page'] : 1);
-
 ?>
 
 <form method="post" action="<?php
@@ -268,6 +271,8 @@ echo $_SERVER['REQUEST_URI'];
     <?php include(WGOJNJ_PATH.'view/sub-dos.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-ddos.php') ?>
+    <hr>
+    <?php include(WGOJNJ_PATH.'view/sub-countries-continents.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-blocks.php') ?>
     <hr>

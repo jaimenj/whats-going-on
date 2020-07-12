@@ -5,7 +5,7 @@ $results = $wpdb->get_results($sql_404s);
 ?>
 
 <div class="wrap-permanent-lists">
-    <h2>Last IPs doing 404s (<?= count($results); ?>)</h2>
+    <h2>Last IPs doing 404s, with a total of <?= count($results); ?> IPs recorded</h2>
 
     <div class="wrap" id="wrap-block-404s">
         <table class="wp-list-table widefat fixed striped posts">
@@ -30,7 +30,7 @@ $results = $wpdb->get_results($sql_404s);
                 </tr>
 
                 <?php
-                if($count >= 30) break;
+                if($count >= 10) break;
             }
             ?>
             </tbody>
