@@ -17,7 +17,9 @@ $results = $wpdb->get_results($sql_404s);
             </thead>
             <tbody>
             <?php
+            $count = 0;
             foreach ($results as $key => $result) {
+                $count++;
                 ?>
 
                 <tr>
@@ -28,6 +30,7 @@ $results = $wpdb->get_results($sql_404s);
                 </tr>
 
                 <?php
+                if($count >= 30) break;
             }
             ?>
             </tbody>

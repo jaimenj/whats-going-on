@@ -1,3 +1,4 @@
+<style>hr{margin-top: 30px;}</style>
 <?php
 
 defined('ABSPATH') or die('No no no');
@@ -76,195 +77,202 @@ $maxs_reached = $wpdb->get_results(
 echo $_SERVER['REQUEST_URI'];
 ?>" id="this_form" name="this_form">
 
-<div class="wrap">
-    <span style="float: right">
-        Support the project, please donate <a href="https://paypal.me/jaimeninoles" target="_blank"><b>here</b></a>.<br>
-        Need help? Ask <a href="https://jnjsite.com/whats-going-on-for-wordpress/" target="_blank"><b>here</b></a>.
-    </span>
-
-    <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simple WAF</h1>
-    
-    <?php
-    if (isset($wgojnjSms)) {
-        echo $wgojnjSms;
-    }
-
-    ////////////////
-    /////////////////////////////// START CHART
-    $chart_sql = 'SELECT count(*) hits FROM '.$wpdb->prefix.'whats_going_on wgo'
-        .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
-    $chart_results = $wpdb->get_results($chart_sql);
-    //var_dump($chart_results);
-    ?>
-
-    <script>
-    function paintMainChart() {
-        var ctx = document.getElementById('mainChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: [<?php
-                        if (count($chart_results) > 0) {
-                            echo "'0'";
-                            for ($i = 1; $i < count($chart_results); ++$i) {
-                                echo ", '".$i."'";
-                            }
-                        }
-                    ?>],
-                datasets: [{
-                    label: '# of requests per hour in the last <?php
-                        if ($days_to_store > 1) {
-                            echo $days_to_store.' days';
-                        } else {
-                            echo 'day';
-                        }
-                        ?>',
-                    data: [<?php
-                        if (count($chart_results) > 0) {
-                            echo $chart_results[0]->hits;
-                            for ($i = 1; $i < count($chart_results); ++$i) {
-                                echo ','.$chart_results[$i]->hits;
-                            }
-                        }
-                    ?>],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-    }
-    </script>
-    <canvas id="mainChart" width="148" height="24"></canvas>
-    <?php
-    /////////////////////// END CHART
-    ////////////////////////////////////////////////////////
-    ?>
-
-    <?php settings_fields('wgojnj_options_group'); ?>
-    <?php do_settings_sections('wgojnj_options_group'); ?>
-
-    <?php wp_nonce_field('wgojnj', 'wgojnj_nonce'); ?>
-
-    <p>
-        <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save all configs">
-
-        <label for="items_per_page">Items per page</label>
-        <select name="items_per_page" id="items_per_page">
-            <option value="10"<?= (10 == $items_per_page ? ' selected' : ''); ?>>10</option>
-            <option value="20"<?= (20 == $items_per_page ? ' selected' : ''); ?>>20</option>
-            <option value="50"<?= (50 == $items_per_page ? ' selected' : ''); ?>>50</option>
-            <option value="100"<?= (100 == $items_per_page ? ' selected' : ''); ?>>100</option>
-            <option value="250"<?= (250 == $items_per_page ? ' selected' : ''); ?>>250</option>
-            <option value="500"<?= (500 == $items_per_page ? ' selected' : ''); ?>>500</option>
-            <option value="1000"<?= (1000 == $items_per_page ? ' selected' : ''); ?>>1000</option>
-        </select>
-
-        <label for="days_to_store">Days to store</label>
-        <select name="days_to_store" id="days_to_store">
-            <option value="1"<?= (1 == $days_to_store ? ' selected' : ''); ?>>1</option>
-            <option value="2"<?= (2 == $days_to_store ? ' selected' : ''); ?>>2</option>
-            <option value="3"<?= (3 == $days_to_store ? ' selected' : ''); ?>>3</option>
-            <option value="7"<?= (7 == $days_to_store ? ' selected' : ''); ?>>7</option>
-            <option value="14"<?= (14 == $days_to_store ? ' selected' : ''); ?>>14</option>
-            <option value="28"<?= (28 == $days_to_store ? ' selected' : ''); ?>>28</option>
-        </select>
-
-        <span class="span-pagination"><?php
-
-        if ($current_page > 1) {
-            ?>
-            <input type="submit" name="submit-previous-page" id="submit-previous-page" class="button button-primary" value="<<">
-            <?php
-        }
-
-        ?>
-        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>">Page <?= $current_page; ?> with total <?= $total_registers; ?> items</a>
-        <?php
-
-        if ($current_page * $items_per_page < $total_registers) {
-            ?>
-            <input type="submit" name="submit-next-page" id="submit-next-page" class="button button-primary" value=">>">
-            <?php
-        }
-
-        ?>
+    <div class="wrap">
+        <span style="float: right">
+            Support the project, please donate <a href="https://paypal.me/jaimeninoles" target="_blank"><b>here</b></a>.<br>
+            Need help? Ask <a href="https://jnjsite.com/whats-going-on-for-wordpress/" target="_blank"><b>here</b></a>.
         </span>
-        <input type="hidden" name="current-page" id="current-page" value="<?= $current_page; ?>">
-    </p>
 
-    <table class="wp-list-table widefat fixed striped posts">
-        <thead>
-            <tr>
-                <td>Time</td>
-                <td>URL</td>
-                <td>Remote IP</td>
-                <td>Remote Port</td>
-                <td>User Agent</td>
-                <td>Method</td>
-                <td>Hits minute (max <?= $maxs_reached[0]->max_hits_minute_reached; ?>)</td>
-                <td>Hits hour (max <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
-            </tr>
-        </thead>
-        <tbody>
-        <?php
-        foreach ($results as $key => $result) {
-            ?>
-
-            <tr>
-                <td><?= $result->time; ?></td>
-                <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
-                <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
-                <?php
-                    wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
-                <td><?= $result->remote_port; ?></td>
-                <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
-                <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
-                <td><?= $result->last_minute; ?></td></td>
-                <td><?= $result->last_hour; ?></td></td>
-            </tr>
-
-            <?php
-        }
-        ?>
-        </tbody>
-    </table>
-
-    <p>
-        <input type="submit" name="submit-remove-old" id="submit-remove-old" class="button button-primary" value="Remove records of more than one week">
-        <input type="submit" name="submit-remove-all" id="submit-remove-all" class="button" value="Remove all records">
+        <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simple WAF</h1>
         
-        <span class="span-install">
-            <?php
-            if (!file_exists(ABSPATH.'.user.ini')) {
+        <?php
+        if (isset($wgojnjSms)) {
+            echo $wgojnjSms;
+        }
+
+        ////////////////
+        /////////////////////////////// START CHART
+        $chart_sql = 'SELECT count(*) hits FROM '.$wpdb->prefix.'whats_going_on wgo'
+            .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
+        $chart_results = $wpdb->get_results($chart_sql);
+        //var_dump($chart_results);
+        ?>
+
+        <script>
+        function paintMainChart() {
+            var ctx = document.getElementById('mainChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [<?php
+                            if (count($chart_results) > 0) {
+                                echo "'0'";
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ", '".$i."'";
+                                }
+                            }
+                        ?>],
+                    datasets: [{
+                        label: '# of requests per hour in the last <?php
+                            if ($days_to_store > 1) {
+                                echo $days_to_store.' days';
+                            } else {
+                                echo 'day';
+                            }
+                            ?>',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $chart_results[0]->hits;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.$chart_results[$i]->hits;
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+        </script>
+        <canvas id="mainChart" width="148" height="24"></canvas>
+        <?php
+        /////////////////////// END CHART
+        ////////////////////////////////////////////////////////
+        ?>
+
+        <?php settings_fields('wgojnj_options_group'); ?>
+        <?php do_settings_sections('wgojnj_options_group'); ?>
+
+        <?php wp_nonce_field('wgojnj', 'wgojnj_nonce'); ?>
+
+        <p>
+            <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save all configs">
+
+            <label for="items_per_page">Items per page</label>
+            <select name="items_per_page" id="items_per_page">
+                <option value="10"<?= (10 == $items_per_page ? ' selected' : ''); ?>>10</option>
+                <option value="20"<?= (20 == $items_per_page ? ' selected' : ''); ?>>20</option>
+                <option value="50"<?= (50 == $items_per_page ? ' selected' : ''); ?>>50</option>
+                <option value="100"<?= (100 == $items_per_page ? ' selected' : ''); ?>>100</option>
+                <option value="250"<?= (250 == $items_per_page ? ' selected' : ''); ?>>250</option>
+                <option value="500"<?= (500 == $items_per_page ? ' selected' : ''); ?>>500</option>
+                <option value="1000"<?= (1000 == $items_per_page ? ' selected' : ''); ?>>1000</option>
+            </select>
+
+            <label for="days_to_store">Days to store</label>
+            <select name="days_to_store" id="days_to_store">
+                <option value="1"<?= (1 == $days_to_store ? ' selected' : ''); ?>>1</option>
+                <option value="2"<?= (2 == $days_to_store ? ' selected' : ''); ?>>2</option>
+                <option value="3"<?= (3 == $days_to_store ? ' selected' : ''); ?>>3</option>
+                <option value="7"<?= (7 == $days_to_store ? ' selected' : ''); ?>>7</option>
+                <option value="14"<?= (14 == $days_to_store ? ' selected' : ''); ?>>14</option>
+                <option value="28"<?= (28 == $days_to_store ? ' selected' : ''); ?>>28</option>
+            </select>
+
+            <span class="span-pagination"><?php
+
+            if ($current_page > 1) {
                 ?>
-                <input type="submit" name="submit-install-full-waf" id="submit-install-full-waf" class="button" value="Install .user.ini">
+                <input type="submit" name="submit-previous-page" id="submit-previous-page" class="button button-primary" value="<<">
+                <?php
+            }
+
+            ?>
+            <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>">Page <?= $current_page; ?> with total <?= $total_registers; ?> items</a>
             <?php
-            } else {
+
+            if ($current_page * $items_per_page < $total_registers) {
                 ?>
-                <input type="submit" name="submit-uninstall-full-waf" id="submit-uninstall-full-waf" class="button" value="Uninstall .user.ini">
+                <input type="submit" name="submit-next-page" id="submit-next-page" class="button button-primary" value=">>">
+                <?php
+            }
+
+            ?>
+            </span>
+            <input type="hidden" name="current-page" id="current-page" value="<?= $current_page; ?>">
+        </p>
+
+        <table class="wp-list-table widefat fixed striped posts">
+            <thead>
+                <tr>
+                    <td>Time</td>
+                    <td>URL</td>
+                    <td>Remote IP</td>
+                    <td>Remote Port</td>
+                    <td>User Agent</td>
+                    <td>Method</td>
+                    <td>Hits minute (max <?= $maxs_reached[0]->max_hits_minute_reached; ?>)</td>
+                    <td>Hits hour (max <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
+                </tr>
+            </thead>
+            <tbody>
             <?php
+            foreach ($results as $key => $result) {
+                ?>
+
+                <tr>
+                    <td><?= $result->time; ?></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
+                    <?php
+                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
+                    <td><?= $result->remote_port; ?></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
+                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
+                    <td><?= $result->last_minute; ?></td></td>
+                    <td><?= $result->last_hour; ?></td></td>
+                </tr>
+
+                <?php
             }
             ?>
-        </span>
+            </tbody>
+        </table>
 
-    </p>
-    
-</div>
+        <p>
+            <input type="submit" name="submit-remove-old" id="submit-remove-old" class="button button-primary" value="Remove records of more than one week">
+            <input type="submit" name="submit-remove-all" id="submit-remove-all" class="button" value="Remove all records">
+            
+            <span class="span-install">
+                <?php
+                if (!file_exists(ABSPATH.'.user.ini')) {
+                    ?>
+                    <input type="submit" name="submit-install-full-waf" id="submit-install-full-waf" class="button" value="Install .user.ini">
+                <?php
+                } else {
+                    ?>
+                    <input type="submit" name="submit-uninstall-full-waf" id="submit-uninstall-full-waf" class="button" value="Uninstall .user.ini">
+                <?php
+                }
+                ?>
+            </span>
 
+        </p>
+        
+    </div>
+
+    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-unique-ips.php') ?>
+    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-regexes.php') ?>
+    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-dos.php') ?>
+    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-ddos.php') ?>
+    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-blocks.php') ?>
+    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-ips-blocked.php') ?>
+    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php') ?>
 
 </form>

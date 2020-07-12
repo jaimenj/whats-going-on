@@ -51,7 +51,7 @@ All the options configured into the plugin are removed when plugin is deleted, n
 
 * Can I block myself?
 
-By default, you cannot be blocked yourself while testing the plugin. Be careful while testing and setting restrictions for the firewall. 
+Yes. By default, you cannot block yourself while you are activating the plugin. But be careful while setting restrictions for the firewall. 
 
 * I blocked myself, how can I disable it without access to the backend?
 
@@ -67,5 +67,5 @@ Not upgraded yet.
 
 ## Changelog
 
-### 1.0
+### 0.1
 * Initial version

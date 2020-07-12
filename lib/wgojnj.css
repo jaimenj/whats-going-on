@@ -4,6 +4,14 @@
     font-size: 30px;
 }
 
+.wgo-wrap {
+    background: #fff;
+    border: 1px dashed #808080;
+    margin-top: 20px;
+    padding: 20px;
+    margin-right: 20px;
+}
+
 .span-pagination {
     float: right;
     border: 1px dashed gray;
@@ -35,7 +43,9 @@
 .wrap-block-and-allow-lists {
     display: flex;
 }
-#wrap-block-list, #wrap-allow-list {
+
+#wrap-block-list,
+#wrap-allow-list {
     width: 50%;
 }
 
