@@ -7,7 +7,7 @@ $results = $wpdb->get_results($block_sql);
 ?>
 
 <div class="wrap-last-blocked">
-    <h2>Last blocks (<?= count($results); ?>)</h2>
+    <h2>Last blocks reasons (<?= count($results); ?>)</h2>
 
     <div class="wrap" id="block-last-blocks">
         <table class="wp-list-table widefat fixed striped posts">

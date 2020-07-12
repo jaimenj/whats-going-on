@@ -53,14 +53,14 @@ function wgojnj_whats_going_on_controller()
             /*
              * Handling actions..
              */
-            if (isset($_REQUEST['btn-submit'])
-            or isset($_REQUEST['submit-dos-configs'])) {
-                update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
-                update_option('wgojnj_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
+            if (isset($_REQUEST['btn-submit'])) {
                 update_option('wgojnj_items_per_page', stripslashes($_REQUEST['items_per_page']));
                 update_option('wgojnj_days_to_store', stripslashes($_REQUEST['days_to_store']));
-
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
+            } elseif (isset($_REQUEST['submit-dos-configs'])) {
+                update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
+                update_option('wgojnj_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
+                $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>DoS configs saved!</p></div>';
             } elseif (isset($_REQUEST['submit-previous-page'])) {
                 --$current_page;
             } elseif (isset($_REQUEST['submit-next-page'])) {

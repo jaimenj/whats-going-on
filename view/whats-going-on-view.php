@@ -155,7 +155,7 @@ echo $_SERVER['REQUEST_URI'];
         <?php wp_nonce_field('wgojnj', 'wgojnj_nonce'); ?>
 
         <p>
-            <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save all configs">
+            <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save this configs">
 
             <label for="items_per_page">Items per page</label>
             <select name="items_per_page" id="items_per_page">
@@ -271,7 +271,7 @@ echo $_SERVER['REQUEST_URI'];
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-blocks.php') ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-last-ips-blocked.php') ?>
+    <?php include(WGOJNJ_PATH.'view/sub-times-blocked-per-ip.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php') ?>
 

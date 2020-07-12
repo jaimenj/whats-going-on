@@ -5,7 +5,7 @@ $results = $wpdb->get_results($block_sql);
 ?>
 
 <div class="wrap-ips-blocked">
-    <h2>Last IPs blocked (<?= count($results); ?>)</h2>
+    <h2>Times blocked per IP (<?= count($results); ?>)</h2>
 
     <div class="wrap" id="block-ips-blocked">
         <table class="wp-list-table widefat fixed striped posts">

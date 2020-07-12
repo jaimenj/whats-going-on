@@ -30,6 +30,6 @@
         <option value="-1"<?= (-1 == $limit_requests_per_hour ? ' selected' : ''); ?>>Unlimited</option>
     </select>
 
-    <input type="submit" name="submit-dos-configs" id="submit-dos-configs" class="button button-green" value="Save all configs">
+    <input type="submit" name="submit-dos-configs" id="submit-dos-configs" class="button button-green" value="Save DoS configs">
 
 </div>
