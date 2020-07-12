@@ -9,6 +9,7 @@ delete_option('wgojnj_limit_requests_per_minute');
 delete_option('wgojnj_limit_requests_per_hour');
 delete_option('wgojnj_items_per_page');
 delete_option('wgojnj_days_to_store');
+delete_option('wgojnj_im_behind_proxy');
 
 if (file_exists(ABSPATH.'.user.ini')) {
     unlink(ABSPATH.'.user.ini');

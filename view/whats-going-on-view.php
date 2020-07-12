@@ -33,6 +33,7 @@ $limit_requests_per_minute = get_option('wgojnj_limit_requests_per_minute');
 $limit_requests_per_hour = get_option('wgojnj_limit_requests_per_hour');
 $items_per_page = get_option('wgojnj_items_per_page');
 $days_to_store = get_option('wgojnj_days_to_store');
+$im_behind_proxy = get_option('wgojnj_im_behind_proxy');
 
 /*
  * Listing registers..
@@ -179,6 +180,12 @@ echo $_SERVER['REQUEST_URI'];
                 <option value="7"<?= (7 == $days_to_store ? ' selected' : ''); ?>>7</option>
                 <option value="14"<?= (14 == $days_to_store ? ' selected' : ''); ?>>14</option>
                 <option value="28"<?= (28 == $days_to_store ? ' selected' : ''); ?>>28</option>
+            </select>
+
+            <label for="im_behind_proxy">The website is behind a proxy</label>
+            <select name="im_behind_proxy" id="im_behind_proxy">
+                <option value="0"<?= (0 == $im_behind_proxy ? ' selected' : ''); ?>>No</option>
+                <option value="1"<?= (1 == $im_behind_proxy ? ' selected' : ''); ?>>Yes</option>
             </select>
 
             <span class="span-pagination"><?php

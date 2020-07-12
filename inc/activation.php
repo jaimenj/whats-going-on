@@ -45,6 +45,7 @@ function wgojnj_activation()
     add_option('wgojnj_limit_requests_per_hour', -1);
     add_option('wgojnj_items_per_page', '10');
     add_option('wgojnj_days_to_store', '7');
+    add_option('wgojnj_im_behind_proxy', 0);
 }
 
 function wgojnj_deactivation()
