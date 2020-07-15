@@ -17,6 +17,7 @@ register_deactivation_hook(__FILE__, 'wgojnj_deactivation');
 include_once WGOJNJ_PATH.'inc/backend.php';
 include_once WGOJNJ_PATH.'inc/actions.php';
 include_once WGOJNJ_PATH.'inc/filters.php';
+include_once WGOJNJ_PATH.'lib/geoip2.phar';
 
 function wpdocs_selectively_enqueue_admin_script($hook)
 {
@@ -47,7 +48,8 @@ function wgojnj_print_countries($remote_ips, $reader)
     echo implode('-', $remote_country_array);
 }
 
-function wgojnj_remove_older_than_a_week_data(){
+function wgojnj_remove_older_than_a_week_data()
+{
     global $wpdb;
 
     $days_to_store = get_option('wgojnj_days_to_store');
@@ -63,7 +65,7 @@ function wgojnj_remove_older_than_a_week_data(){
     $results = $wpdb->get_results($sql);
 }
 
-/*
+/**
  * Clean records older than one week..
  */
 function wgojnj_cron_remove_old_data()
@@ -73,4 +75,37 @@ function wgojnj_cron_remove_old_data()
 add_action('wgojnj_cron_remove_old_data_hook', 'wgojnj_cron_remove_old_data');
 if (!wp_next_scheduled('wgojnj_cron_remove_old_data_hook')) {
     wp_schedule_event(time(), 'hourly', 'wgojnj_cron_remove_old_data_hook');
+}
+
+/*
+ * Fill country columns..
+ */
+function wgojnj_add_cron_intervals($schedules)
+{
+    $schedules['minutely'] = [
+        'interval' => 60,
+        'display' => esc_html__('Every Minute'), ];
+    $schedules['five-minutes'] = [
+        'interval' => 300,
+        'display' => esc_html__('Every 5 Minutes'), ];
+    $schedules['ten-minutes'] = [
+        'interval' => 600,
+        'display' => esc_html__('Every 10 Minutes'), ];
+    $schedules['half-hour'] = [
+        'interval' => 1800,
+        'display' => esc_html__('Half Hour'), ];
+
+    return $schedules;
+}
+add_filter('cron_schedules', 'wgojnj_add_cron_intervals');
+function wgojnj_cron_fill_country_columns()
+{
+    /**
+     * Task for seeking countries for IPs, 100 items per table and time..
+     */
+    
+}
+add_action('wgojnj_cron_fill_country_columns_hook', 'wgojnj_cron_fill_country_columns');
+if (!wp_next_scheduled('wgojnj_cron_fill_country_columns_hook')) {
+    wp_schedule_event(time(), 'five-minutes', 'wgojnj_cron_fill_country_columns_hook');
 }
