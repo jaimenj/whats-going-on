@@ -20,7 +20,6 @@ if (!current_user_can('administrator')) {
 }
 
 // GEOIP
-require WGOJNJ_PATH.'lib/geoip2.phar';
 use GeoIp2\Database\Reader;
 
 if (!empty(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0]) and 2 == strlen(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0])) {
@@ -215,13 +214,11 @@ echo $_SERVER['REQUEST_URI'];
             <thead>
                 <tr>
                     <td>Time</td>
-                    <td>URL</td>
-                    <td>Remote IP</td>
-                    <td>Remote Port</td>
+                    <td>URL method</td>
+                    <td>Remote IP : Port</td>
+                    <td>Country</td>
                     <td>User Agent</td>
-                    <td>Method</td>
-                    <td>Hits minute (max <?= $maxs_reached[0]->max_hits_minute_reached; ?>)</td>
-                    <td>Hits hour (max <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
+                    <td>Hits minute / hour (max <?= $maxs_reached[0]->max_hits_minute_reached; ?> / <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
                 </tr>
             </thead>
             <tbody>
@@ -231,15 +228,16 @@ echo $_SERVER['REQUEST_URI'];
 
                 <tr>
                     <td><?= $result->time; ?></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
-                    <?php
-                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
-                    <td><?= $result->remote_port; ?></td>
+                    <td>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
+                    <td>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a> : <?= $result->remote_port; ?><br>
+                        <?php wgojnj_print_countries($result->remote_ip, $reader); ?>
+                    </td>
+                    <td><?= $result->country_code; ?></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
-                    <td><?= $result->last_minute; ?></td></td>
-                    <td><?= $result->last_hour; ?></td></td>
+                    <td><?= $result->last_minute; ?> / <?= $result->last_hour; ?></td>
                 </tr>
 
                 <?php

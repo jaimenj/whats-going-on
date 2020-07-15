@@ -13,6 +13,7 @@ function wgojnj_activation()
         .'url VARCHAR(256) NOT NULL,'
         .'remote_ip VARCHAR(64) NOT NULL,'
         .'remote_port INT NOT NULL,'
+        .'country_code VARCHAR(2),'
         .'user_agent VARCHAR(128) NOT NULL,'
         .'method VARCHAR(8) NOT NULL,'
         .'last_minute INT NOT NULL,'
@@ -25,6 +26,7 @@ function wgojnj_activation()
         .'time DATETIME NOT NULL,'
         .'remote_ip VARCHAR(64) NOT NULL,'
         .'remote_port INT NOT NULL,'
+        .'country_code VARCHAR(2),'
         .'user_agent VARCHAR(128) NOT NULL,'
         .'comments VARCHAR(256)'
         .');';
@@ -36,6 +38,7 @@ function wgojnj_activation()
         .'url VARCHAR(256) NOT NULL,'
         .'remote_ip VARCHAR(64) NOT NULL,'
         .'remote_port INT NOT NULL,'
+        .'country_code VARCHAR(2),'
         .'user_agent VARCHAR(128) NOT NULL,'
         .'method VARCHAR(8) NOT NULL'
         .');';
@@ -56,7 +59,8 @@ function wgojnj_deactivation()
     $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_block;';
     $wpdb->get_results($sql);
     $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_404s;';
-
+    $wpdb->get_results($sql);
+    
     if (file_exists(ABSPATH.'.user.ini')) {
         unlink(ABSPATH.'.user.ini');
     }
