@@ -1,36 +1,27 @@
 <div class="wrap-ddos">
-    <h2>Administration of DDoS detections</h2>
+    <h2>Administration of Countries and Continents</h2>
     
     <div class="wrap">
-        <?php
-        /**
-         * 500 errors
-         * TTL or processor usage
-         * spikes in traffic.
-         */
-        ?>
 
         <?php
-        // Apply mathematics..
-        $average_hits = 0;
-        $variance_hits = 0;
-        if (count($chart_results) > 0) {
-            foreach ($chart_results as $key => $item) {
-                $average_hits += $item->hits;
+        $visits_per_country = [];
+        /*foreach ($all_records as $key => $item) {
+            if (isset($visits_per_country[$item->country_code])) {
+                ++$visits_per_country[$item->country_code]['counter'];
+            } else {
+                $visits_per_country[$item->country_code]['counter'] = 1;
+                $visits_per_country[$item->country_code]['name'] = $record->country->name;
             }
-            $average_hits = $average_hits / count($chart_results);
-            foreach ($chart_results as $key => $item) {
-                $variance_hits += ($item->hits - $average_hits) ^ 2;
-            }
-            $variance_hits = $variance_hits / count($chart_results);
         }
+        var_dump($visits_per_country);
+        exit;*/
         ?>
 
         <script>
-        function paintSpikesChart() {
-            var ctxSpikesChart = document.getElementById('spikesChart').getContext('2d');
-            var spikesChart = new Chart(ctxSpikesChart, {
-                type: 'line',
+        function paintCountriesAndContinentsChart() {
+            var ctxCountriesAndContinentsChart = document.getElementById('countriesAndContinentsChart').getContext('2d');
+            var countriesAndContinentsChart = new Chart(ctxCountriesAndContinentsChart, {
+                type: 'bar',
                 data: {
                     labels: [<?php
                             if (count($chart_results) > 0) {
@@ -80,8 +71,6 @@
             });
         }
         </script>
-        <canvas id="spikesChart" width="148" height="24"></canvas>
-
-        <p>Average hits per hour: <?= $average_hits; ?> Variance hits per hour: <?= $variance_hits; ?></p>
+        <canvas id="countriesAndContinentsChart" width="148" height="24"></canvas>
     </div>
 </div>
