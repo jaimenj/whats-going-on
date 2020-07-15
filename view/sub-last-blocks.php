@@ -1,4 +1,9 @@
 <?php
+defined('ABSPATH') or die('No no no');
+if (!current_user_can('administrator')) {
+    wp_die(__('Sorry, you are not allowed to manage options for this site.'));
+}
+
 // Results for blocks..
 $block_sql = 'SELECT max(wgob.time) time, wgob.remote_ip, wgob.remote_port, wgob.user_agent, wgob.comments '
 .' FROM '.$wpdb->prefix.'whats_going_on_block wgob'

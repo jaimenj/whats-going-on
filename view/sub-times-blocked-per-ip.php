@@ -1,5 +1,9 @@
-
 <?php
+defined('ABSPATH') or die('No no no');
+if (!current_user_can('administrator')) {
+    wp_die(__('Sorry, you are not allowed to manage options for this site.'));
+}
+
 $block_sql = 'SELECT count(*) as times, remote_ip FROM '.$wpdb->prefix.'whats_going_on_block GROUP BY remote_ip ORDER BY times DESC';
 $results = $wpdb->get_results($block_sql);
 ?>

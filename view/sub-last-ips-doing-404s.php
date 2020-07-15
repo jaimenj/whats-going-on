@@ -1,4 +1,9 @@
 <?php
+defined('ABSPATH') or die('No no no');
+if (!current_user_can('administrator')) {
+    wp_die(__('Sorry, you are not allowed to manage options for this site.'));
+}
+
 // Results for 404s..
 $sql_404s = 'SELECT count(*) as times, remote_ip FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC';
 $results = $wpdb->get_results($sql_404s);
