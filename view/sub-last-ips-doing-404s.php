@@ -5,7 +5,7 @@ if (!current_user_can('administrator')) {
 }
 
 // Results for 404s..
-$sql_404s = 'SELECT count(*) as times, remote_ip FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC';
+$sql_404s = 'SELECT count(*) as times, remote_ip, country_code FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC';
 $results = $wpdb->get_results($sql_404s);
 ?>
 
@@ -18,6 +18,7 @@ $results = $wpdb->get_results($sql_404s);
                 <tr>
                     <td>Times</td>
                     <td>Remote IP</td>
+                    <td>Country</td>
                 </tr>
             </thead>
             <tbody>
@@ -29,9 +30,10 @@ $results = $wpdb->get_results($sql_404s);
 
                 <tr>
                     <td><?= $result->times; ?></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
-                    <?php
-                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
+                    <td>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?>
+                    </td>
+                    <td><?= $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '') ?></td>
                 </tr>
 
                 <?php

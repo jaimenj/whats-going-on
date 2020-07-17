@@ -5,7 +5,7 @@ if (!current_user_can('administrator')) {
 }
 
 // Results for blocks..
-$block_sql = 'SELECT max(wgob.time) time, wgob.remote_ip, wgob.remote_port, wgob.user_agent, wgob.comments '
+$block_sql = 'SELECT max(wgob.time) time, wgob.remote_ip, wgob.country_code, wgob.remote_port, wgob.user_agent, wgob.comments '
 .' FROM '.$wpdb->prefix.'whats_going_on_block wgob'
 .' GROUP BY remote_ip ORDER BY time DESC';
 $results = $wpdb->get_results($block_sql);
@@ -19,8 +19,8 @@ $results = $wpdb->get_results($block_sql);
             <thead>
                 <tr>
                     <td>Time</td>
-                    <td>Remote IP</td>
-                    <td>Remote Port</td>
+                    <td>Remote IP : Port</td>
+                    <td>Country</td>
                     <td>User Agent</td>
                     <td>Comments</td>
                 </tr>
@@ -32,10 +32,10 @@ $results = $wpdb->get_results($block_sql);
 
                 <tr>
                     <td><?= $result->time; ?></td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?><br>
-                    <?php
-                        wgojnj_print_countries($result->remote_ip, $reader); ?></a></td>
-                    <td><?= $result->remote_port; ?></td></td>
+                    <td>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?> : <?= $result->remote_port; ?>
+                    </td>
+                    <td><?= $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '') ?></td>
                     <td><?= $result->user_agent; ?></td></td>
                     <td><?= $result->comments; ?></td></td>
                 </tr>

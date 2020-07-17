@@ -21,6 +21,9 @@ include_once WGOJNJ_PATH.'lib/geoip2.phar';
 
 use GeoIp2\Database\Reader;
 
+/**
+ * It adds assets only for the backend..
+ */
 function wpdocs_selectively_enqueue_admin_script($hook)
 {
     wp_enqueue_style('wgojnj_custom_style', plugin_dir_url(__FILE__).'lib/wgojnj.css', false, '1.0.1');
@@ -30,27 +33,18 @@ function wpdocs_selectively_enqueue_admin_script($hook)
 }
 add_action('admin_enqueue_scripts', 'wpdocs_selectively_enqueue_admin_script');
 
+/**
+ * It simply returns HTTP_X_FORWARDED_FOR - HTTP_CLIENT_IP - REMOTE_ADDR..
+ */
 function wgojnj_current_remote_ips()
 {
     return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
 }
 
-function wgojnj_print_countries($remote_ips, $reader)
-{
-    $remote_ip_array = explode('-', $remote_ips);
-    $remote_country_array = [];
-    foreach ($remote_ip_array as $key => $remote_ip) {
-        try {
-            $record = $reader->city($remote_ip);
-            $remote_country_array[] = $record->country->isoCode.'::'.$record->country->name;
-        } catch (\Throwable $th) {
-        }
-    }
-
-    echo implode('-', $remote_country_array);
-}
-
-function wgojnj_remove_older_than_a_week_data()
+/**
+ * Clean records older than x days..
+ */
+function wgojnj_remove_older_than_x_days()
 {
     global $wpdb;
 
@@ -68,11 +62,11 @@ function wgojnj_remove_older_than_a_week_data()
 }
 
 /**
- * Clean records older than one week..
+ * Cronjob to remove old data..
  */
 function wgojnj_cron_remove_old_data()
 {
-    wgojnj_remove_older_than_a_week_data();
+    wgojnj_remove_older_than_x_days();
 }
 add_action('wgojnj_cron_remove_old_data_hook', 'wgojnj_cron_remove_old_data');
 if (!wp_next_scheduled('wgojnj_cron_remove_old_data_hook')) {

@@ -21,11 +21,15 @@ if (!current_user_can('administrator')) {
 
 // GEOIP
 use GeoIp2\Database\Reader;
-
-if (!empty(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0]) and 2 == strlen(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0])) {
+/*if (!empty(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0]) and 2 == strlen(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0])) {
     $reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb', [explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0], 'en']);
 } else {
     $reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb');
+}*/
+$isoCountriesFile = file(WGOJNJ_PATH.'lib/isoCountriesCodes.csv');
+$isoCountriesArray =[];
+foreach($isoCountriesFile as $isoItem) {
+    $isoCountriesArray[explode(',', $isoItem)[0]] = str_replace('"', '', explode(',', $isoItem)[1]);
 }
 
 $limit_requests_per_minute = get_option('wgojnj_limit_requests_per_minute');
@@ -232,10 +236,9 @@ echo $_SERVER['REQUEST_URI'];
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a> : <?= $result->remote_port; ?><br>
-                        <?php wgojnj_print_countries($result->remote_ip, $reader); ?>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a> : <?= $result->remote_port; ?>
                     </td>
-                    <td><?= $result->country_code; ?></td>
+                    <td><?= $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '') ?></td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
                     <td><?= $result->last_minute; ?> / <?= $result->last_hour; ?></td>
                 </tr>
