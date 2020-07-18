@@ -47,9 +47,6 @@ $total_sql = 'SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on';
 $main_sql = 'SELECT * FROM '.$wpdb->prefix.'whats_going_on ';
 $maxs_reached_sql = 'SELECT max(last_minute) max_hits_minute_reached, max(last_hour) max_hits_hour_reached FROM '.$wpdb->prefix.'whats_going_on';
 
-// All records for later study
-$all_records = $wpdb->get_results($main_sql);
-
 $add_sql = '';
 if (isset($_GET['filter-url'])) {
     $add_sql .= " WHERE url = '".urldecode($_GET['filter-url'])."'";
@@ -296,5 +293,6 @@ echo $_SERVER['REQUEST_URI'];
 window.onload = () => {
     paintMainChart();
     paintSpikesChart();
+    paintCountriesAndContinentsChart();
 }
 </script>

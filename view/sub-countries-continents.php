@@ -10,17 +10,10 @@ if (!current_user_can('administrator')) {
     <div class="wrap">
 
         <?php
-        $visits_per_country = [];
-        /*foreach ($all_records as $key => $item) {
-            if (isset($visits_per_country[$item->country_code])) {
-                ++$visits_per_country[$item->country_code]['counter'];
-            } else {
-                $visits_per_country[$item->country_code]['counter'] = 1;
-                $visits_per_country[$item->country_code]['name'] = $record->country->name;
-            }
-        }
-        var_dump($visits_per_country);
-        exit;*/
+        $countries_sql = 'SELECT country_code, count(*) times FROM '.$wpdb->prefix.'whats_going_on'
+            .' GROUP BY country_code'
+            .' ORDER BY times DESC';
+        $countries_results = $wpdb->get_results($countries_sql);
         ?>
 
         <script>
@@ -30,39 +23,26 @@ if (!current_user_can('administrator')) {
                 type: 'bar',
                 data: {
                     labels: [<?php
-                            if (count($chart_results) > 0) {
-                                echo "'0'";
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ", '".$i."'";
+                            if (count($countries_results) > 0) {
+                                echo "'".$countries_results[0]->country_code."'";
+                                for ($i = 1; $i < count($countries_results); ++$i) {
+                                    echo ", '".$countries_results[$i]->country_code."'";
                                 }
                             }
                         ?>],
                     datasets: [{
-                        label: '# of requests per hour in the last week',
+                        label: '# of requests per country for all records',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $chart_results[0]->hits;
+                                echo $countries_results[0]->times;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$chart_results[$i]->hits;
+                                    echo ','.$countries_results[$i]->times;
                                 }
                             }
                         ?>],
                         borderWidth: 1,
                         backgroundColor: 'rgba(255, 0, 0, 0.3)',
                         borderColor: 'rgba(255, 0, 0, 0.3)'
-                    },{
-                        label: '# average hits per hour',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                echo $average_hits;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$average_hits;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        borderColor: 'rgba(0, 0, 0, 1)',
-                        fill: false
                     }]
                 },
                 options: {
