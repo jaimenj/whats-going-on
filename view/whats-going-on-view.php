@@ -29,7 +29,7 @@ use GeoIp2\Database\Reader;
 $isoCountriesFile = file(WGOJNJ_PATH.'lib/isoCountriesCodes.csv');
 $isoCountriesArray =[];
 foreach($isoCountriesFile as $isoItem) {
-    $isoCountriesArray[explode(',', $isoItem)[0]] = str_replace('"', '', explode(',', $isoItem)[1]);
+    $isoCountriesArray[explode(',', $isoItem)[0]] = str_replace(['"', PHP_EOL], '', explode(',', $isoItem)[1]);
 }
 
 $limit_requests_per_minute = get_option('wgojnj_limit_requests_per_minute');

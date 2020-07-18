@@ -14,19 +14,22 @@ if (!current_user_can('administrator')) {
             .' GROUP BY country_code'
             .' ORDER BY times DESC';
         $countries_results = $wpdb->get_results($countries_sql);
+        //var_dump($isoCountriesArray);
         ?>
 
         <script>
         function paintCountriesAndContinentsChart() {
             var ctxCountriesAndContinentsChart = document.getElementById('countriesAndContinentsChart').getContext('2d');
             var countriesAndContinentsChart = new Chart(ctxCountriesAndContinentsChart, {
-                type: 'bar',
+                type: 'horizontalBar',
                 data: {
                     labels: [<?php
                             if (count($countries_results) > 0) {
-                                echo "'".$countries_results[0]->country_code."'";
+                                $code = $countries_results[0]->country_code;
+                                echo "'".(isset($isoCountriesArray[$code]) ? $code.'::'.$isoCountriesArray[$code] : '')."'";
                                 for ($i = 1; $i < count($countries_results); ++$i) {
-                                    echo ", '".$countries_results[$i]->country_code."'";
+                                    $code = $countries_results[$i]->country_code;
+                                    echo ", '".(isset($isoCountriesArray[$code]) ? $code.'::'.$isoCountriesArray[$code] : '')."'";
                                 }
                             }
                         ?>],
@@ -57,6 +60,6 @@ if (!current_user_can('administrator')) {
             });
         }
         </script>
-        <canvas id="countriesAndContinentsChart" width="148" height="24"></canvas>
+        <canvas id="countriesAndContinentsChart" width="148"></canvas>
     </div>
 </div>
