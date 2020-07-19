@@ -57,6 +57,7 @@ function wgojnj_whats_going_on_controller()
                 update_option('wgojnj_items_per_page', stripslashes($_REQUEST['items_per_page']));
                 update_option('wgojnj_days_to_store', stripslashes($_REQUEST['days_to_store']));
                 update_option('wgojnj_im_behind_proxy', stripslashes($_REQUEST['im_behind_proxy']));
+                update_option('wgojnj_notification_email', stripslashes($_REQUEST['notification_email']));
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
             } elseif (isset($_REQUEST['submit-dos-configs'])) {
                 update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
@@ -129,6 +130,7 @@ function wgojnj_register_options()
     register_setting('wgojnj_options_group', 'wgojnj_items_per_page');
     register_setting('wgojnj_options_group', 'wgojnj_days_to_store');
     register_setting('wgojnj_options_group', 'wgojnj_im_behind_proxy');
+    register_setting('wgojnj_options_group', 'wgojnj_notification_email');
 }
 
 function wgojnj_add_ip_to_the_block_list($the_ip)

@@ -37,6 +37,7 @@ $limit_requests_per_hour = get_option('wgojnj_limit_requests_per_hour');
 $items_per_page = get_option('wgojnj_items_per_page');
 $days_to_store = get_option('wgojnj_days_to_store');
 $im_behind_proxy = get_option('wgojnj_im_behind_proxy');
+$notification_email = get_option('wgojnj_notification_email');
 
 /*
  * Listing registers..
@@ -203,6 +204,9 @@ echo $_SERVER['REQUEST_URI'];
                 <option value="0"<?= (0 == $im_behind_proxy ? ' selected' : ''); ?>>No</option>
                 <option value="1"<?= (1 == $im_behind_proxy ? ' selected' : ''); ?>>Yes</option>
             </select>
+
+            <label for="notification_email">Notification email</label>
+            <input type="text" name="notification_email" id="notification_email" class="regular-text" value="<?= $notification_email ?>">
 
             <span class="span-pagination"><?php
 
