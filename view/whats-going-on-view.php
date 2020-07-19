@@ -100,13 +100,28 @@ echo $_SERVER['REQUEST_URI'];
             .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
         $chart_results = $wpdb->get_results($chart_sql);
         //var_dump($chart_results);
+
+        // Apply mathematics..
+        $average = 0;
+        $standard_deviation = 0;
+        if (count($chart_results) > 0) {
+            foreach ($chart_results as $key => $item) {
+                $average += $item->hits;
+            }
+            $average = $average / count($chart_results);
+            foreach ($chart_results as $key => $item) {
+                $standard_deviation += pow(($item->hits - $average), 2);
+            }
+            $standard_deviation = sqrt($standard_deviation / count($chart_results));
+        }
+        $variance = pow($standard_deviation, 2);
         ?>
 
         <script>
         function paintMainChart() {
             var ctx = document.getElementById('mainChart').getContext('2d');
             var myChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: [<?php
                             if (count($chart_results) > 0) {
@@ -123,6 +138,7 @@ echo $_SERVER['REQUEST_URI'];
                             } else {
                                 echo 'day';
                             }
+                            echo ' ('.($days_to_store * 24).' hours)'
                             ?>',
                         data: [<?php
                             if (count($chart_results) > 0) {
