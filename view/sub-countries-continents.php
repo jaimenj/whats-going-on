@@ -52,7 +52,8 @@ if (!current_user_can('administrator')) {
                     scales: {
                         yAxes: [{
                             ticks: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                autoSkip: false
                             }
                         }]
                     }
@@ -60,6 +61,6 @@ if (!current_user_can('administrator')) {
             });
         }
         </script>
-        <canvas id="countriesAndContinentsChart" width="148"></canvas>
+        <canvas id="countriesAndContinentsChart"></canvas>
     </div>
 </div>

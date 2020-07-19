@@ -120,10 +120,14 @@ function wgojnj_cron_fill_country_columns()
             try {
                 $record = $reader->city($ip);
 
-                // Update records..
-                $sql = 'UPDATE '.$wpdb->prefix.$tableName.' SET country_code = \''.$record->country->isoCode.'\' WHERE remote_ip = \''.$result->remote_ip.'\';';
-                $wpdb->get_results($sql);
-                echo 'Saving '.$result->remote_ip.' '.$record->country->isoCode;
+                if (!empty($record->country->isoCode)) {
+                    // Update records..
+                    $sql = 'UPDATE '.$wpdb->prefix.$tableName.' SET country_code = \''.$record->country->isoCode.'\' WHERE remote_ip = \''.$result->remote_ip.'\';';
+                    $wpdb->get_results($sql);
+                    echo 'Saving '.$result->remote_ip.' '.$record->country->isoCode;
+                } else {
+                    echo 'Not saving empty ISO country code.';
+                }
             } catch (\Throwable $th) {
             }
             echo PHP_EOL;
