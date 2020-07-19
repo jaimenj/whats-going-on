@@ -16,22 +16,6 @@ if (!current_user_can('administrator')) {
          */
         ?>
 
-        <?php
-        // Apply mathematics..
-        $average_hits = 0;
-        $variance_hits = 0;
-        if (count($chart_results) > 0) {
-            foreach ($chart_results as $key => $item) {
-                $average_hits += $item->hits;
-            }
-            $average_hits = $average_hits / count($chart_results);
-            foreach ($chart_results as $key => $item) {
-                $variance_hits += ($item->hits - $average_hits) ^ 2;
-            }
-            $variance_hits = $variance_hits / count($chart_results);
-        }
-        ?>
-
         <script>
         function paintSpikesChart() {
             var ctxSpikesChart = document.getElementById('spikesChart').getContext('2d');
@@ -47,7 +31,8 @@ if (!current_user_can('administrator')) {
                             }
                         ?>],
                     datasets: [{
-                        label: '# of requests per hour in the last week',
+                        type: 'bar',
+                        label: '# of requests per hour',
                         data: [<?php
                             if (count($chart_results) > 0) {
                                 echo $chart_results[0]->hits;
@@ -57,20 +42,122 @@ if (!current_user_can('administrator')) {
                             }
                         ?>],
                         borderWidth: 1,
-                        backgroundColor: 'rgba(255, 0, 0, 0.3)',
+                        backgroundColor: [<?php
+                            if (count($chart_results) > 0) {
+                                $i = 0;
+                                if (abs($chart_results[0]->hits - $average) > 3 * $standard_deviation) {
+                                    echo "'rgba(255, 0, 0, 1)'";
+                                } elseif (abs($chart_results[0]->hits - $average) > 2 * $standard_deviation) {
+                                    echo "'rgba(255, 0, 0, 0.7)'";
+                                } elseif (abs($chart_results[0]->hits - $average) > $standard_deviation) {
+                                    echo "'rgba(255, 0, 0, 0.5)'";
+                                } else {
+                                    echo "'rgba(20, 20, 20, 0.3)'";
+                                }
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    if (abs($chart_results[$i]->hits - $average) > 3 * $standard_deviation) {
+                                        echo ", 'rgba(255, 0, 0, 1)'";
+                                    } elseif (abs($chart_results[$i]->hits - $average) > 2 * $standard_deviation) {
+                                        echo ", 'rgba(255, 0, 0, 0.7)'";
+                                    } elseif (abs($chart_results[$i]->hits - $average) > $standard_deviation) {
+                                        echo ", 'rgba(255, 0, 0, 0.5)'";
+                                    } else {
+                                        echo ", 'rgba(20, 20, 20, 0.3)'";
+                                    }
+                                }
+                            }
+                        ?>],
                         borderColor: 'rgba(255, 0, 0, 0.3)'
                     },{
                         label: '# average hits per hour',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average_hits;
+                                echo $average;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$average_hits;
+                                    echo ','.$average;
                                 }
                             }
                         ?>],
                         borderWidth: 1,
                         borderColor: 'rgba(0, 0, 0, 1)',
+                        fill: false
+                    },{
+                        label: '# A+SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average + $standard_deviation;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average + $standard_deviation);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(100, 100, 100, 1)',
+                        fill: false
+                    },{
+                        label: '# A+2SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average + $standard_deviation * 2;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average + $standard_deviation * 2);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(150, 150, 150, 1)',
+                        fill: false
+                    },{
+                        label: '# A+3SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average + $standard_deviation * 3;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average + $standard_deviation * 3);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(200, 200, 200, 1)',
+                        fill: false
+                    },{
+                        label: '# A-SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average - $standard_deviation;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average - $standard_deviation);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(100, 100, 100, 1)',
+                        fill: false
+                    },{
+                        label: '# A-2SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average - $standard_deviation * 2;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average - $standard_deviation * 2);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(150, 150, 150, 1)',
+                        fill: false
+                    },{
+                        label: '# A-3SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average - $standard_deviation * 3;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average - $standard_deviation * 3);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(200, 200, 200, 1)',
                         fill: false
                     }]
                 },
@@ -88,6 +175,9 @@ if (!current_user_can('administrator')) {
         </script>
         <canvas id="spikesChart" width="148" height="24"></canvas>
 
-        <p>Average hits per hour: <?= $average_hits; ?> Variance hits per hour: <?= $variance_hits; ?></p>
+        <p>Average (A): <?= $average; ?><br>
+        Standard deviation (SD): <?= $standard_deviation; ?><br>
+        Variance (V): <?= $variance; ?>
+        </p>
     </div>
 </div>
