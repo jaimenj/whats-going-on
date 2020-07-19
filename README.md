@@ -1,6 +1,6 @@
 # What's going on for WordPress, a simple WAF
 
-What's going on for WordPress is a simple Web Application Firewall, a WAF, for WordPress.
+What's going on for WordPress is a simple Web Application Firewall, a WAF for WordPress.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-1.png)
 
@@ -67,5 +67,13 @@ Not upgraded yet.
 
 ## Changelog
 
+### 0.2
+
+* Fill countries data in background.
+* New section of countries started.
+* Maths of DDoS detection, and chart.
+* Some fixes and refactoring.
+
 ### 0.1
+
 * Initial version
