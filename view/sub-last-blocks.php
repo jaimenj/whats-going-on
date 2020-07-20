@@ -5,20 +5,21 @@ if (!current_user_can('administrator')) {
 }
 
 // Results for blocks..
-$block_sql = 'SELECT max(wgob.time) time, wgob.remote_ip, wgob.country_code, wgob.remote_port, wgob.user_agent, wgob.comments '
+$block_sql = 'SELECT max(wgob.time) time, count(*) times, wgob.remote_ip, wgob.country_code, wgob.remote_port, wgob.user_agent, wgob.comments '
 .' FROM '.$wpdb->prefix.'whats_going_on_block wgob'
 .' GROUP BY remote_ip ORDER BY time DESC';
 $results = $wpdb->get_results($block_sql);
 ?>
 
 <div class="wrap-last-blocked">
-    <h2>Last blocks reasons (<?= count($results); ?>)</h2>
+    <h2>Last blocks reasons and times blocked, with a total of <?= count($results); ?> IPs recorded</h2>
 
     <div class="wrap" id="block-last-blocks">
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
-                    <td>Time</td>
+                    <td>Last time</td>
+                    <td>Times blocked</td>
                     <td>Remote IP : Port</td>
                     <td>Country</td>
                     <td>User Agent</td>
@@ -32,6 +33,7 @@ $results = $wpdb->get_results($block_sql);
 
                 <tr>
                     <td><?= $result->time; ?></td>
+                    <td><?= $result->times; ?></td>
                     <td>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?> : <?= $result->remote_port; ?>
                     </td>

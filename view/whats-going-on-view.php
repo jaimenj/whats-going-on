@@ -419,8 +419,6 @@ echo $_SERVER['REQUEST_URI'];
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-blocks.php') ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-times-blocked-per-ip.php') ?>
-    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php') ?>
 
 </form>
@@ -430,7 +428,6 @@ echo $_SERVER['REQUEST_URI'];
 <script>
 window.onload = () => {
     paintMainChart();
-    paintSpikesChart();
     paintCountriesAndContinentsChart();
 }
 </script>
