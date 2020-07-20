@@ -62,7 +62,7 @@ if ($max_per_hour > 0 and $requests_last_hour > $max_per_hour) {
 }
 
 // Regexes errors
-$regexesErrorsFile = __DIR__.'/waf-log.errors.log';
+$regexesErrorsFile = __DIR__.'/waf.errors.log';
 $regexesErrors = file($regexesErrorsFile);
 
 // If it's in the block list..
