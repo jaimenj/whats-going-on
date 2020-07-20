@@ -64,6 +64,15 @@ if ($max_per_hour > 0 and $requests_last_hour > $max_per_hour) {
 // Regexes errors
 $regexesErrorsFile = __DIR__.'/waf.errors.log';
 $regexesErrors = file($regexesErrorsFile);
+$regexesErrorsStrings = [
+    0 => 'PREG_NO_ERROR',
+    1 => 'PREG_INTERNAL_ERROR',
+    2 => 'PREG_BACKTRACK_LIMIT_ERROR',
+    3 => 'PREG_RECURSION_LIMIT_ERROR',
+    4 => 'PREG_BAD_UTF8_ERROR',
+    5 => 'PREG_BAD_UTF8_OFFSET_ERROR',
+    6 => 'PREG_JIT_STACKLIMIT_ERROR',
+];
 
 // If it's in the block list..
 if (file_exists($blockListFilePath)) {
@@ -74,8 +83,8 @@ if (file_exists($blockListFilePath)) {
         if (!empty($value) and preg_match('/'.$value.'/', waf_current_remote_ips())) {
             $to_block = true;
         }
-        if(preg_last_error() != PREG_NO_ERROR) {
-            $regexesErrors[] = $value.PHP_EOL;
+        if (PREG_NO_ERROR != preg_last_error()) {
+            $regexesErrors[] = $value.' '.$regexesErrorsStrings[preg_last_error()].PHP_EOL;
         }
     }
     if ($to_block) {
@@ -96,8 +105,8 @@ if (file_exists($blockRegexesFilePath)) {
             and preg_match($value, $_SERVER['QUERY_STRING'])) {
                 $to_block = true;
             }
-            if(preg_last_error() != PREG_NO_ERROR) {
-                $regexesErrors[] = $value.PHP_EOL;
+            if (PREG_NO_ERROR != preg_last_error()) {
+                $regexesErrors[] = $value.' '.$regexesErrorsStrings[preg_last_error()].PHP_EOL;
             }
 
             // Check post data..
@@ -105,8 +114,8 @@ if (file_exists($blockRegexesFilePath)) {
                 if (preg_match($value, $post_value)) {
                     $to_block = true;
                 }
-                if(preg_last_error() != PREG_NO_ERROR) {
-                    $regexesErrors[] = $value.PHP_EOL;
+                if (PREG_NO_ERROR != preg_last_error()) {
+                    $regexesErrors[] = $value.' '.$regexesErrorsStrings[preg_last_error()].PHP_EOL;
                 }
             }
         }
@@ -132,8 +141,8 @@ if (!empty($comments)) {
             if (!empty($value) and preg_match('/'.$value.'/', waf_current_remote_ips())) {
                 $bypassed = true;
             }
-            if(preg_last_error() != PREG_NO_ERROR) {
-                $regexesErrors[] = $value.PHP_EOL;
+            if (PREG_NO_ERROR != preg_last_error()) {
+                $regexesErrors[] = $value.' '.$regexesErrorsStrings[preg_last_error()].PHP_EOL;
             }
         }
         if ($bypassed) {

@@ -420,8 +420,12 @@ echo $_SERVER['REQUEST_URI'];
     <?php include(WGOJNJ_PATH.'view/sub-last-blocks.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php') ?>
+    <hr>
+    <?php include(WGOJNJ_PATH.'view/sub-regexes-errors.php') ?>
 
 </form>
+
+<hr>
 
 <p>This plugin includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.</p>
 
