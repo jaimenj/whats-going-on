@@ -133,6 +133,7 @@ echo $_SERVER['REQUEST_URI'];
                             }
                         ?>],
                     datasets: [{
+                        type: 'bar',
                         label: '# of requests per hour in the last <?php
                             if ($days_to_store > 1) {
                                 echo $days_to_store.' days';
@@ -149,7 +150,124 @@ echo $_SERVER['REQUEST_URI'];
                                 }
                             }
                         ?>],
-                        borderWidth: 1
+                        borderWidth: 1,
+                        backgroundColor: [<?php
+                            if (count($chart_results) > 0) {
+                                $i = 0;
+                                if (abs($chart_results[0]->hits - $average) > 3 * $standard_deviation) {
+                                    echo "'rgba(255, 0, 0, 1)'";
+                                } elseif (abs($chart_results[0]->hits - $average) > 2 * $standard_deviation) {
+                                    echo "'rgba(255, 0, 0, 0.7)'";
+                                } elseif (abs($chart_results[0]->hits - $average) > $standard_deviation) {
+                                    echo "'rgba(255, 0, 0, 0.5)'";
+                                } else {
+                                    echo "'rgba(20, 20, 20, 0.3)'";
+                                }
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    if (abs($chart_results[$i]->hits - $average) > 3 * $standard_deviation) {
+                                        echo ", 'rgba(255, 0, 0, 1)'";
+                                    } elseif (abs($chart_results[$i]->hits - $average) > 2 * $standard_deviation) {
+                                        echo ", 'rgba(255, 0, 0, 0.7)'";
+                                    } elseif (abs($chart_results[$i]->hits - $average) > $standard_deviation) {
+                                        echo ", 'rgba(255, 0, 0, 0.5)'";
+                                    } else {
+                                        echo ", 'rgba(20, 20, 20, 0.3)'";
+                                    }
+                                }
+                            }
+                        ?>],
+                        borderColor: 'rgba(255, 0, 0, 0.3)'
+                    },{
+                        label: '# average hits per hour',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.$average;
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(0, 0, 0, 1)',
+                        fill: false
+                    },{
+                        label: '# A+SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average + $standard_deviation;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average + $standard_deviation);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(100, 100, 100, 1)',
+                        fill: false
+                    },{
+                        label: '# A+2SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average + $standard_deviation * 2;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average + $standard_deviation * 2);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(150, 150, 150, 1)',
+                        fill: false
+                    },{
+                        label: '# A+3SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average + $standard_deviation * 3;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average + $standard_deviation * 3);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(200, 200, 200, 1)',
+                        fill: false
+                    },{
+                        label: '# A-SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average - $standard_deviation;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average - $standard_deviation);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(100, 100, 100, 1)',
+                        fill: false
+                    },{
+                        label: '# A-2SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average - $standard_deviation * 2;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average - $standard_deviation * 2);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(150, 150, 150, 1)',
+                        fill: false
+                    },{
+                        label: '# A-3SD',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                echo $average - $standard_deviation * 3;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.($average - $standard_deviation * 3);
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1,
+                        borderColor: 'rgba(200, 200, 200, 1)',
+                        fill: false
                     }]
                 },
                 options: {
