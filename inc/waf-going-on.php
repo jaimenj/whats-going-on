@@ -56,10 +56,14 @@ if ($max_per_minute > 0 and $requests_last_minute > $max_per_minute) {
 }
 
 // If it achieves max requests per hour..
-if ($max_per_hour > 0 and $request_last_hour > $max_per_hour) {
+if ($max_per_hour > 0 and $requests_last_hour > $max_per_hour) {
     $comments .= 'Reached max requests per hour: '.$max_per_hour.' ';
     $retry_time = 3600;
 }
+
+// Regexes errors
+$regexesErrorsFile = __DIR__.'/waf-log.errors.log';
+$regexesErrors = file($regexesErrorsFile);
 
 // If it's in the block list..
 if (file_exists($blockListFilePath)) {
@@ -69,6 +73,9 @@ if (file_exists($blockListFilePath)) {
         $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
         if (!empty($value) and preg_match('/'.$value.'/', waf_current_remote_ips())) {
             $to_block = true;
+        }
+        if(preg_last_error() != PREG_NO_ERROR) {
+            $regexesErrors[] = $value.PHP_EOL;
         }
     }
     if ($to_block) {
@@ -85,13 +92,21 @@ if (file_exists($blockRegexesFilePath)) {
         $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
         if (!empty($value)) {
             // Check query string..
-            if (preg_match($value, $_SERVER['QUERY_STRING'])) {
+            if (!empty($_SERVER['QUERY_STRING'])
+            and preg_match($value, $_SERVER['QUERY_STRING'])) {
                 $to_block = true;
             }
+            if(preg_last_error() != PREG_NO_ERROR) {
+                $regexesErrors[] = $value.PHP_EOL;
+            }
+
             // Check post data..
             foreach ($_POST as $post_key => $post_value) {
                 if (preg_match($value, $post_value)) {
                     $to_block = true;
+                }
+                if(preg_last_error() != PREG_NO_ERROR) {
+                    $regexesErrors[] = $value.PHP_EOL;
                 }
             }
         }
@@ -101,6 +116,9 @@ if (file_exists($blockRegexesFilePath)) {
         $retry_time = 86400;
     }
 }
+
+// Save Regexes errors to review..
+file_put_contents($regexesErrorsFile, array_unique($regexesErrors));
 
 // If we are blocking..
 if (!empty($comments)) {
@@ -114,6 +132,9 @@ if (!empty($comments)) {
             if (!empty($value) and preg_match('/'.$value.'/', waf_current_remote_ips())) {
                 $bypassed = true;
             }
+            if(preg_last_error() != PREG_NO_ERROR) {
+                $regexesErrors[] = $value.PHP_EOL;
+            }
         }
         if ($bypassed) {
             $comments .= 'IP in the allow-list. Bypassed..';
@@ -121,6 +142,7 @@ if (!empty($comments)) {
     }
 
     waf_save_the_blocking($mysqlConnection, $comments, $the_table_full_prefix);
+    file_put_contents($regexesErrorsFile, array_unique($regexesErrors));
 
     if (!$bypassed) {
         header('HTTP/1.1 429 Too Many Requests');
@@ -217,7 +239,9 @@ function waf_get_options($mysqlConnection, $the_table_full_prefix, &$max_per_min
 
 function waf_current_remote_ips()
 {
-    return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
+    return (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '').'-'
+        .(isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : '').'-'
+        .$_SERVER['REMOTE_ADDR'];
 }
 
 //die;
