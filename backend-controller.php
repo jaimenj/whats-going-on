@@ -63,6 +63,11 @@ function wgojnj_whats_going_on_controller()
                 update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
                 update_option('wgojnj_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>DoS configs saved!</p></div>';
+            } elseif (isset($_REQUEST['submit-ddos-configs'])) {
+                update_option('wgojnj_notify_requests_more_than_sd', stripslashes($_REQUEST['notify_requests_more_than_sd']));
+                update_option('wgojnj_notify_requests_more_than_2sd', stripslashes($_REQUEST['notify_requests_more_than_2sd']));
+                update_option('wgojnj_notify_requests_more_than_3sd', stripslashes($_REQUEST['notify_requests_more_than_3sd']));
+                $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>DDoS configs saved!</p></div>';
             } elseif (isset($_REQUEST['submit-previous-page'])) {
                 --$current_page;
             } elseif (isset($_REQUEST['submit-next-page'])) {
@@ -96,12 +101,15 @@ function wgojnj_whats_going_on_controller()
             } elseif (isset($_REQUEST['submit-install-full-waf'])) {
                 file_put_contents(
                     $userIniFilePath,
-                    "auto_prepend_file = '".WGOJNJ_PATH."inc/waf-going-on.php';".PHP_EOL
+                    "auto_prepend_file = '".WGOJNJ_PATH."waf-going-on.php';".PHP_EOL
                 );
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
             } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
                 unlink($userIniFilePath);
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Uninstalled!</p></div>';
+            } elseif (isset($_REQUEST['submit-remove-regexes-errors'])) {
+                unlink(WGOJNJ_PATH.'waf-errors.log');
+                $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Log file with errors removed!</p></div>';
             } else {
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Cannot understand submitting!</p></div>';
             }
@@ -131,6 +139,9 @@ function wgojnj_register_options()
     register_setting('wgojnj_options_group', 'wgojnj_days_to_store');
     register_setting('wgojnj_options_group', 'wgojnj_im_behind_proxy');
     register_setting('wgojnj_options_group', 'wgojnj_notification_email');
+    register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_sd');
+    register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_2sd');
+    register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_3sd');
 }
 
 function wgojnj_add_ip_to_the_block_list($the_ip)

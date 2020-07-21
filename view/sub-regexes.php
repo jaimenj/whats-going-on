@@ -7,7 +7,7 @@ if (!current_user_can('administrator')) {
 <div class="wrap-permanent-regexes">
     <h2>Administration of Regex detections</h2>
 
-    <p>This Regular Expresions are user for detecting requests with exploits, SQL injection, XSS attacks.. searching in query strings and post data received.</p>
+    <p>This Regular Expresions are used for detecting requests with exploits, SQL injection, XSS attacks.. searching in query strings and post data received.</p>
 
     <div class="wrap" id="wrap-block-regexes">
         <table class="wp-list-table widefat fixed striped posts">

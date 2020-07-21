@@ -3,7 +3,7 @@
 $timeStart = microtime(true);
 
 // Loading configs from wp-config.php file..
-$configFilePath = __DIR__.'/../../../../wp-config.php';
+$configFilePath = __DIR__.'/../../../wp-config.php';
 $configFileContent = file($configFilePath);
 $configsArray = [];
 foreach ($configFileContent as $line) {
@@ -62,7 +62,7 @@ if ($max_per_hour > 0 and $requests_last_hour > $max_per_hour) {
 }
 
 // Regexes errors
-$regexesErrorsFile = __DIR__.'/waf.errors.log';
+$regexesErrorsFile = __DIR__.'/waf-errors.log';
 $regexesErrors = file($regexesErrorsFile);
 $regexesErrorsStrings = [
     0 => 'PREG_NO_ERROR',

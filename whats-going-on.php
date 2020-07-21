@@ -10,131 +10,144 @@
 defined('ABSPATH') or die('No no no');
 define('WGOJNJ_PATH', plugin_dir_path(__FILE__));
 
-include_once WGOJNJ_PATH.'inc/activation.php';
-register_activation_hook(__FILE__, 'wgojnj_activation');
-register_deactivation_hook(__FILE__, 'wgojnj_deactivation');
+include_once WGOJNJ_PATH.'backend-controller.php';
+include_once WGOJNJ_PATH.'cronjobs.php';
 
-include_once WGOJNJ_PATH.'inc/backend.php';
-include_once WGOJNJ_PATH.'inc/actions.php';
-include_once WGOJNJ_PATH.'inc/filters.php';
-include_once WGOJNJ_PATH.'lib/geoip2.phar';
-
-use GeoIp2\Database\Reader;
-
-/**
- * It adds assets only for the backend..
- */
-function wpdocs_selectively_enqueue_admin_script($hook)
+class WhatsGoingOn
 {
-    wp_enqueue_style('wgojnj_custom_style', plugin_dir_url(__FILE__).'lib/wgojnj.css', false, '1.0.1');
-    wp_enqueue_style('wgojnj_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
-    wp_enqueue_script('wgojnj_custom_script', plugin_dir_url(__FILE__).'lib/wgojnj.js', [], '1.0.1');
-    wp_enqueue_script('wgojnj_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
-}
-add_action('admin_enqueue_scripts', 'wpdocs_selectively_enqueue_admin_script');
+    private static $instance;
 
-/**
- * It simply returns HTTP_X_FORWARDED_FOR - HTTP_CLIENT_IP - REMOTE_ADDR..
- */
-function wgojnj_current_remote_ips()
-{
-    return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
-}
+    public static function get_instance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
 
-/**
- * Clean records older than x days..
- */
-function wgojnj_remove_older_than_x_days()
-{
-    global $wpdb;
+        return self::$instance;
+    }
 
-    $days_to_store = get_option('wgojnj_days_to_store');
+    public function __construct()
+    {
+        // Activation and deactivation..
+        register_activation_hook(__FILE__, [$this, 'wgojnj_activation']);
+        register_deactivation_hook(__FILE__, [$this, 'wgojnj_deactivation']);
 
-    $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
-    $results = $wpdb->get_results($sql);
-    $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
-    $results = $wpdb->get_results($sql);
-    $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-        ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
-    $results = $wpdb->get_results($sql);
-}
+        // Main actions..
+        add_action('template_redirect', [$this, 'wgojnj_save_404s']);
+        add_action('admin_enqueue_scripts', [$this, 'wpdocs_selectively_enqueue_admin_script']);
 
-/**
- * Cronjob to remove old data..
- */
-function wgojnj_cron_remove_old_data()
-{
-    wgojnj_remove_older_than_x_days();
-}
-add_action('wgojnj_cron_remove_old_data_hook', 'wgojnj_cron_remove_old_data');
-if (!wp_next_scheduled('wgojnj_cron_remove_old_data_hook')) {
-    wp_schedule_event(time(), 'hourly', 'wgojnj_cron_remove_old_data_hook');
-}
+        // Cronjobs..
+    }
 
-/*
- * Fill country columns..
- */
-function wgojnj_add_cron_intervals($schedules)
-{
-    $schedules['minutely'] = [
-        'interval' => 60,
-        'display' => esc_html__('Every Minute'), ];
-    $schedules['five-minutes'] = [
-        'interval' => 300,
-        'display' => esc_html__('Every 5 Minutes'), ];
-    $schedules['ten-minutes'] = [
-        'interval' => 600,
-        'display' => esc_html__('Every 10 Minutes'), ];
-    $schedules['half-hour'] = [
-        'interval' => 1800,
-        'display' => esc_html__('Half Hour'), ];
+    public function wgojnj_activation()
+    {
+        global $wpdb;
 
-    return $schedules;
-}
-add_filter('cron_schedules', 'wgojnj_add_cron_intervals');
-function wgojnj_cron_fill_country_columns()
-{
-    echo 'Filling countries..'.PHP_EOL;
+        // Main table..
+        $sql = 'CREATE TABLE '.$wpdb->prefix.'whats_going_on ('
+            //."id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,"
+            .'time DATETIME NOT NULL,'
+            .'url VARCHAR(256) NOT NULL,'
+            .'remote_ip VARCHAR(64) NOT NULL,'
+            .'remote_port INT NOT NULL,'
+            .'country_code VARCHAR(2),'
+            .'user_agent VARCHAR(128) NOT NULL,'
+            .'method VARCHAR(8) NOT NULL,'
+            .'last_minute INT NOT NULL,'
+            .'last_hour INT NOT NULL'
+            .');';
+        $wpdb->get_results($sql);
 
-    global $wpdb;
-    $reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb');
-    $im_behind_proxy = get_option('wgojnj_im_behind_proxy');
+        // Blocks table..
+        $sql = 'CREATE TABLE '.$wpdb->prefix.'whats_going_on_block ('
+            .'time DATETIME NOT NULL,'
+            .'remote_ip VARCHAR(64) NOT NULL,'
+            .'remote_port INT NOT NULL,'
+            .'country_code VARCHAR(2),'
+            .'user_agent VARCHAR(128) NOT NULL,'
+            .'comments VARCHAR(256)'
+            .');';
+        $wpdb->get_results($sql);
 
-    $tableNames = ['whats_going_on', 'whats_going_on_block', 'whats_going_on_404s'];
+        // 404s table..
+        $sql = 'CREATE TABLE '.$wpdb->prefix.'whats_going_on_404s ('
+            .'time DATETIME NOT NULL,'
+            .'url VARCHAR(256) NOT NULL,'
+            .'remote_ip VARCHAR(64) NOT NULL,'
+            .'remote_port INT NOT NULL,'
+            .'country_code VARCHAR(2),'
+            .'user_agent VARCHAR(128) NOT NULL,'
+            .'method VARCHAR(8) NOT NULL'
+            .');';
+        $wpdb->get_results($sql);
 
-    foreach ($tableNames as $tableName) {
-        $sql = 'SELECT * FROM '.$wpdb->prefix.$tableName.' WHERE country_code IS NULL LIMIT 100;';
-        $results = $wpdb->get_results($sql);
-        foreach ($results as $result) {
-            echo $result->remote_ip.'.. ';
-            $ips = explode('-', $result->remote_ip);
+        add_option('wgojnj_limit_requests_per_minute', '-1');
+        add_option('wgojnj_limit_requests_per_hour', -1);
+        add_option('wgojnj_items_per_page', '10');
+        add_option('wgojnj_days_to_store', '7');
+        add_option('wgojnj_im_behind_proxy', 0);
+        add_option('wgojnj_notification_email', '');
+        add_option('wgojnj_notify_requests_more_than_sd', 0);
+        add_option('wgojnj_notify_requests_more_than_sd', 1);
+        add_option('wgojnj_notify_requests_more_than_sd', 2);
+    }
 
-            if ($im_behind_proxy) {
-                $ip = $ips[0];
-            } else {
-                $ip = $ips[2];
-            }
+    public function wgojnj_deactivation()
+    {
+        global $wpdb;
+        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on;';
+        $wpdb->get_results($sql);
+        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_block;';
+        $wpdb->get_results($sql);
+        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_404s;';
+        $wpdb->get_results($sql);
 
-            try {
-                $record = $reader->city($ip);
-
-                if (!empty($record->country->isoCode)) {
-                    // Update records..
-                    $sql = 'UPDATE '.$wpdb->prefix.$tableName.' SET country_code = \''.$record->country->isoCode.'\' WHERE remote_ip = \''.$result->remote_ip.'\';';
-                    $wpdb->get_results($sql);
-                    echo 'Saving '.$result->remote_ip.' '.$record->country->isoCode;
-                } else {
-                    echo 'Not saving empty ISO country code.';
-                }
-            } catch (\Throwable $th) {
-            }
-            echo PHP_EOL;
+        if (file_exists(ABSPATH.'.user.ini')) {
+            unlink(ABSPATH.'.user.ini');
         }
     }
+
+    /**
+     * It simply returns HTTP_X_FORWARDED_FOR - HTTP_CLIENT_IP - REMOTE_ADDR..
+     */
+    public function wgojnj_current_remote_ips()
+    {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
+    }
+
+    /**
+     * This only saves 404s to detect anomalous behaviours..
+     */
+    public function wgojnj_save_404s()
+    {
+        if (is_404()) {
+            global $wpdb;
+            $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+
+            $sql = 'INSERT INTO '.$wpdb->prefix.'whats_going_on_404s '
+                .'(time, url, remote_ip, remote_port, user_agent, method) '
+                .'VALUES ('
+                ."now(), '"
+                .$url."', '"
+                .$this->wgojnj_current_remote_ips()."', '"
+                .$_SERVER['REMOTE_PORT']."', '"
+                .$_SERVER['HTTP_USER_AGENT']."', '"
+                .$_SERVER['REQUEST_METHOD']."'"
+                .');';
+            $wpdb->get_results($sql);
+        }
+    }
+
+    /**
+     * It adds assets only for the backend..
+     */
+    public function wpdocs_selectively_enqueue_admin_script($hook)
+    {
+        wp_enqueue_style('wgojnj_custom_style', plugin_dir_url(__FILE__).'lib/wgojnj.css', false, '1.0.1');
+        wp_enqueue_style('wgojnj_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
+        wp_enqueue_script('wgojnj_custom_script', plugin_dir_url(__FILE__).'lib/wgojnj.js', [], '1.0.1');
+        wp_enqueue_script('wgojnj_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
+    }
 }
-add_action('wgojnj_cron_fill_country_columns_hook', 'wgojnj_cron_fill_country_columns');
-if (!wp_next_scheduled('wgojnj_cron_fill_country_columns_hook')) {
-    wp_schedule_event(time(), 'minutely', 'wgojnj_cron_fill_country_columns_hook');
-}
+
+WhatsGoingOn::get_instance();

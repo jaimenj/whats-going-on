@@ -1,4 +1,4 @@
 block-list.php
 block-regexes.php
 allow-list.php
-waf.errors.log
+waf-errors.log

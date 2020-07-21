@@ -1,4 +1,4 @@
-<Files waf.errors.log>
+<Files waf-errors.log>
 Order allow,deny
 Deny from all
 </Files>
