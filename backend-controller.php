@@ -130,19 +130,7 @@ function wgojnj_handle_admin_page()
 }
 add_action('admin_menu', 'wgojnj_handle_admin_page');
 
-// Options
-function wgojnj_register_options()
-{
-    register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_minute');
-    register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_hour');
-    register_setting('wgojnj_options_group', 'wgojnj_items_per_page');
-    register_setting('wgojnj_options_group', 'wgojnj_days_to_store');
-    register_setting('wgojnj_options_group', 'wgojnj_im_behind_proxy');
-    register_setting('wgojnj_options_group', 'wgojnj_notification_email');
-    register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_sd');
-    register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_2sd');
-    register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_3sd');
-}
+
 
 function wgojnj_add_ip_to_the_block_list($the_ip)
 {

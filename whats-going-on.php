@@ -82,6 +82,7 @@ class WhatsGoingOn
             .');';
         $wpdb->get_results($sql);
 
+        $this->wgojnj_register_options();
         add_option('wgojnj_limit_requests_per_minute', '-1');
         add_option('wgojnj_limit_requests_per_hour', -1);
         add_option('wgojnj_items_per_page', '10');
@@ -91,6 +92,20 @@ class WhatsGoingOn
         add_option('wgojnj_notify_requests_more_than_sd', 0);
         add_option('wgojnj_notify_requests_more_than_sd', 1);
         add_option('wgojnj_notify_requests_more_than_sd', 2);
+    }
+
+    // Options
+    public function wgojnj_register_options()
+    {
+        register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_minute');
+        register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_hour');
+        register_setting('wgojnj_options_group', 'wgojnj_items_per_page');
+        register_setting('wgojnj_options_group', 'wgojnj_days_to_store');
+        register_setting('wgojnj_options_group', 'wgojnj_im_behind_proxy');
+        register_setting('wgojnj_options_group', 'wgojnj_notification_email');
+        register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_sd');
+        register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_2sd');
+        register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_3sd');
     }
 
     public function wgojnj_deactivation()
