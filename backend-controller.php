@@ -77,7 +77,7 @@ function wgojnj_whats_going_on_controller()
                 $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on_block;');
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>All records removed!</p></div>';
             } elseif (isset($_REQUEST['submit-remove-old'])) {
-                wgojnj_remove_older_than_a_week_data();
+                WhatsGoingOnCronjobs::get_instance()->wgojnj_remove_older_than_x_days(7);
                 $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Old records removed!</p></div>';
             } elseif (isset($_REQUEST['submit-remove-this-ip'])) {
                 $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
@@ -129,108 +129,6 @@ function wgojnj_handle_admin_page()
     add_management_page($page_title, $menu_title, $capability, $menu_slug, $function, $position);
 }
 add_action('admin_menu', 'wgojnj_handle_admin_page');
-
-
-
-function wgojnj_add_ip_to_the_block_list($the_ip)
-{
-    $return_msg = '';
-
-    $file_path = WGOJNJ_PATH.'block-list.php';
-    if (file_exists($file_path)) {
-        $the_file = file($file_path);
-        $ips = [];
-        for ($i = 1; $i < count($the_file); ++$i) {
-            $ips[] = trim($the_file[$i]).PHP_EOL;
-        }
-    }
-    $ips[] = $the_ip.PHP_EOL;
-    if (count($ips) != count(array_unique($ips))) {
-        $return_msg = '<div id="message" class="notice notice-success is-dismissible"><p>IP yet in the list!</p></div>';
-    } else {
-        $return_msg = '<div id="message" class="notice notice-success is-dismissible"><p>IP '.$_REQUEST['txt_this_ip'].' added to the block list!</p></div>';
-    }
-    $ips = array_unique($ips);
-    file_put_contents($file_path, array_merge(['<?php'.PHP_EOL], $ips));
-
-    return $return_msg;
-}
-
-function wgojnj_remove_ip_from_the_block_list($the_ip)
-{
-    $removed = false;
-
-    $file_path = WGOJNJ_PATH.'block-list.php';
-    if (file_exists($file_path)) {
-        $the_file = file($file_path);
-        $ips = [];
-        if (count($the_file > 1)) {
-            for ($i = 1; $i < count($the_file); ++$i) {
-                if (trim($the_ip) != trim($the_file[$i])) {
-                    $ips[] = trim($the_file[$i]).PHP_EOL;
-                } else {
-                    $removed = true;
-                }
-            }
-        }
-        file_put_contents($file_path, array_merge(['<?php'.PHP_EOL], $ips));
-    }
-
-    if ($removed) {
-        return '<div id="message" class="notice notice-success is-dismissible"><p>IP '.$_REQUEST['txt_this_ip'].' removed from the block list!</p></div>';
-    } else {
-        return '<div id="message" class="notice notice-success is-dismissible"><p>IP not found!</p></div>';
-    }
-}
-
-function wgojnj_add_ip_to_the_allow_list($the_ip)
-{
-    $return_msg = '';
-
-    $file_path = WGOJNJ_PATH.'allow-list.php';
-    if (file_exists($file_path)) {
-        $the_file = file($file_path);
-        $ips = [];
-        for ($i = 1; $i < count($the_file); ++$i) {
-            $ips[] = trim($the_file[$i]).PHP_EOL;
-        }
-    }
-    $ips[] = $the_ip.PHP_EOL;
-    if (count($ips) != count(array_unique($ips))) {
-        $return_msg = '<div id="message" class="notice notice-success is-dismissible"><p>IP yet in the list!</p></div>';
-    } else {
-        $return_msg = '<div id="message" class="notice notice-success is-dismissible"><p>IP '.$_REQUEST['txt_this_ip'].' added to the allow list!</p></div>';
-    }
-    $ips = array_unique($ips);
-    file_put_contents($file_path, array_merge(['<?php'.PHP_EOL], $ips));
-
-    return $return_msg;
-}
-
-function wgojnj_remove_ip_from_the_allow_list($the_ip)
-{
-    $removed = false;
-
-    $file_path = WGOJNJ_PATH.'allow-list.php';
-    if (file_exists($file_path)) {
-        $the_file = file($file_path);
-        $ips = [];
-        if (count($the_file > 1)) {
-            for ($i = 1; $i < count($the_file); ++$i) {
-                if (trim($the_ip) != trim($the_file[$i])) {
-                    $ips[] = trim($the_file[$i]).PHP_EOL;
-                }
-            }
-        }
-        file_put_contents($file_path, array_merge(['<?php'.PHP_EOL], $ips));
-    }
-
-    if ($removed) {
-        return '<div id="message" class="notice notice-success is-dismissible"><p>IP '.$_REQUEST['txt_this_ip'].' removed from the allow list!</p></div>';
-    } else {
-        return '<div id="message" class="notice notice-success is-dismissible"><p>IP not found!</p></div>';
-    }
-}
 
 function wgojnj_save_clean_file($txt_regexes_block, $file_path)
 {

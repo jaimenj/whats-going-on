@@ -34,11 +34,13 @@ class WhatsGoingOnCronjobs
     /**
      * Clean records older than x days..
      */
-    public function wgojnj_remove_older_than_x_days()
+    public function wgojnj_remove_older_than_x_days($days = 0)
     {
         global $wpdb;
 
-        $days_to_store = get_option('wgojnj_days_to_store');
+        if (empty($days)) {
+            $days_to_store = get_option('wgojnj_days_to_store');
+        }
 
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
             ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";

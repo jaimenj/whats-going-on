@@ -10,8 +10,8 @@
 defined('ABSPATH') or die('No no no');
 define('WGOJNJ_PATH', plugin_dir_path(__FILE__));
 
-include_once WGOJNJ_PATH.'backend-controller.php';
 include_once WGOJNJ_PATH.'cronjobs.php';
+include_once WGOJNJ_PATH.'backend-controller.php';
 
 class WhatsGoingOn
 {
