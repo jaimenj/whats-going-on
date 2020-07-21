@@ -20,11 +20,16 @@ class WhatsGoingOnCronjobs
 
     public function __construct()
     {
+        // Remove old records from DB..
         add_action('wgojnj_cron_remove_old_data_hook', [$this, 'wgojnj_cron_remove_old_data']);
         if (!wp_next_scheduled('wgojnj_cron_remove_old_data_hook')) {
             wp_schedule_event(time(), 'hourly', [$this, 'wgojnj_cron_remove_old_data_hook']);
         }
+
+        // Add some new cron schedules..
         add_filter('cron_schedules', [$this, 'wgojnj_add_cron_intervals']);
+
+        // Fill countries data of IPs in background..
         add_action('wgojnj_cron_fill_country_columns_hook', [$this, 'wgojnj_cron_fill_country_columns']);
         if (!wp_next_scheduled('wgojnj_cron_fill_country_columns_hook')) {
             wp_schedule_event(time(), 'minutely', [$this, 'wgojnj_cron_fill_country_columns_hook']);

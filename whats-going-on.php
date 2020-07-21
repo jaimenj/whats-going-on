@@ -36,8 +36,8 @@ class WhatsGoingOn
         add_action('template_redirect', [$this, 'wgojnj_save_404s']);
         add_action('admin_enqueue_scripts', [$this, 'wpdocs_selectively_enqueue_admin_script']);
 
-        // Cronjobs..
         WhatsGoingOnCronjobs::get_instance();
+        WhatsGoingOnBackendController::get_instance();
     }
 
     public function wgojnj_activation()
