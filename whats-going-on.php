@@ -37,6 +37,7 @@ class WhatsGoingOn
         add_action('admin_enqueue_scripts', [$this, 'wpdocs_selectively_enqueue_admin_script']);
 
         // Cronjobs..
+        WhatsGoingOnCronjobs::get_instance();
     }
 
     public function wgojnj_activation()
