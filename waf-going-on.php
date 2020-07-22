@@ -1,6 +1,10 @@
 <?php
 
-$timeStart = microtime(true);
+// Debug or not debug
+$debug = false;
+if ($debug) {
+    $timeStart = microtime(true);
+}
 
 // Loading configs from wp-config.php file..
 $configFilePath = __DIR__.'/../../../wp-config.php';
@@ -15,10 +19,10 @@ foreach ($configFileContent as $line) {
         $configsArray['TABLE_PREFIX'] = $matches[1];
     }
 }
-$blockListFilePath = __DIR__.'/../block-list.php';
-$allowListFilePath = __DIR__.'/../allow-list.php';
-$blockRegexesFilePath = __DIR__.'/../block-regexes.php';
-//var_dump($configsArray); die;
+$blockListFilePath = __DIR__.'/block-list.php';
+$allowListFilePath = __DIR__.'/allow-list.php';
+$blockRegexesFilePath = __DIR__.'/block-regexes.php';
+//var_dump($blockListFilePath); die;
 
 // Connect to database
 $mysqlConnection = new mysqli(
@@ -73,6 +77,7 @@ $regexesErrorsStrings = [
     5 => 'PREG_BAD_UTF8_OFFSET_ERROR',
     6 => 'PREG_JIT_STACKLIMIT_ERROR',
 ];
+//var_dump($regexesErrorsFile);
 
 // If it's in the block list..
 if (file_exists($blockListFilePath)) {
@@ -80,7 +85,7 @@ if (file_exists($blockListFilePath)) {
     $to_block = false;
     for ($i = 1; $i < count($file_content); ++$i) {
         $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
-        if (!empty($value) and preg_match('/'.$value.'/', waf_current_remote_ips())) {
+        if (!empty($value) and preg_match('/'.$value.'/i', waf_current_remote_ips())) {
             $to_block = true;
         }
         if (PREG_NO_ERROR != preg_last_error()) {
@@ -99,6 +104,7 @@ if (file_exists($blockRegexesFilePath)) {
     $to_block = false;
     for ($i = 1; $i < count($file_content); ++$i) {
         $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
+        //var_dump($value);
         if (!empty($value)) {
             // Check query string..
             if (!empty($_SERVER['QUERY_STRING'])
@@ -108,6 +114,7 @@ if (file_exists($blockRegexesFilePath)) {
             if (PREG_NO_ERROR != preg_last_error()) {
                 $regexesErrors[] = $value.' '.$regexesErrorsStrings[preg_last_error()].PHP_EOL;
             }
+            //var_dump(preg_last_error());
 
             // Check post data..
             foreach ($_POST as $post_key => $post_value) {
@@ -117,6 +124,7 @@ if (file_exists($blockRegexesFilePath)) {
                 if (PREG_NO_ERROR != preg_last_error()) {
                     $regexesErrors[] = $value.' '.$regexesErrorsStrings[preg_last_error()].PHP_EOL;
                 }
+                //var_dump(preg_last_error());
             }
         }
     }
@@ -125,6 +133,8 @@ if (file_exists($blockRegexesFilePath)) {
         $retry_time = 86400;
     }
 }
+
+//var_dump($regexesErrors);
 
 // Save Regexes errors to review..
 file_put_contents($regexesErrorsFile, array_unique($regexesErrors));
@@ -138,7 +148,7 @@ if (!empty($comments)) {
         $file_content = file($allowListFilePath);
         for ($i = 1; $i < count($file_content); ++$i) {
             $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
-            if (!empty($value) and preg_match('/'.$value.'/', waf_current_remote_ips())) {
+            if (!empty($value) and preg_match('/'.$value.'/i', waf_current_remote_ips())) {
                 $bypassed = true;
             }
             if (PREG_NO_ERROR != preg_last_error()) {
@@ -163,9 +173,12 @@ if (!empty($comments)) {
 // Close database connection
 mysqli_close($mysqlConnection);
 
-$timeEnd = microtime(true);
-$timeConsumed = $timeEnd - $timeStart;
-//echo 'Time consumed: '.$timeConsumed.' secs';
+// Debugging or not
+if ($debug) {
+    $timeEnd = microtime(true);
+    $timeConsumed = $timeEnd - $timeStart;
+    echo 'Time consumed: '.$timeConsumed.' secs';
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +193,7 @@ function waf_save_the_blocking($mysqlConnection, $comments, $the_table_full_pref
         ."now(), '"
         .waf_current_remote_ips()."', '"
         .$_SERVER['REMOTE_PORT']."', '"
-        .$_SERVER['HTTP_USER_AGENT']."','"
+        .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"
         .$comments."'"
         .');';
     $result = mysqli_query($mysqlConnection, $sql);
@@ -196,7 +209,7 @@ function waf_save_my_request($mysqlConnection, $url, $requests_last_minute, $req
         .$url."', '"
         .waf_current_remote_ips()."', '"
         .$_SERVER['REMOTE_PORT']."', '"
-        .$_SERVER['HTTP_USER_AGENT']."', '"
+        .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"
         .$_SERVER['REQUEST_METHOD']."', "
         .$requests_last_minute.', '
         .$requests_last_hour
