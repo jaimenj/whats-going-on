@@ -20,55 +20,28 @@ class WhatsGoingOnCronjobs
 
     public function __construct()
     {
-        // Remove old records from DB..
-        add_action('wgojnj_cron_remove_old_data_hook', [$this, 'wgojnj_cron_remove_old_data']);
-        if (!wp_next_scheduled('wgojnj_cron_remove_old_data_hook')) {
-            wp_schedule_event(time(), 'hourly', [$this, 'wgojnj_cron_remove_old_data_hook']);
-        }
-
         // Add some new cron schedules..
         add_filter('cron_schedules', [$this, 'wgojnj_add_cron_intervals']);
 
-        // Fill countries data of IPs in background..
+        // Job remove old records from DB..
+        add_action('wgojnj_cron_remove_old_data_hook', [$this, 'wgojnj_cron_remove_old_data']);
+        if (!wp_next_scheduled('wgojnj_cron_remove_old_data_hook')) {
+            wp_schedule_event(time(), 'hourly', 'wgojnj_cron_remove_old_data_hook');
+        }
+
+        // Job fill countries data of IPs in background..
         add_action('wgojnj_cron_fill_country_columns_hook', [$this, 'wgojnj_cron_fill_country_columns']);
         if (!wp_next_scheduled('wgojnj_cron_fill_country_columns_hook')) {
-            wp_schedule_event(time(), 'minutely', [$this, 'wgojnj_cron_fill_country_columns_hook']);
+            wp_schedule_event(time(), 'minutely', 'wgojnj_cron_fill_country_columns_hook');
+        }
+
+        // Job notify by email for DDoS detections..
+        add_action('wgojnj_cron_notify_ddos_hook', [$this, 'wgojnj_cron_notify_ddos']);
+        if (!wp_next_scheduled('wgojnj_cron_notify_ddos_hook')) {
+            wp_schedule_event(time(), 'half-hour', 'wgojnj_cron_notify_ddos_hook');
         }
     }
 
-    /**
-     * Clean records older than x days..
-     */
-    public function wgojnj_remove_older_than_x_days($days = 0)
-    {
-        global $wpdb;
-
-        if (empty($days)) {
-            $days_to_store = get_option('wgojnj_days_to_store');
-        }
-
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-            ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
-        $results = $wpdb->get_results($sql);
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-            ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
-        $results = $wpdb->get_results($sql);
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-            ."WHERE time < '".date('Y-m-d H:i:s', strtotime(date().' -'.$days_to_store.' day'))."';";
-        $results = $wpdb->get_results($sql);
-    }
-
-    /**
-     * Cronjob to remove old data..
-     */
-    public function wgojnj_cron_remove_old_data()
-    {
-        wgojnj_remove_older_than_x_days();
-    }
-
-    /*
-    * Fill country columns..
-    */
     public function wgojnj_add_cron_intervals($schedules)
     {
         $schedules['minutely'] = [
@@ -87,6 +60,39 @@ class WhatsGoingOnCronjobs
         return $schedules;
     }
 
+    /**
+     * Cronjob for cleanning records older than x days..
+     */
+    public function wgojnj_remove_older_than_x_days($days = 0)
+    {
+        global $wpdb;
+
+        if (empty($days)) {
+            $days_to_store = get_option('wgojnj_days_to_store');
+        }
+
+        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
+            .'WHERE time < NOW() - INTERVAL '.$days_to_store.' DAY;';
+        $results = $wpdb->get_results($sql);
+        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
+            .'WHERE time < NOW() - INTERVAL '.$days_to_store.' DAY;';
+        $results = $wpdb->get_results($sql);
+        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
+            .'WHERE time < NOW() - INTERVAL '.$days_to_store.' DAY;';
+        $results = $wpdb->get_results($sql);
+    }
+
+    /**
+     * Cronjob for removing old data..
+     */
+    public function wgojnj_cron_remove_old_data()
+    {
+        $this->wgojnj_remove_older_than_x_days();
+    }
+
+    /**
+     * Cronjob for filling country columns..
+     */
     public function wgojnj_cron_fill_country_columns()
     {
         echo 'Filling countries..'.PHP_EOL;
@@ -124,6 +130,103 @@ class WhatsGoingOnCronjobs
                 } catch (\Throwable $th) {
                 }
                 echo PHP_EOL;
+            }
+        }
+    }
+
+    /**
+     * Cronjob for notifying DDoS detections..
+     */
+    public function wgojnj_cron_notify_ddos()
+    {
+        global $wpdb;
+
+        $notify_requests_more_than_sd = get_option('wgojnj_notify_requests_more_than_sd');
+        $notify_requests_more_than_2sd = get_option('wgojnj_notify_requests_more_than_2sd');
+        $notify_requests_more_than_3sd = get_option('wgojnj_notify_requests_more_than_3sd');
+        $notify_requests_less_than_25_percent = get_option('wgojnj_notify_requests_less_than_25_percent');
+        $notification_email = get_option('wgojnj_notification_email');
+
+        if (!empty($notification_email) and (
+        $notify_requests_more_than_sd
+        or $notify_requests_more_than_2sd
+        or $notify_requests_more_than_3sd)) {
+            $chart_sql = 'SELECT count(*) hits FROM '.$wpdb->prefix.'whats_going_on wgo'
+                .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
+            $chart_results = $wpdb->get_results($chart_sql);
+            //var_dump($chart_results);
+
+            // Apply mathematics..
+            $average = 0;
+            $standard_deviation = 0;
+            if (count($chart_results) > 0) {
+                foreach ($chart_results as $key => $item) {
+                    $average += $item->hits;
+                }
+                $average = $average / count($chart_results);
+                foreach ($chart_results as $key => $item) {
+                    $standard_deviation += pow(($item->hits - $average), 2);
+                }
+                $standard_deviation = sqrt($standard_deviation / count($chart_results));
+            }
+
+            // Last hits..
+            $chart_sql = 'SELECT count(*) hits FROM '.$wpdb->prefix.'whats_going_on wgo'
+                .' WHERE time > NOW() - INTERVAL 1 HOUR;';
+            $chart_results = $wpdb->get_results($chart_sql);
+            $last_hits = $chart_results[0]->hits;
+
+            echo 'Last hits: '.$last_hits.PHP_EOL
+                .'Average: '.$average.PHP_EOL
+                .'Standard Deviation: '.$standard_deviation.PHP_EOL;
+
+            if ($last_hits >= 0) {
+                if (($notify_requests_more_than_3sd and $last_hits > $average + 3 * $standard_deviation)
+                or ($notify_requests_more_than_3sd and $last_hits < $average - 3 * $standard_deviation)) {
+                    echo 'Notify 3SD..'.PHP_EOL;
+                    wp_mail(
+                        $notification_email,
+                        get_bloginfo('name').': What\'s going on: DDoS notification A±3SD',
+                        'Requests have reached Average ± 3 * Standard Deviation: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
+                    );
+                } else {
+                    echo 'NOT Notify 3SD..'.PHP_EOL;
+                }
+
+                if (($notify_requests_more_than_2sd and $last_hits > $average + 2 * $standard_deviation)
+                or ($notify_requests_more_than_2sd and $last_hits < $average - 2 * $standard_deviation)) {
+                    echo 'Notify 2SD..'.PHP_EOL;
+                    wp_mail(
+                        $notification_email,
+                        get_bloginfo('name').': What\'s going on: DDoS notification A±2SD',
+                        'Requests have reached Average ± 2 * Standard Deviation: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
+                    );
+                } else {
+                    echo 'NOT Notify 2SD..'.PHP_EOL;
+                }
+
+                if (($notify_requests_more_than_sd and $last_hits > $average + $standard_deviation)
+                or ($notify_requests_more_than_sd and $last_hits < $average - $standard_deviation)) {
+                    echo 'Notify SD..'.PHP_EOL;
+                    wp_mail(
+                        $notification_email,
+                        get_bloginfo('name').': What\'s going on: DDoS notification A±SD',
+                        'Requests have reached Average ± Standard Deviation: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
+                    );
+                } else {
+                    echo 'NOT Notify SD..'.PHP_EOL;
+                }
+
+                if ($notify_requests_less_than_25_percent and $last_hits < $average * 0.25) {
+                    echo 'Notify 25%A..'.PHP_EOL;
+                    wp_mail(
+                        $notification_email,
+                        get_bloginfo('name').': What\'s going on: DDoS notification 25%A',
+                        'Requests have reached less than 25% of the average: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
+                    );
+                } else {
+                    echo 'NOT Notify 25%A..'.PHP_EOL;
+                }
             }
         }
     }
