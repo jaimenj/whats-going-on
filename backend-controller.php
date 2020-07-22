@@ -85,6 +85,7 @@ class WhatsGoingOnBackendController
                     update_option('wgojnj_notify_requests_more_than_sd', stripslashes($_REQUEST['notify_requests_more_than_sd']));
                     update_option('wgojnj_notify_requests_more_than_2sd', stripslashes($_REQUEST['notify_requests_more_than_2sd']));
                     update_option('wgojnj_notify_requests_more_than_3sd', stripslashes($_REQUEST['notify_requests_more_than_3sd']));
+                    update_option('wgojnj_notify_requests_less_than_25_percent', stripslashes($_REQUEST['notify_requests_less_than_25_percent']));
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>DDoS configs saved!</p></div>';
                 } elseif (isset($_REQUEST['submit-previous-page'])) {
                     --$current_page;
@@ -109,13 +110,17 @@ class WhatsGoingOnBackendController
                     $results = $wpdb->get_results($sql);
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Records with IP '.$_REQUEST['txt_this_ip'].' removed!</p></div>';
                 } elseif (isset($_REQUEST['submit-save-ips-lists'])) {
-                    wgojnj_save_clean_file($_REQUEST['txt-block-list'], WGOJNJ_PATH.'block-list.php');
-                    wgojnj_save_clean_file($_REQUEST['txt-allow-list'], WGOJNJ_PATH.'allow-list.php');
+                    $this->wgojnj_save_clean_file($_REQUEST['txt-block-list'], WGOJNJ_PATH.'block-list.php');
+                    $this->wgojnj_save_clean_file($_REQUEST['txt-allow-list'], WGOJNJ_PATH.'allow-list.php');
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
                 } elseif (isset($_REQUEST['submit-save-regexes'])) {
                     // Save Regexes
-                    wgojnj_save_clean_file($_REQUEST['txt-regexes-block'], WGOJNJ_PATH.'block-regexes.php');
-                    $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes saved!</p></div>';
+                    if (!empty($_FILES['file-regexes-signatures']['tmp_name'])) {
+                        $this->wgojnj_save_clean_file(file_get_contents($_FILES['file-regexes-signatures']['tmp_name']), WGOJNJ_PATH.'block-regexes.php');
+                        $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes saved!</p></div>';
+                    } else {
+                        $wgojnjSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
+                    }
                 } elseif (isset($_REQUEST['submit-install-full-waf'])) {
                     file_put_contents(
                         $userIniFilePath,
@@ -150,9 +155,9 @@ class WhatsGoingOnBackendController
 
     public function wgojnj_save_clean_file($txt_regexes_block, $file_path)
     {
-        //var_dump($txt_regexes_block); die;
         $final_array = [];
-        $final_array[] = '<?php'.PHP_EOL;
+        $final_array[] = '<?php/*'.PHP_EOL;
+
         $array = explode("\r\n", $txt_regexes_block);
         foreach ($array as $item) {
             $item = trim($item);

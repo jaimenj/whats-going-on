@@ -7,9 +7,9 @@ if (!current_user_can('administrator')) {
 <div class="wrap-permanent-lists">
     <h2>Administration of unique IPs</h2>
 
-    <p>The format of IPs is: HTTP_X_FORWARDED_FOR-HTTP_CLIENT_IP-REMOTE_ADDR
-    If you see something like --127.0.0.1 it's because the web is not behind a proxy.
-    You can use a Regular Expresions to check IPs.</p>
+    <p>The format of IPs recorded is: HTTP_X_FORWARDED_FOR-HTTP_CLIENT_IP-REMOTE_ADDR
+    If you see something like --123.123.123.123 it's because the web is not behind a proxy.<br>
+    You can use . + * like in Regular Expresions to check ranges or masks of IPs, for example: 123.123.123.*.</p>
 
     <p>
         With this IP.. <input type="text" name="txt_this_ip" id="txt_this_ip" class="regular-text">

@@ -77,7 +77,7 @@ $maxs_reached = $wpdb->get_results(
 //$current_page = (isset($_POST['current_page']) ? $_POST['current_page'] : 1);
 ?>
 
-<form method="post" action="<?php
+<form method="post" enctype="multipart/form-data" action="<?php
 //echo admin_url('tools.php?page=whats-going-on');
 echo $_SERVER['REQUEST_URI'];
 ?>" id="this_form" name="this_form">
@@ -140,7 +140,7 @@ echo $_SERVER['REQUEST_URI'];
                             } else {
                                 echo 'day';
                             }
-                            echo ' ('.($days_to_store * 24).' hours)'
+                            echo ' (~'.($days_to_store * 24).' hours)'
                             ?>',
                         data: [<?php
                             if (count($chart_results) > 0) {
@@ -374,7 +374,13 @@ echo $_SERVER['REQUEST_URI'];
                     <td>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a> : <?= $result->remote_port; ?>
                     </td>
-                    <td><?= $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '') ?></td>
+                    <td>
+                        <?php
+                        if (!empty($result->country_code)) {
+                            echo $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '');
+                        }
+                        ?>
+                    </td>
                     <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
                     <td><?= $result->last_minute; ?> / <?= $result->last_hour; ?></td>
                 </tr>
@@ -410,19 +416,19 @@ echo $_SERVER['REQUEST_URI'];
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-unique-ips.php') ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-regexes.php') ?>
-    <hr>
     <?php include(WGOJNJ_PATH.'view/sub-dos.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-ddos.php') ?>
+    <hr>
+    <?php include(WGOJNJ_PATH.'view/sub-regexes.php') ?>
+    <hr>
+    <?php include(WGOJNJ_PATH.'view/sub-regexes-errors.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-countries-continents.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-blocks.php') ?>
     <hr>
     <?php include(WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php') ?>
-    <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-regexes-errors.php') ?>
 
 </form>
 

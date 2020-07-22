@@ -37,7 +37,13 @@ $results = $wpdb->get_results($block_sql);
                     <td>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?> : <?= $result->remote_port; ?>
                     </td>
-                    <td><?= $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '') ?></td>
+                    <td>
+                        <?php
+                        if (!empty($result->country_code)) {
+                            echo $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '');
+                        }
+                        ?>
+                    </td>
                     <td><?= $result->user_agent; ?></td></td>
                     <td><?= $result->comments; ?></td></td>
                 </tr>

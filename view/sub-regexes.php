@@ -19,19 +19,19 @@ if (!current_user_can('administrator')) {
             <tbody>
                 <tr>
                     <td>
-                        <textarea name="txt-regexes-block" id="txt-regexes-block" class="waf-textarea-config"><?php
+                        <?php
                         $file_path = WGOJNJ_PATH.'block-regexes.php';
                         if (file_exists($file_path)) {
                             $the_file = file($file_path);
+
                             if (count($the_file) > 1) {
                                 for ($i = 1; $i < count($the_file); ++$i) {
-                                    echo $the_file[$i];
+                                    echo $the_file[$i].'<br>';
                                 }
+                            } else {
+                                echo '<p>No Regexes found.</p>';
                             }
-                        }
-                        ?></textarea>
-                        <?php
-                        if (empty($the_file)) {
+                        } else {
                             echo '<p>No Regexes found.</p>';
                         }
                         ?>
@@ -42,6 +42,7 @@ if (!current_user_can('administrator')) {
     </div>
 
     <p>
-        <input type="submit" name="submit-save-regexes" id="submit-save-regexes" class="button button-red" value="Save Regexes">
+        <input type="file" name="file-regexes-signatures" id="file-regexes-signatures">
+        <input type="submit" name="submit-save-regexes" id="submit-save-regexes" class="button button-green" value="Upload Regexes signatures">
     </p>
 </div>
