@@ -187,7 +187,7 @@ echo $_SERVER['REQUEST_URI'];
                                 }
                             }
                         ?>],
-                        borderWidth: 1,
+                        borderWidth: 1.5,
                         borderColor: 'rgba(0, 0, 0, 1)',
                         fill: false
                     },{

@@ -118,6 +118,9 @@ if (file_exists($blockRegexesFilePath)) {
 
             // Check post data..
             foreach ($_POST as $post_key => $post_value) {
+                /**
+                 * TODO sometimes $post_value is array..
+                 */
                 if (preg_match($value, $post_value)) {
                     $to_block = true;
                 }
