@@ -35,7 +35,7 @@ Plugin website: \
 * Permanent block or bypass of custom IPs, it allows you to configure IP masks and ranges with your own Regexes too.
 * Log and show you section for Regexes errors.
 * 404s detections.
-* Building detection of DDoS attacks.
+* Possible DDoS attacks detection and notification by email.
 
 ## Installation
 
@@ -76,9 +76,33 @@ Not upgraded yet.
 
 ## Screenshots
 
-1. The main configuration view into the admin panel.
+1. The main view into the admin panel.
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-2.png)
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-3.png)
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-4.png)
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-5.png)
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-6.png)
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-7.png)
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-8.png)
 
 ## Changelog
+
+### 0.3
+
+* Main chart with requests, average, standard deviation and others.
+* Fix Regexes saving for XSS, SQL injection and xploits detection.
+* Debug zone for your own Regexes results.
+* Background filling data of countries.
+* More configurable option like: email of notifications, behind a proxy or not, days to store data..
+* DDoS detection is working.
+* Refactoring of all files, implementing MVC.
 
 ### 0.2
 
