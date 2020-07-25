@@ -70,10 +70,6 @@ Yes. By default, you cannot block yourself while you are activating the plugin. 
 
 In case of emergency, you can remove the file .user.ini and the directory /wp-content/plugins/whats-going-on/. Maybe you also want to restart PHP-fpm or Apache/Nginx if WAF is cached.
 
-## Upgrade Notice
-
-Not upgraded yet.
-
 ## Screenshots
 
 1. The main view into the admin panel.
@@ -113,4 +109,4 @@ Not upgraded yet.
 
 ### 0.1
 
-* Initial version
+* Initial version.

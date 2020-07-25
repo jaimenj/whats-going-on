@@ -113,11 +113,19 @@ class WhatsGoingOnBackendController
                     $this->wgojnj_save_clean_file($_REQUEST['txt-block-list'], WGOJNJ_PATH.'block-list.php');
                     $this->wgojnj_save_clean_file($_REQUEST['txt-allow-list'], WGOJNJ_PATH.'allow-list.php');
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
-                } elseif (isset($_REQUEST['submit-save-regexes'])) {
+                } elseif (isset($_REQUEST['submit-save-regexes-uri'])) {
                     // Save Regexes
-                    if (!empty($_FILES['file-regexes-signatures']['tmp_name'])) {
-                        $this->wgojnj_save_clean_file(file_get_contents($_FILES['file-regexes-signatures']['tmp_name']), WGOJNJ_PATH.'block-regexes.php');
-                        $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes saved!</p></div>';
+                    if (!empty($_FILES['file-regexes-uri']['tmp_name'])) {
+                        $this->wgojnj_save_clean_file(file_get_contents($_FILES['file-regexes-uri']['tmp_name']), WGOJNJ_PATH.'block-regexes-uri.php');
+                        $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for request uri saved!</p></div>';
+                    } else {
+                        $wgojnjSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
+                    }
+                } elseif (isset($_REQUEST['submit-save-regexes-payload'])) {
+                    // Save Regexes
+                    if (!empty($_FILES['file-regexes-payload']['tmp_name'])) {
+                        $this->wgojnj_save_clean_file(file_get_contents($_FILES['file-regexes-payload']['tmp_name']), WGOJNJ_PATH.'block-regexes-payload.php');
+                        $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for payload saved!</p></div>';
                     } else {
                         $wgojnjSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
                     }

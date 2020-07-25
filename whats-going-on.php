@@ -163,4 +163,5 @@ class WhatsGoingOn
     }
 }
 
+// Do all..
 WhatsGoingOn::get_instance();
