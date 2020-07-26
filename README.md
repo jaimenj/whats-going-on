@@ -31,11 +31,11 @@ Plugin website: \
 * ..
 * It’s free, completely free.
 * Detection and protection of DoS attacks.
-* It can protect you against SQL injection and XSS attacks using your own Regexes.
-* Permanent block or bypass of custom IPs, it allows you to configure IP masks and ranges with your own Regexes too.
-* Log and show you section for Regexes errors.
+* Detection and notification of possible DDoS attacks.
+* It can protect you against SQL injection, XSS and xploit attacks using your own Regexes.
+* Permanent block or bypass of custom IPs, it allows you to configure IPs with your own Regexes too.
+* Log and show Regex errors in the admin panel, for debug and improve your Regexes.
 * 404s detections.
-* Possible DDoS attacks detection and notification by email.
 
 ## Installation
 
@@ -55,8 +55,9 @@ With SSH you can stay up to date using the normal git pull command.
 
 ## Uninstall
 
-1. Deactivate the plugin into the Plugins menu in the admin panel of WordPress.
-2. Delete into the Plugins menu.
+1. Uninstall .user.ini file.
+2. Deactivate the plugin into the Plugins menu in the admin panel of Wordpress.
+3. Delete into the Plugins menu.
 
 All the options configured into the plugin are removed when plugin is deleted, not when plugin is deactivated. All the database tables are removed when plugin is deactivated. So if you want to remove the plugin and all data stored, first deactivate the plugin and then remove it from the plugin admin zone into the WordPress backend.
 

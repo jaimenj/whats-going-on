@@ -125,7 +125,9 @@ class WhatsGoingOn
      */
     public function wgojnj_current_remote_ips()
     {
-        return $_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['HTTP_CLIENT_IP'].'-'.$_SERVER['REMOTE_ADDR'];
+        return (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '').'-'
+            .(isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : '').'-'
+            .$_SERVER['REMOTE_ADDR'];
     }
 
     /**
