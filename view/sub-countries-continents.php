@@ -11,6 +11,7 @@ if (!current_user_can('administrator')) {
 
         <?php
         $countries_sql = 'SELECT country_code, count(*) times FROM '.$wpdb->prefix.'whats_going_on'
+            .' WHERE country_code IS NOT NULL'
             .' GROUP BY country_code'
             .' ORDER BY times DESC';
         $countries_results = $wpdb->get_results($countries_sql);
@@ -38,7 +39,7 @@ if (!current_user_can('administrator')) {
                         data: [<?php
                             if (count($chart_results) > 0) {
                                 echo $countries_results[0]->times;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                for ($i = 1; $i < count($countries_results); ++$i) {
                                     echo ','.$countries_results[$i]->times;
                                 }
                             }
