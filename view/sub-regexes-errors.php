@@ -17,20 +17,23 @@ if (!current_user_can('administrator')) {
             <tbody>
                 <tr>
                     <td>
-                        <?php 
-                        $regexesErrors = file(WGOJNJ_PATH.'waf-errors.log');
-
-                        if (!empty($regexesErrors)) {
-                            ?>
-                            <ul>
-                                <?php
-                                foreach ($regexesErrors as $regexError) {
-                                    echo '<li>'.$regexError.'</li>';
-                                }
-                                ?>
-                            </ul>
-                            <input type="submit" name="submit-remove-regexes-errors" id="submit-remove-regexes-errors" class="button button-green" value="Remove regexes errors">
                         <?php
+                        if (file_exists(WGOJNJ_PATH.'waf-errors.log')) {
+                            $regexesErrors = file(WGOJNJ_PATH.'waf-errors.log');
+
+                            if (!empty($regexesErrors)) {
+                                ?>
+                                <ul>
+                                    <?php
+                                    foreach ($regexesErrors as $regexError) {
+                                        echo '<li>'.$regexError.'</li>';
+                                    } ?>
+                                </ul>
+                                <input type="submit" name="submit-remove-regexes-errors" id="submit-remove-regexes-errors" class="button button-green" value="Remove regexes errors">
+                                <?php
+                            } else {
+                                ?><p>There are no errors in Regexes saved.</p><?php
+                            }
                         } else {
                             ?><p>There are no errors in Regexes saved.</p><?php
                         }

@@ -103,9 +103,10 @@ class WhatsGoingOnBackendController
                 } elseif (isset($_REQUEST['submit-remove-all'])) {
                     $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on;');
                     $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on_block;');
+                    $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on_404s;');
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>All records removed!</p></div>';
                 } elseif (isset($_REQUEST['submit-remove-old'])) {
-                    WhatsGoingOnCronjobs::get_instance()->wgojnj_remove_older_than_x_days(7);
+                    WhatsGoingOnCronjobs::get_instance()->remove_older_than_x_days(7);
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Old records removed!</p></div>';
                 } elseif (isset($_REQUEST['submit-remove-this-ip'])) {
                     $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
@@ -150,6 +151,12 @@ class WhatsGoingOnBackendController
                 } elseif (isset($_REQUEST['submit-remove-regexes-errors'])) {
                     unlink(WGOJNJ_PATH.'waf-errors.log');
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Log file with errors removed!</p></div>';
+                } elseif (isset($_REQUEST['submit-block-selected-countries'])) {
+
+                    $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked!</p></div>';
+                } elseif (isset($_REQUEST['submit-unblock-selected-countries'])) {
+
+                    $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked!</p></div>';
                 } else {
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Cannot understand submitting!</p></div>';
                 }

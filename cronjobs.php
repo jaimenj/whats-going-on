@@ -68,17 +68,17 @@ class WhatsGoingOnCronjobs
         global $wpdb;
 
         if (empty($days)) {
-            $days_to_store = get_option('wgojnj_days_to_store');
+            $days = get_option('wgojnj_days_to_store');
         }
 
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-            .'WHERE time < NOW() - INTERVAL '.$days_to_store.' DAY;';
+            .'WHERE time < NOW() - INTERVAL '.$days.' DAY;';
         $results = $wpdb->get_results($sql);
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-            .'WHERE time < NOW() - INTERVAL '.$days_to_store.' DAY;';
+            .'WHERE time < NOW() - INTERVAL '.$days.' DAY;';
         $results = $wpdb->get_results($sql);
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-            .'WHERE time < NOW() - INTERVAL '.$days_to_store.' DAY;';
+            .'WHERE time < NOW() - INTERVAL '.$days.' DAY;';
         $results = $wpdb->get_results($sql);
     }
 
