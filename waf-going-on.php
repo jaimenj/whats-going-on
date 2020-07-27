@@ -30,7 +30,12 @@ class WafGoingOn
         }
 
         // Define some variables
-        $this->url = substr($_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 0, 255);
+        $this->url = substr(
+            $_SERVER['REQUEST_SCHEME'].'://'
+            .$_SERVER['SERVER_NAME']
+            .(80 != $_SERVER['SERVER_PORT'] ? ':'.$_SERVER['SERVER_PORT'] : '')
+            .$_SERVER['REQUEST_URI']
+        , 0, 255);
         $this->regexes_errors_strings = [
             0 => 'PREG_NO_ERROR',
             1 => 'PREG_INTERNAL_ERROR',

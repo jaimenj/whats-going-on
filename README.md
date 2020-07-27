@@ -8,7 +8,7 @@ A simple Web Application Firewall for WordPress.
 
 * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
 * Contributors: jaimenj
-* Tags: wordpress, security, waf, frontend
+* Tags: wordpress, security, waf
 * Requires at least: 5.0
 * Tested up to: 5.4
 * Requires PHP: 7.2
@@ -20,7 +20,7 @@ A simple Web Application Firewall for WordPress.
 
 ## Description
 
-A very simple plugin for WordPress that allows you to see all real requests to your website. It’s a WAF, a Web Application Firewall that is installed in the frontend of WordPress. It’s installed in the server with the plugin, and it checks requests from the web browsers, bots or webcrawlers to your WordPress. It executes the WAF codes before every request to PHP files of WordPress, so it also works before every request to the WordPress cache.
+A very simple plugin for WordPress that allows you to see all real requests to your website. It’s a WAF, a Web Application Firewall that is installed in front of WordPress. It’s installed in the server with the plugin, and it checks requests from the web browsers, bots or webcrawlers to your WordPress. It executes the WAF codes before every request to PHP files of WordPress, so it also works before every request to the WordPress cache.
 
 Plugin website: \
 <a href="https://jnjsite.com/whats-going-on-for-wordpress/">https://jnjsite.com/whats-going-on-for-wordpress/</a>
@@ -32,7 +32,7 @@ Plugin website: \
 * It’s free, completely free.
 * Detection and protection of DoS attacks.
 * Detection and notification of possible DDoS attacks.
-* It can protect you against SQL injection, XSS and xploit attacks using your own Regexes.
+* It can protect you against SQL injection, XSS and Xploit attacks using your own Regexes.
 * Permanent block or bypass of custom IPs, it allows you to configure IPs with your own Regexes too.
 * Log and show Regex errors in the admin panel, for debug and improve your Regexes.
 * 404s detections.
@@ -75,17 +75,31 @@ In case of emergency, you can remove the file .user.ini and the directory /wp-co
 
 1. The main view into the admin panel.
 
+2. Administration of unique IPs.
+
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-2.png)
+
+3. Regexes administration.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-3.png)
 
+4. DoS detection and prevention, DDoS detection and notification.
+
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-4.png)
+
+5. Countries and continents administration.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-5.png)
 
+6. Lasts blocks done.
+
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-6.png)
 
+7. Lasts 404s done.
+
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-7.png)
+
+8. Regexes errors to review.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-8.png)
 

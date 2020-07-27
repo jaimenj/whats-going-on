@@ -137,14 +137,17 @@ class WhatsGoingOn
     {
         if (is_404()) {
             global $wpdb;
-            $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+            $url = $_SERVER['REQUEST_SCHEME'].'://'
+                .$_SERVER['SERVER_NAME']
+                .(80 != $_SERVER['SERVER_PORT'] ? ':'.$_SERVER['SERVER_PORT'] : '')
+                .$_SERVER['REQUEST_URI'];
 
             $sql = 'INSERT INTO '.$wpdb->prefix.'whats_going_on_404s '
                 .'(time, url, remote_ip, remote_port, user_agent, method) '
                 .'VALUES ('
                 ."now(), '"
-                .substr($url, 0 ,255)."', '"
-                .$this->wgojnj_current_remote_ips()."', '"
+                .substr($url, 0, 255)."', '"
+                .$this->current_remote_ips()."', '"
                 .$_SERVER['REMOTE_PORT']."', '"
                 .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"
                 .$_SERVER['REQUEST_METHOD']."'"
