@@ -17,12 +17,11 @@ class WhatsGoingOnBackendController
 
     public function __construct()
     {
-        add_action('admin_bar_menu', [$this, 'wgojnj_admin_bar_menu'], 99);
-        add_action('admin_menu', [$this, 'wgojnj_handle_admin_page']);
+        add_action('admin_bar_menu', [$this, 'add_admin_bar_menu'], 99);
+        add_action('admin_menu', [$this, 'add_admin_page']);
     }
 
-    // Topbar
-    public function wgojnj_admin_bar_menu($admin_bar)
+    public function add_admin_bar_menu($admin_bar)
     {
         if (!current_user_can('manage_options')) {
             return;
@@ -40,8 +39,18 @@ class WhatsGoingOnBackendController
         ]);
     }
 
-    // Tools menu
-    public function wgojnj_whats_going_on_controller()
+    public function add_admin_page()
+    {
+        $page_title = 'What\'s going on';
+        $menu_title = $page_title;
+        $capability = 'administrator';
+        $menu_slug = 'whats-going-on';
+        $function = [$this, 'wgo_main_admin_controller'];
+        $position = null;
+        add_management_page($page_title, $menu_title, $capability, $menu_slug, $function, $position);
+    }
+
+    public function wgo_main_admin_controller()
     {
         global $wpdb;
         global $current_page;
@@ -110,13 +119,13 @@ class WhatsGoingOnBackendController
                     $results = $wpdb->get_results($sql);
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Records with IP '.$_REQUEST['txt_this_ip'].' removed!</p></div>';
                 } elseif (isset($_REQUEST['submit-save-ips-lists'])) {
-                    $this->wgojnj_save_clean_file($_REQUEST['txt-block-list'], WGOJNJ_PATH.'block-list.php');
-                    $this->wgojnj_save_clean_file($_REQUEST['txt-allow-list'], WGOJNJ_PATH.'allow-list.php');
+                    $this->save_clean_file($_REQUEST['txt-block-list'], WGOJNJ_PATH.'block-list.php');
+                    $this->save_clean_file($_REQUEST['txt-allow-list'], WGOJNJ_PATH.'allow-list.php');
                     $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
                 } elseif (isset($_REQUEST['submit-save-regexes-uri'])) {
                     // Save Regexes
                     if (!empty($_FILES['file-regexes-uri']['tmp_name'])) {
-                        $this->wgojnj_save_clean_file(file_get_contents($_FILES['file-regexes-uri']['tmp_name']), WGOJNJ_PATH.'block-regexes-uri.php');
+                        $this->save_clean_file(file_get_contents($_FILES['file-regexes-uri']['tmp_name']), WGOJNJ_PATH.'block-regexes-uri.php');
                         $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for request uri saved!</p></div>';
                     } else {
                         $wgojnjSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
@@ -124,7 +133,7 @@ class WhatsGoingOnBackendController
                 } elseif (isset($_REQUEST['submit-save-regexes-payload'])) {
                     // Save Regexes
                     if (!empty($_FILES['file-regexes-payload']['tmp_name'])) {
-                        $this->wgojnj_save_clean_file(file_get_contents($_FILES['file-regexes-payload']['tmp_name']), WGOJNJ_PATH.'block-regexes-payload.php');
+                        $this->save_clean_file(file_get_contents($_FILES['file-regexes-payload']['tmp_name']), WGOJNJ_PATH.'block-regexes-payload.php');
                         $wgojnjSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for payload saved!</p></div>';
                     } else {
                         $wgojnjSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
@@ -150,18 +159,7 @@ class WhatsGoingOnBackendController
         include WGOJNJ_PATH.'view/whats-going-on-view.php';
     }
 
-    public function wgojnj_handle_admin_page()
-    {
-        $page_title = 'What\'s going on';
-        $menu_title = $page_title;
-        $capability = 'administrator';
-        $menu_slug = 'whats-going-on';
-        $function = [$this, 'wgojnj_whats_going_on_controller'];
-        $position = null;
-        add_management_page($page_title, $menu_title, $capability, $menu_slug, $function, $position);
-    }
-
-    public function wgojnj_save_clean_file($txt_regexes_block, $file_path)
+    public function save_clean_file($txt_regexes_block, $file_path)
     {
         $final_array = [];
         $final_array[] = '<?php/*'.PHP_EOL;

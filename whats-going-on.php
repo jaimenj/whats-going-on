@@ -29,18 +29,18 @@ class WhatsGoingOn
     public function __construct()
     {
         // Activation and deactivation..
-        register_activation_hook(__FILE__, [$this, 'wgojnj_activation']);
-        register_deactivation_hook(__FILE__, [$this, 'wgojnj_deactivation']);
+        register_activation_hook(__FILE__, [$this, 'activation']);
+        register_deactivation_hook(__FILE__, [$this, 'deactivation']);
 
         // Main actions..
-        add_action('template_redirect', [$this, 'wgojnj_save_404s']);
-        add_action('admin_enqueue_scripts', [$this, 'wpdocs_selectively_enqueue_admin_script']);
+        add_action('template_redirect', [$this, 'save_404s']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css_js']);
 
         WhatsGoingOnCronjobs::get_instance();
         WhatsGoingOnBackendController::get_instance();
     }
 
-    public function wgojnj_activation()
+    public function activation()
     {
         global $wpdb;
 
@@ -105,7 +105,7 @@ class WhatsGoingOn
         add_option('wgojnj_notify_requests_less_than_25_percent', 0);
     }
 
-    public function wgojnj_deactivation()
+    public function deactivation()
     {
         global $wpdb;
         $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on;';
@@ -123,7 +123,7 @@ class WhatsGoingOn
     /**
      * It simply returns HTTP_X_FORWARDED_FOR - HTTP_CLIENT_IP - REMOTE_ADDR..
      */
-    public function wgojnj_current_remote_ips()
+    public function current_remote_ips()
     {
         return (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '').'-'
             .(isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : '').'-'
@@ -133,7 +133,7 @@ class WhatsGoingOn
     /**
      * This only saves 404s to detect anomalous behaviours..
      */
-    public function wgojnj_save_404s()
+    public function save_404s()
     {
         if (is_404()) {
             global $wpdb;
@@ -143,7 +143,7 @@ class WhatsGoingOn
                 .'(time, url, remote_ip, remote_port, user_agent, method) '
                 .'VALUES ('
                 ."now(), '"
-                .$url."', '"
+                .substr($url, 0 ,255)."', '"
                 .$this->wgojnj_current_remote_ips()."', '"
                 .$_SERVER['REMOTE_PORT']."', '"
                 .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"
@@ -156,7 +156,7 @@ class WhatsGoingOn
     /**
      * It adds assets only for the backend..
      */
-    public function wpdocs_selectively_enqueue_admin_script($hook)
+    public function enqueue_admin_css_js($hook)
     {
         wp_enqueue_style('wgojnj_custom_style', plugin_dir_url(__FILE__).'lib/wgojnj.css', false, '1.0.1');
         wp_enqueue_style('wgojnj_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
