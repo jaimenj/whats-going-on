@@ -108,7 +108,10 @@ class WhatsGoingOnBackendController
                     $wgoSms = $this->_save_regexes_payload();
                 } elseif (isset($_REQUEST['submit-remove-regexes-errors'])) {
                     $wgoSms = $this->_remove_regexes_errors_log();
-                if (isset($_REQUEST['btn-submit'])) {
+                } elseif (isset($_REQUEST['submit-block-selected-countries'])) {
+                    $wgoSms = $this->_add_countries_to_block();
+                } elseif (isset($_REQUEST['submit-unblock-selected-countries'])) {
+                    $wgoSms = $this->_remove_countries_to_block();
                 } elseif (isset($_REQUEST['submit-install-full-waf'])) {
                     $wgoSms = $this->_install_waf();
                 } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
@@ -232,6 +235,8 @@ class WhatsGoingOnBackendController
         } else {
             $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
         }
+
+        return $wgoSms;
     }
 
     private function _remove_regexes_errors_log()
