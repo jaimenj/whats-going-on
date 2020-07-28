@@ -24,21 +24,21 @@ class WhatsGoingOnCronjobs
         add_filter('cron_schedules', [$this, 'add_cron_intervals']);
 
         // Job remove old records from DB..
-        add_action('cron_remove_old_data_hook', [$this, 'cron_remove_old_data']);
-        if (!wp_next_scheduled('cron_remove_old_data_hook')) {
-            wp_schedule_event(time(), 'hourly', 'cron_remove_old_data_hook');
+        add_action('wgo_cron_remove_old_data_hook', [$this, 'remove_old_data']);
+        if (!wp_next_scheduled('wgo_cron_remove_old_data_hook')) {
+            wp_schedule_event(time(), 'hourly', 'wgo_cron_remove_old_data_hook');
         }
 
         // Job fill countries data of IPs in background..
-        add_action('cron_fill_country_columns_hook', [$this, 'cron_fill_country_columns']);
-        if (!wp_next_scheduled('cron_fill_country_columns_hook')) {
-            wp_schedule_event(time(), 'minutely', 'cron_fill_country_columns_hook');
+        add_action('wgo_cron_fill_country_columns_hook', [$this, 'fill_country_columns']);
+        if (!wp_next_scheduled('wgo_cron_fill_country_columns_hook')) {
+            wp_schedule_event(time(), 'minutely', 'wgo_cron_fill_country_columns_hook');
         }
 
         // Job notify by email for DDoS detections..
-        add_action('cron_notify_ddos_hook', [$this, 'cron_notify_ddos']);
-        if (!wp_next_scheduled('cron_notify_ddos_hook')) {
-            wp_schedule_event(time(), 'half-hour', 'cron_notify_ddos_hook');
+        add_action('wgo_cron_notify_ddos_hook', [$this, 'notify_ddos']);
+        if (!wp_next_scheduled('wgo_cron_notify_ddos_hook')) {
+            wp_schedule_event(time(), 'half-hour', 'wgo_cron_notify_ddos_hook');
         }
     }
 
@@ -85,7 +85,7 @@ class WhatsGoingOnCronjobs
     /**
      * Cronjob for removing old data..
      */
-    public function cron_remove_old_data()
+    public function remove_old_data()
     {
         $this->remove_older_than_x_days();
     }
@@ -93,7 +93,7 @@ class WhatsGoingOnCronjobs
     /**
      * Cronjob for filling country columns..
      */
-    public function cron_fill_country_columns()
+    public function fill_country_columns()
     {
         echo 'Filling countries..'.PHP_EOL;
 
@@ -137,7 +137,7 @@ class WhatsGoingOnCronjobs
     /**
      * Cronjob for notifying DDoS detections..
      */
-    public function cron_notify_ddos()
+    public function notify_ddos()
     {
         global $wpdb;
 
