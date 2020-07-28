@@ -39,7 +39,7 @@ if (!current_user_can('administrator')) {
                 </tr>
             </tbody>
         </table>
-        <input type="file" name="file-regexes-uri" id="file-regexes-uri">
+        <input type="file" name="file_regexes_uri" id="file_regexes_uri">
         <input type="submit" name="submit-save-regexes-uri" id="submit-save-regexes-uri" class="button button-green" value="Upload Regexes signatures only for request uri">
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
@@ -70,7 +70,7 @@ if (!current_user_can('administrator')) {
                 </tr>
             </tbody>
         </table>
-        <input type="file" name="file-regexes-payload" id="file-regexes-payload">
+        <input type="file" name="file_regexes_payload" id="file_regexes_payload">
         <input type="submit" name="submit-save-regexes-payload" id="submit-save-regexes-payload" class="button button-green" value="Upload Regexes signatures only for payload">
     </div>
 

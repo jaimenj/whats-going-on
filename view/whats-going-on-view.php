@@ -91,8 +91,8 @@ echo $_SERVER['REQUEST_URI'];
         <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simple WAF</h1>
         
         <?php
-        if (isset($wgojnjSms)) {
-            echo $wgojnjSms;
+        if (isset($wgoSms)) {
+            echo $wgoSms;
         }
 
         ////////////////

@@ -27,7 +27,7 @@ if (!current_user_can('administrator')) {
                 <tbody>
                     <tr>
                         <td>
-                            <textarea name="txt-block-list" id="txt-block-list" class="waf-textarea-config"><?php
+                            <textarea name="txt_block_list" id="txt_block_list" class="waf-textarea-config"><?php
                             $file_path = WGOJNJ_PATH.'block-list.php';
                             if (file_exists($file_path)) {
                                 $the_file = file($file_path);
@@ -59,7 +59,7 @@ if (!current_user_can('administrator')) {
                 <tbody>
                     <tr>
                         <td>
-                            <textarea name="txt-allow-list" id="txt-allow-list" class="waf-textarea-config"><?php
+                            <textarea name="txt_allow_list" id="txt_allow_list" class="waf-textarea-config"><?php
                             $file_path = WGOJNJ_PATH.'allow-list.php';
                             if (file_exists($file_path)) {
                                 $the_file = file($file_path);
