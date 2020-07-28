@@ -139,7 +139,7 @@ class WhatsGoingOn
             global $wpdb;
             $url = $_SERVER['REQUEST_SCHEME'].'://'
                 .$_SERVER['SERVER_NAME']
-                .(80 != $_SERVER['SERVER_PORT'] ? ':'.$_SERVER['SERVER_PORT'] : '')
+                .(!in_array($_SERVER['SERVER_PORT'], [80, 443]) ? ':'.$_SERVER['SERVER_PORT'] : '')
                 .$_SERVER['REQUEST_URI'];
 
             $sql = 'INSERT INTO '.$wpdb->prefix.'whats_going_on_404s '
