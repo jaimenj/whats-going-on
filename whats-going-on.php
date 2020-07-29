@@ -26,7 +26,7 @@ class WhatsGoingOn
         return self::$instance;
     }
 
-    public function __construct()
+    private function __construct()
     {
         // Activation and deactivation..
         register_activation_hook(__FILE__, [$this, 'activation']);
@@ -146,7 +146,7 @@ class WhatsGoingOn
                 .'(time, url, remote_ip, remote_port, user_agent, method) '
                 .'VALUES ('
                 ."now(), '"
-                .substr($url, 0, 255)."', '"
+                .urlencode(substr($url, 0, 255))."', '"
                 .$this->current_remote_ips()."', '"
                 .$_SERVER['REMOTE_PORT']."', '"
                 .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"

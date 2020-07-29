@@ -17,7 +17,7 @@ class WhatsGoingOnBackendController
         return self::$instance;
     }
 
-    public function __construct()
+    private function __construct()
     {
         add_action('admin_bar_menu', [$this, 'add_admin_bar_menu'], 99);
         add_action('admin_menu', [$this, 'add_admin_page']);
@@ -51,7 +51,7 @@ class WhatsGoingOnBackendController
         $menu_slug = 'whats-going-on';
         $function = [$this, 'wgo_main_admin_controller'];
         $position = null;
-        
+
         add_management_page($page_title, $menu_title, $capability, $menu_slug, $function, $position);
     }
 
@@ -81,9 +81,9 @@ class WhatsGoingOnBackendController
             } elseif (!wp_verify_nonce($_REQUEST['wgojnj_nonce'], 'wgojnj')) {
                 $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: invalid nonce specified.</p></div>';
             } else {
-                /*
-                * Handling actions..
-                */
+                /**
+                 * Handling actions..
+                 */
                 if (isset($_REQUEST['submit-previous-page'])) {
                     --$current_page;
                 } elseif (isset($_REQUEST['submit-next-page'])) {
@@ -122,6 +122,7 @@ class WhatsGoingOnBackendController
             }
         }
 
+        // Paints the view..
         include WGOJNJ_PATH.'view/whats-going-on-view.php';
     }
 
@@ -260,5 +261,38 @@ class WhatsGoingOnBackendController
         }
 
         file_put_contents($file_path, $final_array);
+    }
+
+    private function _add_countries_to_block()
+    {
+        $add_countries = $_REQUEST['select_block_countries'];
+
+        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        } else {
+            $current_blocking_countries = [];
+            $current_blocking_countries[] = '<?php/*';
+        }
+        foreach ($add_countries as $country_to_block) {
+            $current_blocking_countries[] = $country_to_block;
+        }
+        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $_REQUEST['select_block_countries']).')!</p></div>';
+    }
+
+    private function _remove_countries_to_block()
+    {
+        $remove_countries = $_REQUEST['select_unblock_countries'];
+
+        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        } else {
+            $current_blocking_countries = [];
+            $current_blocking_countries[] = '<?php/*';
+        }
+        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $_REQUEST['select_unblock_countries']).')!</p></div>';
     }
 }

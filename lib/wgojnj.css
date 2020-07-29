@@ -40,15 +40,19 @@
     color: white !important;
 }
 
-.wrap-block-and-allow-lists {
+.wrap-block-and-allow-lists,
+.wrap-block-and-allow-countries {
     display: flex;
 }
 
 #wrap-block-list,
-#wrap-allow-list {
+#wrap-allow-list,
+#wrap-countries-continents-allowed,
+#wrap-countries-continents-blocked {
     width: 50%;
 }
 
-.waf-textarea-config {
+.waf-textarea-config, .waf-select-area-config {
     width: 100%;
+    max-width: none !important;
 }

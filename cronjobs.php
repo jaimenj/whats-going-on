@@ -18,7 +18,7 @@ class WhatsGoingOnCronjobs
         return self::$instance;
     }
 
-    public function __construct()
+    private function __construct()
     {
         // Add some new cron schedules..
         add_filter('cron_schedules', [$this, 'add_cron_intervals']);

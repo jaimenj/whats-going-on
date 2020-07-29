@@ -1,5 +1,8 @@
 <?php
 
+include_once __DIR__.'/lib/geoip2.phar';
+use GeoIp2\Database\Reader;
+
 class WafGoingOn
 {
     private static $instance;
@@ -7,11 +10,13 @@ class WafGoingOn
     private $debug = false;
     private $url;
     private $regexes_errors_strings;
-    private $block_list_file_path;
     private $allow_list_file_path;
+    private $block_list_file_path;
     private $block_regexes_uri_file_path;
     private $block_regexes_payload_file_path;
+    private $block_countries;
     private $retry_time;
+    private $wp_options;
 
     public static function get_instance()
     {
@@ -22,7 +27,7 @@ class WafGoingOn
         return self::$instance;
     }
 
-    public function __construct()
+    private function __construct()
     {
         // Debug or not debug
         if ($this->debug) {
@@ -30,12 +35,12 @@ class WafGoingOn
         }
 
         // Define some variables
-        $this->url = substr(
+        $this->url = urlencode(substr(
             $_SERVER['REQUEST_SCHEME'].'://'
             .$_SERVER['SERVER_NAME']
             .(!in_array($_SERVER['SERVER_PORT'], [80, 443]) ? ':'.$_SERVER['SERVER_PORT'] : '')
             .$_SERVER['REQUEST_URI']
-        , 0, 255);
+        , 0, 255));
         $this->regexes_errors_strings = [
             0 => 'PREG_NO_ERROR',
             1 => 'PREG_INTERNAL_ERROR',
@@ -49,6 +54,7 @@ class WafGoingOn
         $this->allow_list_file_path = __DIR__.'/allow-list.php';
         $this->block_regexes_uri_file_path = __DIR__.'/block-regexes-uri.php';
         $this->block_regexes_payload_file_path = __DIR__.'/block-regexes-payload.php';
+        $this->block_countries = __DIR__.'/block-countries.php';
 
         // The main things of the WAF
         $this->_main();
@@ -58,7 +64,7 @@ class WafGoingOn
             $timeEnd = microtime(true);
             $timeConsumed = $timeEnd - $timeStart;
             echo 'Time consumed: '.number_format($timeConsumed, 9).' secs';
-            die;
+            die('Debug..');
         }
     }
 
@@ -77,10 +83,15 @@ class WafGoingOn
             die('Connection failed: '.$mysqlConnection->connect_error);
         }
 
-        $this->_get_options($mysqlConnection, $the_table_full_prefix, $max_per_minute, $max_per_hour);
+        $this->_get_options($mysqlConnection, $the_table_full_prefix);
 
         $requests_last_minute = $this->_get_requests_per_minutes(1, $mysqlConnection, $the_table_full_prefix);
         $requests_last_hour = $this->_get_requests_per_minutes(60, $mysqlConnection, $the_table_full_prefix);
+        if ($this->debug) {
+            echo 'requests_last_minute='.$requests_last_minute.'<br>'
+                .'requests_last_hour='.$requests_last_hour.'<br>'
+                .'<br>';
+        }
 
         $this->_save_my_request($mysqlConnection, $requests_last_minute, $requests_last_hour, $the_table_full_prefix);
 
@@ -89,14 +100,14 @@ class WafGoingOn
         $this->retry_time = 1;
 
         // If it achieves max requests per minute..
-        if ($max_per_minute > 0 and $requests_last_minute > $max_per_minute) {
-            $comments .= 'Reached max requests per minute: '.$max_per_minute.' ';
+        if ($this->wp_options['limit_requests_per_minute'] > 0 and $requests_last_minute > $this->wp_options['limit_requests_per_minute']) {
+            $comments .= 'Reached max requests per minute: '.$this->wp_options['limit_requests_per_minute'].' ';
             $this->retry_time = 60;
         }
 
         // If it achieves max requests per hour..
-        if ($max_per_hour > 0 and $requests_last_hour > $max_per_hour) {
-            $comments .= 'Reached max requests per hour: '.$max_per_hour.' ';
+        if ($this->wp_options['limit_requests_per_hour'] > 0 and $requests_last_hour > $this->wp_options['limit_requests_per_hour']) {
+            $comments .= 'Reached max requests per hour: '.$this->wp_options['limit_requests_per_hour'].' ';
             $this->retry_time = 3600;
         }
 
@@ -121,6 +132,8 @@ class WafGoingOn
 
         // Save Regexes errors to review..
         file_put_contents($regexesErrorsFile, array_unique($regexesErrors));
+
+        $this->_check_countries($comments, $regexesErrors);
 
         // If we are blocking..
         if (!empty($comments)) {
@@ -300,6 +313,47 @@ class WafGoingOn
         }
     }
 
+    private function _check_countries(&$comments, &$regexesErrors)
+    {
+        if (file_exists($this->block_countries)) {
+            $reader = new Reader(__DIR__.'/lib/GeoLite2-City.mmdb');
+            $request_country = '';
+            $to_block = false;
+
+            $blocking_countries = explode(PHP_EOL, file_get_contents($this->block_countries));
+            unset($blocking_countries[0]);
+
+            if ($this->wp_options['im_behind_proxy']) {
+                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            } else {
+                $ip = $_SERVER['REMOTE_ADDR'];
+            }
+
+            // Debug..
+            if ($this->debug) {
+                $ip = gethostbyname('jnjsite.com');
+            }
+
+            try {
+                $record = $reader->city($ip);
+                $request_country = $record->country->isoCode;
+            } catch (\Throwable $th) {
+            }
+
+            if (in_array($request_country, $blocking_countries)) {
+                $comments .= 'Request blocking by country. ';
+                $this->retry_time = 86400;
+                $to_block = true;
+            }
+
+            // Debug..
+            if ($this->debug) {
+                echo 'request_country='.$request_country.'<br>';
+                echo '=> result $to_block='.($to_block ? 'true' : 'false').'<br><br>';
+            }
+        }
+    }
+
     private function _check_allow_list(&$comments, &$regexesErrors)
     {
         $bypassed = false;
@@ -391,23 +445,35 @@ class WafGoingOn
         return $return_value;
     }
 
-    private function _get_options($mysqlConnection, $the_table_full_prefix, &$max_per_minute, &$max_per_hour)
+    private function _get_options($mysqlConnection, $the_table_full_prefix)
     {
+        $options_to_search = [
+            'wgojnj_limit_requests_per_minute',
+            'wgojnj_limit_requests_per_hour',
+            'wgojnj_im_behind_proxy',
+        ];
+
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '
-            ."WHERE option_name IN ('wgojnj_limit_requests_per_minute', 'wgojnj_limit_requests_per_hour')";
+            ."WHERE option_name IN ('"
+            .implode("', '", $options_to_search)
+            ."')";
         if ($result = mysqli_query($mysqlConnection, $sql)) {
             //var_dump($result);
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_array($result)) {
-                    if ('wgojnj_limit_requests_per_minute' == $row[0]) {
-                        $max_per_minute = $row[1];
-                    }
-                    if ('wgojnj_limit_requests_per_hour' == $row[0]) {
-                        $max_per_hour = $row[1];
-                    }
+                    $option_name = substr($row['option_name'], 7, strlen($row['option_name']) - 7);
+                    $this->wp_options[$option_name] = $row['option_value'];
                 }
                 mysqli_free_result($result);
             }
+        }
+
+        if ($this->debug) {
+            foreach ($options_to_search as $option_to_search) {
+                $option_name = substr($option_to_search, 7, strlen($option_to_search) - 7);
+                echo $option_name.'='.$this->wp_options[$option_name].'<br>';
+            }
+            echo '<br>';
         }
     }
 

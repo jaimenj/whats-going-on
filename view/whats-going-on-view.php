@@ -369,7 +369,7 @@ echo $_SERVER['REQUEST_URI'];
                 <tr>
                     <td><?= $result->time; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= $result->url; ?></a>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= $result->url; ?>"><?= urldecode($result->url); ?></a>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
                     <td>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a> : <?= $result->remote_port; ?>
