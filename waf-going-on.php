@@ -430,7 +430,7 @@ class WafGoingOn
         $return_value = -1;
 
         $sql = 'SELECT count(*) FROM '.$the_table_full_prefix.'whats_going_on '
-            ."WHERE remote_ip = '".$this->_current_remote_ips()." '"
+            ."WHERE remote_ip = '".$this->_current_remote_ips()."' "
             .'AND time > NOW() - INTERVAL '.$minutes.' MINUTE;';
         if ($result = mysqli_query($mysqlConnection, $sql)) {
             //var_dump($result);
