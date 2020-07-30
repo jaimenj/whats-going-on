@@ -91,7 +91,7 @@ echo $_SERVER['REQUEST_URI'];
 
         ////////////////
         /////////////////////////////// START CHART
-        $chart_sql = 'SELECT count(*) hits FROM '.$wpdb->prefix.'whats_going_on wgo'
+        $chart_sql = "SELECT count(*) hits, DATE_FORMAT(wgo.time, '%Hh') the_hour FROM ".$wpdb->prefix."whats_going_on wgo"
             .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
         $chart_results = $wpdb->get_results($chart_sql);
         //var_dump($chart_results);
@@ -120,9 +120,9 @@ echo $_SERVER['REQUEST_URI'];
                 data: {
                     labels: [<?php
                             if (count($chart_results) > 0) {
-                                echo "'0'";
+                                echo "'".$chart_results[0]->the_hour."'";
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ", '".$i."'";
+                                    echo ", '".$chart_results[$i]->the_hour."'";
                                 }
                             }
                         ?>],
