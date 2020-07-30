@@ -39,8 +39,7 @@ class WafGoingOn
             $_SERVER['REQUEST_SCHEME'].'://'
             .$_SERVER['SERVER_NAME']
             .(!in_array($_SERVER['SERVER_PORT'], [80, 443]) ? ':'.$_SERVER['SERVER_PORT'] : '')
-            .$_SERVER['REQUEST_URI']
-        , 0, 255));
+            .$_SERVER['REQUEST_URI'], 0, 255));
         $this->regexes_errors_strings = [
             0 => 'PREG_NO_ERROR',
             1 => 'PREG_INTERNAL_ERROR',
@@ -220,6 +219,7 @@ class WafGoingOn
         if (file_exists($this->block_regexes_uri_file_path)) {
             $file_content = file($this->block_regexes_uri_file_path);
             $to_block = false;
+            $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
                 $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
 
@@ -233,6 +233,7 @@ class WafGoingOn
                     if (!empty($_SERVER['REQUEST_URI'])
                     and preg_match($value, $_SERVER['REQUEST_URI'])) {
                         $to_block = true;
+                        $to_block_regex_num[] = $i;
                     }
                     if (PREG_NO_ERROR != preg_last_error()) {
                         $regexesErrors[] = $value.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
@@ -247,7 +248,7 @@ class WafGoingOn
             }
 
             if ($to_block) {
-                $comments .= 'Request blocking by regexes for query string. ';
+                $comments .= 'Request blocking by regexes for query string ('.implode('-', $to_block_regex_num).'). ';
                 $this->retry_time = 86400;
             }
         }
@@ -259,6 +260,7 @@ class WafGoingOn
         if (file_exists($this->block_regexes_payload_file_path)) {
             $file_content = file($this->block_regexes_payload_file_path);
             $to_block = false;
+            $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
                 $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
 
@@ -285,11 +287,13 @@ class WafGoingOn
                             foreach ($post_value as $post_sub_value) {
                                 if (preg_match($value, $post_sub_value)) {
                                     $to_block = true;
+                                    $to_block_regex_num[] = $i;
                                 }
                             }
                         } else {
                             if (preg_match($value, $post_value)) {
                                 $to_block = true;
+                                $to_block_regex_num[] = $i;
                             }
                         }
 
@@ -307,7 +311,7 @@ class WafGoingOn
             }
 
             if ($to_block) {
-                $comments .= 'Request blocking by regexes for payload. ';
+                $comments .= 'Request blocking by regexes for payload ('.implode('-', $to_block_regex_num).'). ';
                 $this->retry_time = 86400;
             }
         }
