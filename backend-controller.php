@@ -114,6 +114,10 @@ class WhatsGoingOnBackendController
                     $wgoSms = $this->_add_countries_to_block();
                 } elseif (isset($_REQUEST['submit-unblock-selected-countries'])) {
                     $wgoSms = $this->_remove_countries_to_block();
+                } elseif (isset($_REQUEST['submit-block-continent'])) {
+                    $wgoSms = $this->_block_continent();
+                } elseif (isset($_REQUEST['submit-unblock-continent'])) {
+                    $wgoSms = $this->_unblock_continent();
                 } elseif (isset($_REQUEST['submit-install-full-waf'])) {
                     $wgoSms = $this->_install_waf();
                 } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
@@ -165,6 +169,7 @@ class WhatsGoingOnBackendController
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Email sent!</p></div>';
     }
+
     private function _save_dos_configs()
     {
         update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
@@ -306,5 +311,65 @@ class WhatsGoingOnBackendController
         file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $_REQUEST['select_unblock_countries']).')!</p></div>';
+    }
+
+    private function _block_continent()
+    {
+        $continent_to_block = $_REQUEST['select_block_continent'][0];
+        
+        $add_countries = [];
+        $array_countries_continents = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'lib/isoCountriesContinents.csv'));
+        foreach ($array_countries_continents as $row) {
+            if (!empty($row)) {
+                $row_country_code = explode(',', $row)[0];
+                $row_continent_code = explode(',', $row)[1];
+                if ($continent_to_block == $row_continent_code) {
+                    $add_countries[] = $row_country_code;
+                }
+            }
+        }
+        //var_dump($add_countries);
+
+        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        } else {
+            $current_blocking_countries = [];
+            $current_blocking_countries[] = '<?php/*';
+        }
+        foreach ($add_countries as $country_to_block) {
+            $current_blocking_countries[] = $country_to_block;
+        }
+        $current_blocking_countries = array_unique($current_blocking_countries);
+        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $add_countries).')!</p></div>';
+    }
+
+    private function _unblock_continent()
+    {
+        $continent_to_unblock = $_REQUEST['select_unblock_continent'][0];
+        
+        $remove_countries = [];
+        $array_countries_continents = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'lib/isoCountriesContinents.csv'));
+        foreach ($array_countries_continents as $row) {
+            if (!empty($row)) {
+                $row_country_code = explode(',', $row)[0];
+                $row_continent_code = explode(',', $row)[1];
+                if ($continent_to_unblock == $row_continent_code) {
+                    $remove_countries[] = $row_country_code;
+                }
+            }
+        }
+        //var_dump($remove_countries);
+
+        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        } else {
+            $current_blocking_countries = [];
+            $current_blocking_countries[] = '<?php/*';
+        }
+        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $remove_countries).')!</p></div>';
     }
 }

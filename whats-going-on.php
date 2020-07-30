@@ -163,8 +163,10 @@ class WhatsGoingOn
     {
         wp_enqueue_style('wgojnj_custom_style', plugin_dir_url(__FILE__).'lib/wgojnj.css', false, '1.0.1');
         wp_enqueue_style('wgojnj_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
+        wp_enqueue_style('wgojnj_map_style', plugin_dir_url(__FILE__).'lib/svgMap.min.css', false, '1');
         wp_enqueue_script('wgojnj_custom_script', plugin_dir_url(__FILE__).'lib/wgojnj.js', [], '1.0.1');
         wp_enqueue_script('wgojnj_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
+        wp_enqueue_script('wgojnj_map_script', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '1');
     }
 }
 

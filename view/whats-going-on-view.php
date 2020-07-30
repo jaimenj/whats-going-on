@@ -434,6 +434,6 @@ echo $_SERVER['REQUEST_URI'];
 <script>
 window.onload = () => {
     paintMainChart();
-    paintCountriesAndContinentsChart();
+    paintCountriesAndContinents();
 }
 </script>
