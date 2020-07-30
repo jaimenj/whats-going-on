@@ -36,6 +36,7 @@ Plugin website: \
 * Permanent block or bypass of custom IPs, it allows you to configure IPs with your own Regexes too.
 * Log and show Regex errors in the admin panel, for debug and improve your Regexes.
 * 404s detections.
+* Block and allow countries and continents.
 
 ## Installation
 
@@ -105,23 +106,28 @@ In case of emergency, you can remove the file .user.ini and the directory /wp-co
 
 ## Changelog
 
-### 0.3
+### v0.4
+
+* Countries and continents section working.
+* A lot of checks done, bugfix and more refactoring of codes.
+
+### v0.3
 
 * Main chart with requests, average, standard deviation and others.
-* Fix Regexes saving for XSS, SQL injection and xploits detection.
+* Fix Regexes saving for XSS, SQL injection and Xploits detection.
 * Debug zone for your own Regexes results.
 * Background filling data of countries.
 * More configurable option like: email of notifications, behind a proxy or not, days to store data..
 * DDoS detection is working.
-* Refactoring of all files, implementing MVC.
+* Refactoring of all files, implementing VC with singletones.
 
-### 0.2
+### v0.2
 
 * Fill countries data in background.
 * New section of countries started.
 * Maths of DDoS detection, and chart.
 * Some fixes and refactoring.
 
-### 0.1
+### v0.1
 
 * Initial version.
