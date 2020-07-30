@@ -20,12 +20,6 @@ if (!current_user_can('administrator')) {
 }
 
 // GEOIP
-use GeoIp2\Database\Reader;
-/*if (!empty(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0]) and 2 == strlen(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0])) {
-    $reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb', [explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'])[0], 'en']);
-} else {
-    $reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb');
-}*/
 $isoCountriesFile = file(WGOJNJ_PATH.'lib/isoCountriesCodes.csv');
 $isoCountriesArray =[];
 foreach($isoCountriesFile as $isoItem) {
@@ -326,6 +320,7 @@ echo $_SERVER['REQUEST_URI'];
 
             <label for="notification_email">Notification email</label>
             <input type="text" name="notification_email" id="notification_email" class="regular-text" value="<?= $notification_email ?>">
+            <input type="submit" name="submit-check-email" id="submit-check-email" class="button button-green" value="Check email">
 
             <span class="span-pagination"><?php
 

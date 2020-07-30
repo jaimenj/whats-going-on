@@ -81,7 +81,7 @@ class WhatsGoingOnBackendController
             } elseif (!wp_verify_nonce($_REQUEST['wgojnj_nonce'], 'wgojnj')) {
                 $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: invalid nonce specified.</p></div>';
             } else {
-                /**
+                /*
                  * Handling actions..
                  */
                 if (isset($_REQUEST['submit-previous-page'])) {
@@ -90,6 +90,8 @@ class WhatsGoingOnBackendController
                     ++$current_page;
                 } elseif (isset($_REQUEST['btn-submit'])) {
                     $wgoSms = $this->_save_main_configs();
+                } elseif (isset($_REQUEST['submit-check-email'])) {
+                    $wgoSms = $this->_check_email();
                 } elseif (isset($_REQUEST['submit-dos-configs'])) {
                     $wgoSms = $this->_save_dos_configs();
                 } elseif (isset($_REQUEST['submit-ddos-configs'])) {
@@ -153,6 +155,16 @@ class WhatsGoingOnBackendController
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
     }
 
+    private function _check_email()
+    {
+        wp_mail(
+            get_option('wgojnj_notification_email'),
+            get_bloginfo('name').': What\'s going on: checking email',
+            'This is a check for testing that email is working.'
+        );
+
+        return  '<div id="message" class="notice notice-success is-dismissible"><p>Email sent!</p></div>';
+    }
     private function _save_dos_configs()
     {
         update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
