@@ -5,12 +5,14 @@ if (!current_user_can('administrator')) {
 }
 
 // Results for 404s..
-$sql_404s = 'SELECT count(*) as times, remote_ip, country_code FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC';
+$sql_404s = 'SELECT count(*) as times, remote_ip, country_code FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC LIMIT 10';
 $results = $wpdb->get_results($sql_404s);
+$sql_ips_doing_404s = 'SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_404s;';
+$total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
 ?>
 
 <div class="wrap-permanent-lists">
-    <h2>Last IPs doing 404s, with a total of <?= count($results); ?> IPs recorded</h2>
+    <h2>Top 10 of IPs doing 404s, with a total of <?= $total_ips_doing_404s ?> IPs recorded</h2>
 
     <div class="wrap" id="wrap-block-404s">
         <table class="wp-list-table widefat fixed striped posts">
@@ -23,9 +25,7 @@ $results = $wpdb->get_results($sql_404s);
             </thead>
             <tbody>
             <?php
-            $count = 0;
             foreach ($results as $key => $result) {
-                $count++;
                 ?>
 
                 <tr>
@@ -43,7 +43,6 @@ $results = $wpdb->get_results($sql_404s);
                 </tr>
 
                 <?php
-                if($count >= 10) break;
             }
             ?>
             </tbody>
