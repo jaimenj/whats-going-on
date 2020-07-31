@@ -6,8 +6,6 @@ class WhatsGoingOnBackendController
 {
     private static $instance;
 
-    private $userIniFilePath;
-
     public static function get_instance()
     {
         if (!isset(self::$instance)) {
@@ -21,8 +19,6 @@ class WhatsGoingOnBackendController
     {
         add_action('admin_bar_menu', [$this, 'add_admin_bar_menu'], 99);
         add_action('admin_menu', [$this, 'add_admin_page']);
-
-        $this->userIniFilePath = ABSPATH.'.user.ini';
     }
 
     public function add_admin_bar_menu($admin_bar)
@@ -134,19 +130,55 @@ class WhatsGoingOnBackendController
 
     private function _install_waf()
     {
-        file_put_contents(
-            $this->userIniFilePath,
-            "auto_prepend_file = '".WGOJNJ_PATH."waf-going-on.php';".PHP_EOL
-        );
+        $config_line = "auto_prepend_file = '".WGOJNJ_PATH."waf-going-on.php';".PHP_EOL;
+        file_put_contents(ABSPATH.'.user.ini', $config_line);
+        $this->_install_recursive_waf('wp-admin/', $config_line);
+        $this->_install_recursive_waf('wp-content/', $config_line);
+        $this->_install_recursive_waf('wp-includes/', $config_line);
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
     }
 
+    private function _install_recursive_waf($current_path, $config_line)
+    {
+        file_put_contents(ABSPATH.$current_path.'.user.ini', $config_line);
+
+        $dir = dir(ABSPATH.$current_path);
+        while (false !== ($entry = $dir->read())) {
+            $new_current_path = $current_path.$entry.'/';
+            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
+                //echo $new_current_path.'<br>';
+                $this->_install_recursive_waf($new_current_path, $config_line);
+            }
+        }
+        $dir->close();
+    }
+
     private function _uninstall_waf()
     {
-        unlink($this->userIniFilePath);
+        unlink(ABSPATH.'.user.ini');
+        $this->_uninstall_recursive_waf('wp-admin/');
+        $this->_uninstall_recursive_waf('wp-content/');
+        $this->_uninstall_recursive_waf('wp-includes/');
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Uninstalled!</p></div>';
+    }
+
+    private function _uninstall_recursive_waf($current_path)
+    {
+        if (file_exists(ABSPATH.$current_path.'.user.ini')) {
+            unlink(ABSPATH.$current_path.'.user.ini');
+        }
+
+        $dir = dir(ABSPATH.$current_path);
+        while (false !== ($entry = $dir->read())) {
+            $new_current_path = $current_path.$entry.'/';
+            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
+                //echo $new_current_path.'<br>';
+                $this->_uninstall_recursive_waf($new_current_path);
+            }
+        }
+        $dir->close();
     }
 
     private function _save_main_configs()
@@ -316,7 +348,7 @@ class WhatsGoingOnBackendController
     private function _block_continent()
     {
         $continent_to_block = $_REQUEST['select_block_continent'][0];
-        
+
         $add_countries = [];
         $array_countries_continents = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'lib/isoCountriesContinents.csv'));
         foreach ($array_countries_continents as $row) {
@@ -348,7 +380,7 @@ class WhatsGoingOnBackendController
     private function _unblock_continent()
     {
         $continent_to_unblock = $_REQUEST['select_unblock_continent'][0];
-        
+
         $remove_countries = [];
         $array_countries_continents = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'lib/isoCountriesContinents.csv'));
         foreach ($array_countries_continents as $row) {
