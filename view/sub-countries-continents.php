@@ -101,8 +101,6 @@ if (!current_user_can('administrator')) {
     var_dump($available_countries);*/
     ?>
 
-
-
     <div class="wrap-block-and-allow-countries">
         <div class="wrap" id="wrap-countries-continents-allowed">
             <input type="submit" name="submit-block-selected-countries" id="submit-block-selected-coutries" class="button button-red" value="Block selected countries">

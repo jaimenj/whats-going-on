@@ -31,7 +31,7 @@ class WafGoingOn
     {
         // Debug or not debug
         if ($this->debug) {
-            $timeStart = microtime(true);
+            $time_start = microtime(true);
         }
 
         // Define some variables
@@ -60,39 +60,39 @@ class WafGoingOn
 
         // Debugging or not
         if ($this->debug) {
-            $timeEnd = microtime(true);
-            $timeConsumed = $timeEnd - $timeStart;
-            echo 'Time consumed: '.number_format($timeConsumed, 9).' secs';
-            die('Debug..');
+            $time_end = microtime(true);
+            $time_consumed = $time_end - $time_start;
+            echo 'Time consumed: '.number_format($time_consumed, 9).' secs<br><br>';
+            die('Die, we are debugging..');
         }
     }
 
     private function _main()
     {
-        $this->_load_configs($configsArray);
+        $this->_load_configs($configs_array);
 
         // Connect to database
-        $mysqlConnection = new mysqli(
-            $configsArray['DB_HOST'],
-            $configsArray['DB_USER'],
-            $configsArray['DB_PASSWORD']
+        $mysql_connection = new mysqli(
+            $configs_array['DB_HOST'],
+            $configs_array['DB_USER'],
+            $configs_array['DB_PASSWORD']
         );
-        $the_table_full_prefix = $configsArray['DB_NAME'].'.'.$configsArray['TABLE_PREFIX'];
-        if ($mysqlConnection->connect_error) {
-            die('Connection failed: '.$mysqlConnection->connect_error);
+        $the_table_full_prefix = $configs_array['DB_NAME'].'.'.$configs_array['TABLE_PREFIX'];
+        if ($mysql_connection->connect_error) {
+            die('Connection failed: '.$mysql_connection->connect_error);
         }
 
-        $this->_get_options($mysqlConnection, $the_table_full_prefix);
+        $this->_get_options($mysql_connection, $the_table_full_prefix);
 
-        $requests_last_minute = $this->_get_requests_per_minutes(1, $mysqlConnection, $the_table_full_prefix);
-        $requests_last_hour = $this->_get_requests_per_minutes(60, $mysqlConnection, $the_table_full_prefix);
+        $requests_last_minute = $this->_get_requests_per_minutes(1, $mysql_connection, $the_table_full_prefix);
+        $requests_last_hour = $this->_get_requests_per_minutes(60, $mysql_connection, $the_table_full_prefix);
         if ($this->debug) {
             echo 'requests_last_minute='.$requests_last_minute.'<br>'
                 .'requests_last_hour='.$requests_last_hour.'<br>'
                 .'<br>';
         }
 
-        $this->_save_my_request($mysqlConnection, $requests_last_minute, $requests_last_hour, $the_table_full_prefix);
+        $this->_save_my_request($mysql_connection, $requests_last_minute, $requests_last_hour, $the_table_full_prefix);
 
         // To block or not to block, that's the matter..
         $comments = '';
@@ -111,44 +111,44 @@ class WafGoingOn
         }
 
         // Regexes errors
-        $regexesErrorsFile = __DIR__.'/waf-errors.log';
-        $regexesErrors = file($regexesErrorsFile);
+        $regexes_errors_file = __DIR__.'/waf-errors.log';
+        $regexes_errors = file($regexes_errors_file);
 
-        //var_dump($regexesErrorsFile);
+        //var_dump($regexes_errors_file);
 
-        $this->_check_block_list($comments, $regexesErrors);
-        $this->_check_regexes_uri($comments, $regexesErrors);
-        $this->_check_regexes_payload($comments, $regexesErrors);
+        $this->_check_block_list($comments, $regexes_errors);
+        $this->_check_regexes_uri($comments, $regexes_errors);
+        $this->_check_regexes_payload($comments, $regexes_errors);
 
         // Debug..
         if ($this->debug) {
             echo 'Regex errors:<br>';
-            foreach ($regexesErrors as $item) {
+            foreach ($regexes_errors as $item) {
                 echo $item.'<br>';
             }
             echo '<br>';
         }
 
         // Save Regexes errors to review..
-        file_put_contents($regexesErrorsFile, array_unique($regexesErrors));
+        file_put_contents($regexes_errors_file, array_unique($regexes_errors));
 
-        $this->_check_countries($comments, $regexesErrors);
+        $this->_check_countries($comments, $regexes_errors);
 
         // If we are blocking..
         if (!empty($comments)) {
-            $bypassed = $this->_check_allow_list($comments, $regexesErrors);
+            $bypassed = $this->_check_allow_list($comments, $regexes_errors);
 
             // Debug..
             if ($this->debug) {
                 echo 'Regex errors:<br>';
-                foreach ($regexesErrors as $item) {
+                foreach ($regexes_errors as $item) {
                     echo $item.'<br>';
                 }
                 echo '<br>';
             }
 
-            $this->_save_the_blocking($mysqlConnection, $comments, $the_table_full_prefix);
-            file_put_contents($regexesErrorsFile, array_unique($regexesErrors));
+            $this->_save_the_blocking($mysql_connection, $comments, $the_table_full_prefix);
+            file_put_contents($regexes_errors_file, array_unique($regexes_errors));
 
             if (!$bypassed) {
                 header('HTTP/1.1 429 Too Many Requests');
@@ -158,44 +158,44 @@ class WafGoingOn
         }
 
         // Close database connection
-        mysqli_close($mysqlConnection);
+        mysqli_close($mysql_connection);
     }
 
-    private function _load_configs(&$configsArray)
+    private function _load_configs(&$configs_array)
     {
         // Loading configs from wp-config.php file..
-        $configFilePath = __DIR__.'/../../../wp-config.php';
-        $configFileContent = file($configFilePath);
-        foreach ($configFileContent as $line) {
+        $config_file_path = __DIR__.'/../../../wp-config.php';
+        $config_file_content = file($config_file_path);
+        foreach ($config_file_content as $line) {
             $matches = [];
             if (preg_match('/DEFINE\(\'(.*?)\',\s*\'(.*)\'\);/i', $line, $matches)) {
-                $configsArray[$matches[1]] = $matches[2];
+                $configs_array[$matches[1]] = $matches[2];
             }
             if (preg_match('/table_prefix.*\'(.*)\'/i', $line, $matches)) {
-                $configsArray['TABLE_PREFIX'] = $matches[1];
+                $configs_array['TABLE_PREFIX'] = $matches[1];
             }
         }
     }
 
-    private function _check_block_list(&$comments, &$regexesErrors)
+    private function _check_block_list(&$comments, &$regexes_errors)
     {
         // If it's in the block list..
         if (file_exists($this->block_list_file_path)) {
             $file_content = file($this->block_list_file_path);
             $to_block = false;
             for ($i = 1; $i < count($file_content); ++$i) {
-                $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
+                $ip_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
 
                 // Debug..
                 if ($this->debug) {
-                    echo 'Checking '.$value.'<br>';
+                    echo 'Checking '.$ip_regex.'<br>';
                 }
 
-                if (!empty($value) and preg_match('/'.$value.'/i', $this->_current_remote_ips())) {
+                if (!empty($ip_regex) and preg_match('/'.$ip_regex.'/i', $this->_current_remote_ips())) {
                     $to_block = true;
                 }
                 if (PREG_NO_ERROR != preg_last_error()) {
-                    $regexesErrors[] = $value.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
+                    $regexes_errors[] = $ip_regex.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
                 }
                 //var_dump(preg_last_error());
             }
@@ -213,7 +213,7 @@ class WafGoingOn
         }
     }
 
-    private function _check_regexes_uri(&$comments, &$regexesErrors)
+    private function _check_regexes_uri(&$comments, &$regexes_errors)
     {
         // If hits a regex for query string..
         if (file_exists($this->block_regexes_uri_file_path)) {
@@ -221,22 +221,22 @@ class WafGoingOn
             $to_block = false;
             $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
-                $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
+                $uri_regex= trim(str_replace(PHP_EOL, '', $file_content[$i]));
 
                 // Debug..
                 if ($this->debug) {
-                    echo 'Checking '.$value.'<br>';
+                    echo 'Checking '.$uri_regex.'<br>';
                 }
 
-                if (!empty($value)) {
+                if (!empty($uri_regex)) {
                     // Check query string..
                     if (!empty($_SERVER['REQUEST_URI'])
-                    and preg_match($value, $_SERVER['REQUEST_URI'])) {
+                    and preg_match($uri_regex, $_SERVER['REQUEST_URI'])) {
                         $to_block = true;
                         $to_block_regex_num[] = $i;
                     }
                     if (PREG_NO_ERROR != preg_last_error()) {
-                        $regexesErrors[] = $value.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
+                        $regexes_errors[] = $uri_regex.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
                     }
                     //var_dump(preg_last_error());
                 }
@@ -248,13 +248,13 @@ class WafGoingOn
             }
 
             if ($to_block) {
-                $comments .= 'Request blocking by regexes for query string ('.implode('-', $to_block_regex_num).'). ';
+                $comments .= 'Regex for query string ('.implode('-', $to_block_regex_num).'). ';
                 $this->retry_time = 86400;
             }
         }
     }
 
-    private function _check_regexes_payload(&$comments, &$regexesErrors)
+    private function _check_regexes_payload(&$comments, &$regexes_errors)
     {
         // If hits a regex for post data..
         if (file_exists($this->block_regexes_payload_file_path)) {
@@ -262,45 +262,17 @@ class WafGoingOn
             $to_block = false;
             $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
-                $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
+                $payload_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
 
                 // Debug..
                 if ($this->debug) {
-                    echo 'Checking '.$value.'<br>';
+                    echo 'Checking '.$payload_regex.'<br>';
                 }
 
-                if (!empty($value)) {
+                if (!empty($payload_regex)) {
                     // Check post data..
                     foreach ($_POST as $post_value) {
-                        // Debug..
-                        if ($this->debug) {
-                            if (is_array($post_value)) {
-                                foreach ($post_value as $post_sub_value) {
-                                    echo '..with PAYLOAD '.$post_sub_value.'<br>';
-                                }
-                            } else {
-                                echo '..with PAYLOAD '.$post_value.'<br>';
-                            }
-                        }
-
-                        if (is_array($post_value)) {
-                            foreach ($post_value as $post_sub_value) {
-                                if (preg_match($value, $post_sub_value)) {
-                                    $to_block = true;
-                                    $to_block_regex_num[] = $i;
-                                }
-                            }
-                        } else {
-                            if (preg_match($value, $post_value)) {
-                                $to_block = true;
-                                $to_block_regex_num[] = $i;
-                            }
-                        }
-
-                        if (PREG_NO_ERROR != preg_last_error()) {
-                            $regexesErrors[] = $value.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
-                        }
-                        //var_dump(preg_last_error());
+                        $this->_recursive_payload_check($payload_regex, $i, $post_value, $to_block, $to_block_regex_num, $regexes_errors);
                     }
                 }
             }
@@ -311,13 +283,36 @@ class WafGoingOn
             }
 
             if ($to_block) {
-                $comments .= 'Request blocking by regexes for payload ('.implode('-', $to_block_regex_num).'). ';
+                $comments .= 'Regex for payload ('.implode('-', $to_block_regex_num).'). ';
                 $this->retry_time = 86400;
             }
         }
     }
 
-    private function _check_countries(&$comments, &$regexesErrors)
+    private function _recursive_payload_check($payload_regex, $i, $post_value, &$to_block, &$to_block_regex_num, &$regexes_errors)
+    {
+        if (is_array($post_value)) {
+            foreach ($post_value as $post_sub_value) {
+                $this->_recursive_payload_check($payload_regex, $i, $post_sub_value, $to_block, $to_block_regex_num, $regexes_errors);
+            }
+        } else {
+            // Debug..
+            if ($this->debug) {
+                echo '..with PAYLOAD '.$post_value.'<br>';
+            }
+
+            if (preg_match($payload_regex, $post_value)) {
+                $to_block = true;
+                $to_block_regex_num[] = $i;
+            }
+
+            if (PREG_NO_ERROR != preg_last_error()) {
+                $regexes_errors[] = $payload_regex.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
+            }
+        }
+    }
+
+    private function _check_countries(&$comments, &$regexes_errors)
     {
         if (file_exists($this->block_countries)) {
             $reader = new Reader(__DIR__.'/lib/GeoLite2-City.mmdb');
@@ -358,7 +353,7 @@ class WafGoingOn
         }
     }
 
-    private function _check_allow_list(&$comments, &$regexesErrors)
+    private function _check_allow_list(&$comments, &$regexes_errors)
     {
         $bypassed = false;
 
@@ -367,17 +362,17 @@ class WafGoingOn
             $file_content = file($this->allow_list_file_path);
 
             for ($i = 1; $i < count($file_content); ++$i) {
-                $value = trim(str_replace(PHP_EOL, '', $file_content[$i]));
-                if (!empty($value) and preg_match('/'.$value.'/i', $this->_current_remote_ips())) {
+                $ip_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
+                if (!empty($ip_regex) and preg_match('/'.$ip_regex.'/i', $this->_current_remote_ips())) {
                     $bypassed = true;
                 }
                 if (PREG_NO_ERROR != preg_last_error()) {
-                    $regexesErrors[] = $value.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
+                    $regexes_errors[] = $ip_regex.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
                 }
 
                 // Debug..
                 if ($this->debug) {
-                    echo 'Checking '.$value.'<br>';
+                    echo 'Checking '.$ip_regex.'<br>';
                 }
             }
 
@@ -395,7 +390,7 @@ class WafGoingOn
         return $bypassed;
     }
 
-    private function _save_the_blocking($mysqlConnection, $comments, $the_table_full_prefix)
+    private function _save_the_blocking($mysql_connection, $comments, $the_table_full_prefix)
     {
         $sql = 'INSERT INTO '.$the_table_full_prefix.'whats_going_on_block '
             .'(time, remote_ip, remote_port, user_agent, comments) '
@@ -406,11 +401,11 @@ class WafGoingOn
             .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"
             .$comments."'"
             .');';
-        $result = mysqli_query($mysqlConnection, $sql);
+        $result = mysqli_query($mysql_connection, $sql);
         //var_dump($result);
     }
 
-    private function _save_my_request($mysqlConnection, $requests_last_minute, $requests_last_hour, $the_table_full_prefix)
+    private function _save_my_request($mysql_connection, $requests_last_minute, $requests_last_hour, $the_table_full_prefix)
     {
         $sql = 'INSERT INTO '.$the_table_full_prefix.'whats_going_on '
             .'(time, url, remote_ip, remote_port, user_agent, method, last_minute, last_hour) '
@@ -425,18 +420,18 @@ class WafGoingOn
             .$requests_last_hour
             .');';
 
-        $result = mysqli_query($mysqlConnection, $sql);
+        $result = mysqli_query($mysql_connection, $sql);
         //var_dump($result);
     }
 
-    private function _get_requests_per_minutes($minutes, $mysqlConnection, $the_table_full_prefix)
+    private function _get_requests_per_minutes($minutes, $mysql_connection, $the_table_full_prefix)
     {
         $return_value = -1;
 
         $sql = 'SELECT count(*) FROM '.$the_table_full_prefix.'whats_going_on '
             ."WHERE remote_ip = '".$this->_current_remote_ips()."' "
             .'AND time > NOW() - INTERVAL '.$minutes.' MINUTE;';
-        if ($result = mysqli_query($mysqlConnection, $sql)) {
+        if ($result = mysqli_query($mysql_connection, $sql)) {
             //var_dump($result);
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_array($result)) {
@@ -449,7 +444,7 @@ class WafGoingOn
         return $return_value;
     }
 
-    private function _get_options($mysqlConnection, $the_table_full_prefix)
+    private function _get_options($mysql_connection, $the_table_full_prefix)
     {
         $options_to_search = [
             'wgojnj_limit_requests_per_minute',
@@ -461,7 +456,7 @@ class WafGoingOn
             ."WHERE option_name IN ('"
             .implode("', '", $options_to_search)
             ."')";
-        if ($result = mysqli_query($mysqlConnection, $sql)) {
+        if ($result = mysqli_query($mysql_connection, $sql)) {
             //var_dump($result);
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_array($result)) {
