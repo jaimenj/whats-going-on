@@ -35,8 +35,8 @@ if (!current_user_can('administrator')) {
     overflow-x: auto;
 }
 #x2 {
-    position: relative;
-    float: right;
+    position: absolute;
+    right: 10px;
     background: transparent;
     color: black;
     border: 0px;
