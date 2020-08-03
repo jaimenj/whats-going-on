@@ -54,6 +54,7 @@ class WafGoingOn
         $this->block_regexes_uri_file_path = __DIR__.'/block-regexes-uri.php';
         $this->block_regexes_payload_file_path = __DIR__.'/block-regexes-payload.php';
         $this->block_countries = __DIR__.'/block-countries.php';
+        $this->payloads_file_path = __DIR__.'/waf-payloads.log';
 
         // The main things of the WAF
         $this->_main();
@@ -119,6 +120,9 @@ class WafGoingOn
         $this->_check_block_list($comments, $regexes_errors);
         $this->_check_regexes_uri($comments, $regexes_errors);
         $this->_check_regexes_payload($comments, $regexes_errors);
+        if ($this->wp_options['save_payloads']) {
+            $this->_save_payloads();
+        }
 
         // Debug..
         if ($this->debug) {
@@ -221,7 +225,7 @@ class WafGoingOn
             $to_block = false;
             $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
-                $uri_regex= trim(str_replace(PHP_EOL, '', $file_content[$i]));
+                $uri_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
 
                 // Debug..
                 if ($this->debug) {
@@ -308,6 +312,31 @@ class WafGoingOn
 
             if (PREG_NO_ERROR != preg_last_error()) {
                 $regexes_errors[] = $payload_regex.' '.$this->regexes_errors_strings[preg_last_error()].PHP_EOL;
+            }
+        }
+    }
+
+    private function _save_payloads()
+    {
+        if ('POST' === $_SERVER['REQUEST_METHOD']) {
+            file_put_contents($this->payloads_file_path,
+                date('Y-m-d H:i:s').' '.$this->_current_remote_ips().PHP_EOL
+                .$this->url.PHP_EOL
+                .'================================================================================'.PHP_EOL,
+                FILE_APPEND
+            );
+            $this->_recursive_save_payloads('', $_POST);
+            file_put_contents($this->payloads_file_path, '<<<'.PHP_EOL.PHP_EOL, FILE_APPEND);
+        }
+    }
+
+    private function _recursive_save_payloads($key_append = '', $post_items)
+    {
+        foreach ($post_items as $post_key => $post_value) {
+            if (is_array($post_value)) {
+                $this->_recursive_save_payloads($key_append.'['.$post_key.']', $post_value);
+            } else {
+                file_put_contents($this->payloads_file_path, $key_append.'['.$post_key.']='.$post_value.PHP_EOL, FILE_APPEND);
             }
         }
     }
@@ -450,6 +479,7 @@ class WafGoingOn
             'wgojnj_limit_requests_per_minute',
             'wgojnj_limit_requests_per_hour',
             'wgojnj_im_behind_proxy',
+            'wgojnj_save_payloads',
         ];
 
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '

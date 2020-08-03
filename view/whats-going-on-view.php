@@ -32,6 +32,7 @@ $items_per_page = get_option('wgojnj_items_per_page');
 $days_to_store = get_option('wgojnj_days_to_store');
 $im_behind_proxy = get_option('wgojnj_im_behind_proxy');
 $notification_email = get_option('wgojnj_notification_email');
+$save_payloads = get_option('wgojnj_save_payloads');
 
 /*
  * Listing registers..
