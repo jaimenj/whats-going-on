@@ -5,21 +5,21 @@ if (!current_user_can('administrator')) {
 }
 
 // Results for 404s..
-$sql_404s = 'SELECT count(*) as times, remote_ip, country_code FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC LIMIT 10';
-$results = $wpdb->get_results($sql_404s);
-$sql_ips_doing_404s = 'SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_404s;';
-$total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
+$sql_urls = 'SELECT count(*) as times, url, country_code FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY url ORDER BY times DESC LIMIT 10';
+$results = $wpdb->get_results($sql_urls);
+$sql_urls_doing_404s = 'SELECT count(DISTINCT url) FROM '.$wpdb->prefix.'whats_going_on_404s;';
+$total_urls_doing_404s = $wpdb->get_var($sql_urls_doing_404s);
 ?>
 
 <div class="wrap-permanent-lists">
-    <h2>Top 10 of IPs doing 404s, with a total of <?= $total_ips_doing_404s ?> IPs recorded <a href="javascript:showAllIps404s()">see all</a></h2></h2>
+    <h2>Top 10 of URLs doing 404s, with a total of <?= $total_urls_doing_404s ?> IPs recorded <a href="javascript:showAllUrls404s()">see all</a></h2></h2>
 
     <div class="wrap" id="wrap-block-404s">
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
                     <td>Times</td>
-                    <td>Remote IP</td>
+                    <td>URL</td>
                     <td>Country</td>
                 </tr>
             </thead>
@@ -31,7 +31,7 @@ $total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
                 <tr>
                     <td><?= $result->times; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= urldecode($result->url); ?>
                     </td>
                     <td>
                         <?php

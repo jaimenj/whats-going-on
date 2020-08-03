@@ -9,10 +9,13 @@ $block_sql = 'SELECT max(wgob.time) time, count(*) times, wgob.remote_ip, wgob.c
 .' FROM '.$wpdb->prefix.'whats_going_on_block wgob'
 .' GROUP BY remote_ip ORDER BY time DESC';
 $results = $wpdb->get_results($block_sql);
+
+// Total blocks
+$total_blocks = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_block');
 ?>
 
 <div class="wrap-last-blocked">
-    <h2>Last blocks reasons and times blocked, with a total of <?= count($results); ?> IPs recorded</h2>
+    <h2>Last blocks reasons and times blocked, <?= $total_blocks ?> total blocks, with a total of <?= count($results); ?> IPs recorded <a href="javascript:showAllBlocks()">see all</a></h2>
 
     <div class="wrap" id="block-last-blocks">
         <table class="wp-list-table widefat fixed striped posts">
@@ -35,7 +38,7 @@ $results = $wpdb->get_results($block_sql);
                     <td><?= $result->time; ?></td>
                     <td><?= $result->times; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?> : <?= $result->remote_port; ?>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a>
                     </td>
                     <td>
                         <?php

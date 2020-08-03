@@ -12,6 +12,7 @@ define('WGOJNJ_PATH', plugin_dir_path(__FILE__));
 
 include_once WGOJNJ_PATH.'cronjobs.php';
 include_once WGOJNJ_PATH.'backend-controller.php';
+include_once WGOJNJ_PATH.'ajax-controller.php';
 
 class WhatsGoingOn
 {
@@ -38,6 +39,7 @@ class WhatsGoingOn
 
         WhatsGoingOnCronjobs::get_instance();
         WhatsGoingOnBackendController::get_instance();
+        WhatsGoingOnAjaxController::get_instance();
     }
 
     public function activation()
@@ -119,7 +121,7 @@ class WhatsGoingOn
         $wpdb->get_results($sql);
 
         WhatsGoingOnBackendController::get_instance()->_uninstall_waf();
-        }
+    }
 
     public function uninstall()
     {
