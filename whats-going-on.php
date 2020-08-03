@@ -62,6 +62,7 @@ class WhatsGoingOn
         // Blocks table..
         $sql = 'CREATE TABLE '.$wpdb->prefix.'whats_going_on_block ('
             .'time DATETIME NOT NULL,'
+            .'url VARCHAR(256) NOT NULL,'
             .'remote_ip VARCHAR(64) NOT NULL,'
             .'remote_port INT NOT NULL,'
             .'country_code VARCHAR(2),'
@@ -92,6 +93,7 @@ class WhatsGoingOn
         register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_2sd');
         register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_3sd');
         register_setting('wgojnj_options_group', 'wgojnj_notify_requests_less_than_25_percent');
+        register_setting('wgojnj_options_group', 'wgojnj_save_payloads');
 
         add_option('wgojnj_limit_requests_per_minute', '-1');
         add_option('wgojnj_limit_requests_per_hour', -1);
@@ -103,6 +105,7 @@ class WhatsGoingOn
         add_option('wgojnj_notify_requests_more_than_2sd', 0);
         add_option('wgojnj_notify_requests_more_than_3sd', 0);
         add_option('wgojnj_notify_requests_less_than_25_percent', 0);
+        add_option('wgojnj_save_payloads', 0);
     }
 
     public function deactivation()

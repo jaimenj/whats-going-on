@@ -422,9 +422,10 @@ class WafGoingOn
     private function _save_the_blocking($mysql_connection, $comments, $the_table_full_prefix)
     {
         $sql = 'INSERT INTO '.$the_table_full_prefix.'whats_going_on_block '
-            .'(time, remote_ip, remote_port, user_agent, comments) '
+            .'(time, url, remote_ip, remote_port, user_agent, comments) '
             .'VALUES ('
             ."now(), '"
+            .$this->url."', '"
             .$this->_current_remote_ips()."', '"
             .$_SERVER['REMOTE_PORT']."', '"
             .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"
