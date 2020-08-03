@@ -36,7 +36,8 @@ if (!current_user_can('administrator')) {
 }
 #x2 {
     position: absolute;
-    right: 10px;
+    right: 15px;
+    top: 3px;
     background: transparent;
     color: black;
     border: 0px;

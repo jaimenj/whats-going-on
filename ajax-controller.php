@@ -148,7 +148,7 @@ class WhatsGoingOnAjaxController
             $waf_payloads_log = 'EMPTY FILE';
         }
 
-        echo $waf_payloads_log;
+        echo '<pre>'.$waf_payloads_log.'</pre>';
 
         wp_die();
     }
