@@ -407,31 +407,29 @@ echo $_SERVER['REQUEST_URI'];
     </div>
 
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-unique-ips.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-unique-ips.php'; ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-dos.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-dos.php'; ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-ddos.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-ddos.php'; ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-regexes.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-regexes.php'; ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-regexes-errors.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-regexes-errors.php'; ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-countries-continents.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-countries-continents.php'; ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-last-blocks.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-last-blocks.php'; ?>
     <hr>
-    <?php include(WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php') ?>
+    <?php include WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php'; ?>
+    <hr>
+    <?php include WGOJNJ_PATH.'view/sub-last-urls-doing-404s.php'; ?>
+    <hr>
+    <?php include WGOJNJ_PATH.'view/sub-most-visited-from.php'; ?>
 
 </form>
-
 <hr>
 
 <p>This plugin includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.</p>
 
-<script>
-window.onload = () => {
-    paintMainChart();
-    paintCountriesAndContinents();
-}
-</script>
+<?php include WGOJNJ_PATH.'view/sub-popup-info.php'; ?>
