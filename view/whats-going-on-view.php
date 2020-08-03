@@ -21,8 +21,8 @@ if (!current_user_can('administrator')) {
 
 // GEOIP
 $isoCountriesFile = file(WGOJNJ_PATH.'lib/isoCountriesCodes.csv');
-$isoCountriesArray =[];
-foreach($isoCountriesFile as $isoItem) {
+$isoCountriesArray = [];
+foreach ($isoCountriesFile as $isoItem) {
     $isoCountriesArray[explode(',', $isoItem)[0]] = str_replace(['"', PHP_EOL], '', explode(',', $isoItem)[1]);
 }
 
@@ -32,6 +32,7 @@ $items_per_page = get_option('wgojnj_items_per_page');
 $days_to_store = get_option('wgojnj_days_to_store');
 $im_behind_proxy = get_option('wgojnj_im_behind_proxy');
 $notification_email = get_option('wgojnj_notification_email');
+$save_payloads = get_option('wgojnj_save_payloads');
 
 /*
  * Listing registers..
@@ -44,11 +45,9 @@ $maxs_reached_sql = 'SELECT max(last_minute) max_hits_minute_reached, max(last_h
 
 $add_sql = '';
 if (isset($_GET['filter-url'])) {
-    $add_sql .= " WHERE url = '".urldecode($_GET['filter-url'])."'";
+    $add_sql .= " WHERE url = '".$_GET['filter-url']."'";
 } elseif (isset($_GET['filter-ip'])) {
-    $add_sql .= " WHERE remote_ip = '".urldecode($_GET['filter-ip'])."'";
-} elseif (isset($_GET['filter-uagent'])) {
-    $add_sql .= " WHERE user_agent = '".urldecode($_GET['filter-uagent'])."'";
+    $add_sql .= " WHERE remote_ip = '".$_GET['filter-ip']."'";
 } elseif (isset($_GET['filter-method'])) {
     $add_sql .= " WHERE method = '".urldecode($_GET['filter-method'])."'";
 }
@@ -91,7 +90,7 @@ echo $_SERVER['REQUEST_URI'];
 
         ////////////////
         /////////////////////////////// START CHART
-        $chart_sql = "SELECT count(*) hits, DATE_FORMAT(wgo.time, '%Hh') the_hour FROM ".$wpdb->prefix."whats_going_on wgo"
+        $chart_sql = "SELECT count(*) hits, DATE_FORMAT(wgo.time, '%Hh') the_hour FROM ".$wpdb->prefix.'whats_going_on wgo'
             .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
         $chart_results = $wpdb->get_results($chart_sql);
         //var_dump($chart_results);
@@ -134,7 +133,7 @@ echo $_SERVER['REQUEST_URI'];
                             } else {
                                 echo 'day';
                             }
-                            echo ' (~'.($days_to_store * 24).' hours)'
+                            echo ' (~'.($days_to_store * 24).' hours)';
                             ?>',
                         data: [<?php
                             if (count($chart_results) > 0) {
@@ -319,7 +318,7 @@ echo $_SERVER['REQUEST_URI'];
             </select>
 
             <label for="notification_email">Notification email</label>
-            <input type="text" name="notification_email" id="notification_email" class="regular-text" value="<?= $notification_email ?>">
+            <input type="text" name="notification_email" id="notification_email" class="regular-text" value="<?= $notification_email; ?>">
             <input type="submit" name="submit-check-email" id="submit-check-email" class="button button-green" value="Check email">
 
             <span class="span-pagination"><?php
@@ -364,7 +363,7 @@ echo $_SERVER['REQUEST_URI'];
                 <tr>
                     <td><?= $result->time; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= $result->url; ?>"><?= urldecode($result->url); ?></a>
+                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= urldecode($result->url); ?></a>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
                     <td>
                         <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a> : <?= $result->remote_port; ?>
@@ -373,10 +372,9 @@ echo $_SERVER['REQUEST_URI'];
                         <?php
                         if (!empty($result->country_code)) {
                             echo $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '');
-                        }
-                        ?>
+                        } ?>
                     </td>
-                    <td><a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-uagent=<?= urlencode($result->user_agent); ?>"><?= $result->user_agent; ?></a></td>
+                    <td><?= $result->user_agent; ?></td>
                     <td><?= $result->last_minute; ?> / <?= $result->last_hour; ?></td>
                 </tr>
 

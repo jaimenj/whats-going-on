@@ -5,3 +5,4 @@ block-list.php
 block-regexes-uri.php
 block-regexes-payload.php
 waf-errors.log
+waf-payloads.log

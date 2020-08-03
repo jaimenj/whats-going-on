@@ -104,6 +104,10 @@ class WhatsGoingOnBackendController
                     $wgoSms = $this->_save_regexes_uri();
                 } elseif (isset($_REQUEST['submit-save-regexes-payload'])) {
                     $wgoSms = $this->_save_regexes_payload();
+                } elseif (isset($_REQUEST['submit-truncate-payloads-log'])) {
+                    $wgoSms = $this->_truncate_payloads_log();
+                } elseif (isset($_REQUEST['submit-regexes-configs'])) {
+                    $wgoSms = $this->_save_regexes_configs();
                 } elseif (isset($_REQUEST['submit-remove-regexes-errors'])) {
                     $wgoSms = $this->_remove_regexes_errors_log();
                 } elseif (isset($_REQUEST['submit-block-selected-countries'])) {
@@ -154,7 +158,7 @@ class WhatsGoingOnBackendController
         $dir->close();
     }
 
-    private function _uninstall_waf()
+    public function _uninstall_waf()
     {
         unlink(ABSPATH.'.user.ini');
         $this->_uninstall_recursive_waf('wp-admin/');
@@ -287,6 +291,19 @@ class WhatsGoingOnBackendController
         }
 
         return $wgoSms;
+    }
+
+    private function _truncate_payloads_log(){
+        file_put_contents(WGOJNJ_PATH.'waf-payloads.log', '');
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Payloads log truncated!</p></div>';
+    }
+
+    private function _save_regexes_configs()
+    {
+        update_option('wgojnj_save_payloads', stripslashes($_REQUEST['save_payloads']));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Regexes configs saved!</p></div>';
     }
 
     private function _remove_regexes_errors_log()
