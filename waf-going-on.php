@@ -119,8 +119,10 @@ class WafGoingOn
 
         $this->_check_block_list($comments, $regexes_errors);
         $this->_check_regexes_uri($comments, $regexes_errors);
-        $this->_check_regexes_payload($comments, $regexes_errors);
-        if ($this->wp_options['save_payloads']) {
+        $payload_matches = false;
+        $this->_check_regexes_payload($comments, $regexes_errors, $payload_matches);
+        if (($this->wp_options['save_payloads'] and !$this->wp_options['save_only_payloads_matching_regex'])
+        or ($this->wp_options['save_payloads'] and $this->wp_options['save_only_payloads_matching_regex']) and $payload_matches) {
             $this->_save_payloads();
         }
 
@@ -258,7 +260,7 @@ class WafGoingOn
         }
     }
 
-    private function _check_regexes_payload(&$comments, &$regexes_errors)
+    private function _check_regexes_payload(&$comments, &$regexes_errors, &$payload_matches)
     {
         // If hits a regex for post data..
         if (file_exists($this->block_regexes_payload_file_path)) {
@@ -291,6 +293,8 @@ class WafGoingOn
                 $this->retry_time = 86400;
             }
         }
+
+        $payload_matches = $to_block;
     }
 
     private function _recursive_payload_check($payload_regex, $i, $post_value, &$to_block, &$to_block_regex_num, &$regexes_errors)
@@ -481,6 +485,7 @@ class WafGoingOn
             'wgojnj_limit_requests_per_hour',
             'wgojnj_im_behind_proxy',
             'wgojnj_save_payloads',
+            'wgojnj_save_only_payloads_matching_regex',
         ];
 
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '

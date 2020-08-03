@@ -96,6 +96,7 @@ class WhatsGoingOn
         register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_3sd');
         register_setting('wgojnj_options_group', 'wgojnj_notify_requests_less_than_25_percent');
         register_setting('wgojnj_options_group', 'wgojnj_save_payloads');
+        register_setting('wgojnj_options_group', 'wgojnj_save_only_payloads_matching_regex');
 
         add_option('wgojnj_limit_requests_per_minute', '-1');
         add_option('wgojnj_limit_requests_per_hour', -1);
@@ -108,6 +109,7 @@ class WhatsGoingOn
         add_option('wgojnj_notify_requests_more_than_3sd', 0);
         add_option('wgojnj_notify_requests_less_than_25_percent', 0);
         add_option('wgojnj_save_payloads', 0);
+        add_option('wgojnj_save_only_payloads_matching_regex', 0);
     }
 
     public function deactivation()
@@ -135,6 +137,7 @@ class WhatsGoingOn
         delete_option('wgojnj_notify_requests_more_than_2sd');
         delete_option('wgojnj_notify_requests_more_than_3sd');
         delete_option('wgojnj_save_payloads');
+        delete_option('wgojnj_save_only_payloads_matching_regex');
 
         WhatsGoingOnBackendController::get_instance()->_uninstall_waf();
     }

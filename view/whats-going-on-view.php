@@ -33,6 +33,7 @@ $days_to_store = get_option('wgojnj_days_to_store');
 $im_behind_proxy = get_option('wgojnj_im_behind_proxy');
 $notification_email = get_option('wgojnj_notification_email');
 $save_payloads = get_option('wgojnj_save_payloads');
+$save_only_payloads_matching_regex = get_option('wgojnj_save_only_payloads_matching_regex');
 
 /*
  * Listing registers..

@@ -293,7 +293,8 @@ class WhatsGoingOnBackendController
         return $wgoSms;
     }
 
-    private function _truncate_payloads_log(){
+    private function _truncate_payloads_log()
+    {
         file_put_contents(WGOJNJ_PATH.'waf-payloads.log', '');
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Payloads log truncated!</p></div>';
@@ -301,7 +302,8 @@ class WhatsGoingOnBackendController
 
     private function _save_regexes_configs()
     {
-        update_option('wgojnj_save_payloads', stripslashes($_REQUEST['save_payloads']));
+        update_option('wgojnj_save_payloads', $_REQUEST['save_payloads']);
+        update_option('wgojnj_save_only_payloads_matching_regex', $_REQUEST['save_only_payloads_matching_regex']);
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Regexes configs saved!</p></div>';
     }
