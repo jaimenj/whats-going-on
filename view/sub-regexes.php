@@ -74,4 +74,21 @@ if (!current_user_can('administrator')) {
         <input type="submit" name="submit-save-regexes-payload" id="submit-save-regexes-payload" class="button button-green" value="Upload Regexes signatures only for payload">
     </div>
 
+    <p>
+        <input type="submit" name="submit-truncate-payloads-log" id="submit-truncate-payloads-log" class="button button-red" value="Truncate payloads log (current <?php
+        if (file_exists(WGOJNJ_PATH.'waf-payloads.log')) {
+            echo number_format(filesize(WGOJNJ_PATH.'waf-payloads.log') / 1024, 2);
+        } else {
+            echo '0';
+        }
+        ?> KB)">
+        <label for="save_payloads">Save payloads in the log file</label>
+        <select name="save_payloads" id="save_payloads">
+            <option value="0"<?= (0 == $save_payloads ? ' selected' : ''); ?>>No</option>
+            <option value="1"<?= (1 == $save_payloads ? ' selected' : ''); ?>>Yes</option>
+        </select>
+        <a href="javascript:showPayloadsLog()" class="button button-primary">Show payloads log</a>
+        <input type="submit" name="submit-regexes-configs" id="submit-regexes-configs" class="button button-green" value="Save Regexes configs">
+    </p>
+
 </div>
