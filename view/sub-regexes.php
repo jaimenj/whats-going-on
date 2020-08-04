@@ -26,7 +26,7 @@ if (!current_user_can('administrator')) {
 
                             if (count($the_file) > 1) {
                                 for ($i = 1; $i < count($the_file); ++$i) {
-                                    echo $the_file[$i].'<br>';
+                                    echo $i.'.- '.$the_file[$i].'<br>';
                                 }
                             } else {
                                 echo '<p>No Regexes found.</p>';
@@ -57,7 +57,7 @@ if (!current_user_can('administrator')) {
 
                             if (count($the_file) > 1) {
                                 for ($i = 1; $i < count($the_file); ++$i) {
-                                    echo $the_file[$i].'<br>';
+                                    echo $i.'.- '.$the_file[$i].'<br>';
                                 }
                             } else {
                                 echo '<p>No Regexes found.</p>';
