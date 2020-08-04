@@ -325,7 +325,7 @@ class WafGoingOn
         if ('POST' === $_SERVER['REQUEST_METHOD']) {
             file_put_contents($this->payloads_file_path,
                 date('Y-m-d H:i:s').' '.$this->_current_remote_ips().PHP_EOL
-                .$this->url.PHP_EOL
+                .urldecode($this->url).PHP_EOL
                 .'================================================================================'.PHP_EOL,
                 FILE_APPEND
             );

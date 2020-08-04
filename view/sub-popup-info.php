@@ -47,6 +47,14 @@ if (!current_user_can('administrator')) {
     height: 30px;
     font-size: 30px;
 }
+pre { 
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
 </style>
 
 <script>
