@@ -2,7 +2,7 @@
 
 defined('ABSPATH') or die('No no no');
 
-include_once WGOJNJ_PATH.'lib/geoip2.phar';
+include_once WGO_PATH.'lib/geoip2.phar';
 use GeoIp2\Database\Reader;
 
 class WhatsGoingOnCronjobs
@@ -68,7 +68,7 @@ class WhatsGoingOnCronjobs
         global $wpdb;
 
         if (empty($days)) {
-            $days = get_option('wgojnj_days_to_store');
+            $days = get_option('wgo_days_to_store');
         }
 
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
@@ -98,8 +98,8 @@ class WhatsGoingOnCronjobs
         echo 'Filling countries..'.PHP_EOL;
 
         global $wpdb;
-        $reader = new Reader(WGOJNJ_PATH.'lib/GeoLite2-City.mmdb');
-        $im_behind_proxy = get_option('wgojnj_im_behind_proxy');
+        $reader = new Reader(WGO_PATH.'lib/GeoLite2-City.mmdb');
+        $im_behind_proxy = get_option('wgo_im_behind_proxy');
 
         $tableNames = ['whats_going_on', 'whats_going_on_block', 'whats_going_on_404s'];
 
@@ -141,11 +141,11 @@ class WhatsGoingOnCronjobs
     {
         global $wpdb;
 
-        $notify_requests_more_than_sd = get_option('wgojnj_notify_requests_more_than_sd');
-        $notify_requests_more_than_2sd = get_option('wgojnj_notify_requests_more_than_2sd');
-        $notify_requests_more_than_3sd = get_option('wgojnj_notify_requests_more_than_3sd');
-        $notify_requests_less_than_25_percent = get_option('wgojnj_notify_requests_less_than_25_percent');
-        $notification_email = get_option('wgojnj_notification_email');
+        $notify_requests_more_than_sd = get_option('wgo_notify_requests_more_than_sd');
+        $notify_requests_more_than_2sd = get_option('wgo_notify_requests_more_than_2sd');
+        $notify_requests_more_than_3sd = get_option('wgo_notify_requests_more_than_3sd');
+        $notify_requests_less_than_25_percent = get_option('wgo_notify_requests_less_than_25_percent');
+        $notification_email = get_option('wgo_notification_email');
 
         if (!empty($notification_email) and (
         $notify_requests_more_than_sd

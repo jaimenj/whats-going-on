@@ -119,8 +119,10 @@ class WafGoingOn
 
         $this->_check_block_list($comments, $regexes_errors);
         $this->_check_regexes_uri($comments, $regexes_errors);
-        $this->_check_regexes_payload($comments, $regexes_errors);
-        if ($this->wp_options['save_payloads']) {
+        $payload_matches = false;
+        $this->_check_regexes_payload($comments, $regexes_errors, $payload_matches);
+        if (($this->wp_options['save_payloads'] and !$this->wp_options['save_only_payloads_matching_regex'])
+        or ($this->wp_options['save_payloads'] and $this->wp_options['save_only_payloads_matching_regex']) and $payload_matches) {
             $this->_save_payloads();
         }
 
@@ -258,7 +260,7 @@ class WafGoingOn
         }
     }
 
-    private function _check_regexes_payload(&$comments, &$regexes_errors)
+    private function _check_regexes_payload(&$comments, &$regexes_errors, &$payload_matches)
     {
         // If hits a regex for post data..
         if (file_exists($this->block_regexes_payload_file_path)) {
@@ -291,6 +293,8 @@ class WafGoingOn
                 $this->retry_time = 86400;
             }
         }
+
+        $payload_matches = $to_block;
     }
 
     private function _recursive_payload_check($payload_regex, $i, $post_value, &$to_block, &$to_block_regex_num, &$regexes_errors)
@@ -321,7 +325,7 @@ class WafGoingOn
         if ('POST' === $_SERVER['REQUEST_METHOD']) {
             file_put_contents($this->payloads_file_path,
                 date('Y-m-d H:i:s').' '.$this->_current_remote_ips().PHP_EOL
-                .$this->url.PHP_EOL
+                .urldecode($this->url).PHP_EOL
                 .'================================================================================'.PHP_EOL,
                 FILE_APPEND
             );
@@ -477,10 +481,11 @@ class WafGoingOn
     private function _get_options($mysql_connection, $the_table_full_prefix)
     {
         $options_to_search = [
-            'wgojnj_limit_requests_per_minute',
-            'wgojnj_limit_requests_per_hour',
-            'wgojnj_im_behind_proxy',
-            'wgojnj_save_payloads',
+            'wgo_limit_requests_per_minute',
+            'wgo_limit_requests_per_hour',
+            'wgo_im_behind_proxy',
+            'wgo_save_payloads',
+            'wgo_save_only_payloads_matching_regex',
         ];
 
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '

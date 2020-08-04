@@ -18,8 +18,8 @@ if (!current_user_can('administrator')) {
                 <tr>
                     <td>
                         <?php
-                        if (file_exists(WGOJNJ_PATH.'waf-errors.log')) {
-                            $regexesErrors = file(WGOJNJ_PATH.'waf-errors.log');
+                        if (file_exists(WGO_PATH.'waf-errors.log')) {
+                            $regexesErrors = file(WGO_PATH.'waf-errors.log');
 
                             if (!empty($regexesErrors)) {
                                 ?>

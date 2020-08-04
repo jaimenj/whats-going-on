@@ -23,7 +23,7 @@ $total_blocks = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_goin
                 <tr>
                     <td>Last time</td>
                     <td>Times blocked</td>
-                    <td>Remote IP : Port</td>
+                    <td>Remote IP</td>
                     <td>Country</td>
                     <td>User Agent</td>
                     <td>Comments</td>

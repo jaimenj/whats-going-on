@@ -20,19 +20,20 @@ if (!current_user_can('administrator')) {
 }
 
 // GEOIP
-$isoCountriesFile = file(WGOJNJ_PATH.'lib/isoCountriesCodes.csv');
+$isoCountriesFile = file(WGO_PATH.'lib/isoCountriesCodes.csv');
 $isoCountriesArray = [];
 foreach ($isoCountriesFile as $isoItem) {
     $isoCountriesArray[explode(',', $isoItem)[0]] = str_replace(['"', PHP_EOL], '', explode(',', $isoItem)[1]);
 }
 
-$limit_requests_per_minute = get_option('wgojnj_limit_requests_per_minute');
-$limit_requests_per_hour = get_option('wgojnj_limit_requests_per_hour');
-$items_per_page = get_option('wgojnj_items_per_page');
-$days_to_store = get_option('wgojnj_days_to_store');
-$im_behind_proxy = get_option('wgojnj_im_behind_proxy');
-$notification_email = get_option('wgojnj_notification_email');
-$save_payloads = get_option('wgojnj_save_payloads');
+$limit_requests_per_minute = get_option('wgo_limit_requests_per_minute');
+$limit_requests_per_hour = get_option('wgo_limit_requests_per_hour');
+$items_per_page = get_option('wgo_items_per_page');
+$days_to_store = get_option('wgo_days_to_store');
+$im_behind_proxy = get_option('wgo_im_behind_proxy');
+$notification_email = get_option('wgo_notification_email');
+$save_payloads = get_option('wgo_save_payloads');
+$save_only_payloads_matching_regex = get_option('wgo_save_only_payloads_matching_regex');
 
 /*
  * Listing registers..
@@ -282,10 +283,10 @@ echo $_SERVER['REQUEST_URI'];
         ////////////////////////////////////////////////////////
         ?>
 
-        <?php settings_fields('wgojnj_options_group'); ?>
-        <?php do_settings_sections('wgojnj_options_group'); ?>
+        <?php settings_fields('wgo_options_group'); ?>
+        <?php do_settings_sections('wgo_options_group'); ?>
 
-        <?php wp_nonce_field('wgojnj', 'wgojnj_nonce'); ?>
+        <?php wp_nonce_field('wgojnj', 'wgo_nonce'); ?>
 
         <p>
             <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save this configs">
@@ -407,29 +408,29 @@ echo $_SERVER['REQUEST_URI'];
     </div>
 
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-unique-ips.php'; ?>
+    <?php include WGO_PATH.'view/sub-unique-ips.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-dos.php'; ?>
+    <?php include WGO_PATH.'view/sub-dos.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-ddos.php'; ?>
+    <?php include WGO_PATH.'view/sub-ddos.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-regexes.php'; ?>
+    <?php include WGO_PATH.'view/sub-regexes.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-regexes-errors.php'; ?>
+    <?php include WGO_PATH.'view/sub-regexes-errors.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-countries-continents.php'; ?>
+    <?php include WGO_PATH.'view/sub-countries-continents.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-last-blocks.php'; ?>
+    <?php include WGO_PATH.'view/sub-last-blocks.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-last-ips-doing-404s.php'; ?>
+    <?php include WGO_PATH.'view/sub-last-ips-doing-404s.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-last-urls-doing-404s.php'; ?>
+    <?php include WGO_PATH.'view/sub-last-urls-doing-404s.php'; ?>
     <hr>
-    <?php include WGOJNJ_PATH.'view/sub-most-visited-from.php'; ?>
+    <?php include WGO_PATH.'view/sub-most-visited-from.php'; ?>
 
 </form>
 <hr>
 
 <p>This plugin includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.</p>
 
-<?php include WGOJNJ_PATH.'view/sub-popup-info.php'; ?>
+<?php include WGO_PATH.'view/sub-popup-info.php'; ?>

@@ -27,14 +27,14 @@ class WhatsGoingOnBackendController
             return;
         }
         $admin_bar->add_menu([
-            'id' => 'wgojnj-topbar',
+            'id' => 'wgo-topbar',
             'parent' => null,
             'group' => null,
             'title' => 'What\'s going on',
             'href' => admin_url('tools.php?page=whats-going-on'),
             'meta' => [
                 'title' => 'What\'s going on', //This title will show on hover
-                'class' => 'wgojnj-topbar',
+                'class' => 'wgo-topbar',
             ],
         ]);
     }
@@ -72,9 +72,9 @@ class WhatsGoingOnBackendController
 
         // Security control
         if ($submitting) {
-            if (!isset($_REQUEST['wgojnj_nonce'])) {
+            if (!isset($_REQUEST['wgo_nonce'])) {
                 $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: nonce field is missing.</p></div>';
-            } elseif (!wp_verify_nonce($_REQUEST['wgojnj_nonce'], 'wgojnj')) {
+            } elseif (!wp_verify_nonce($_REQUEST['wgo_nonce'], 'wgojnj')) {
                 $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: invalid nonce specified.</p></div>';
             } else {
                 /*
@@ -129,12 +129,12 @@ class WhatsGoingOnBackendController
         }
 
         // Paints the view..
-        include WGOJNJ_PATH.'view/whats-going-on-view.php';
+        include WGO_PATH.'view/whats-going-on-view.php';
     }
 
     private function _install_waf()
     {
-        $config_line = "auto_prepend_file = '".WGOJNJ_PATH."waf-going-on.php';".PHP_EOL;
+        $config_line = "auto_prepend_file = '".WGO_PATH."waf-going-on.php';".PHP_EOL;
         file_put_contents(ABSPATH.'.user.ini', $config_line);
         $this->_install_recursive_waf('wp-admin/', $config_line);
         $this->_install_recursive_waf('wp-content/', $config_line);
@@ -187,10 +187,10 @@ class WhatsGoingOnBackendController
 
     private function _save_main_configs()
     {
-        update_option('wgojnj_items_per_page', stripslashes($_REQUEST['items_per_page']));
-        update_option('wgojnj_days_to_store', stripslashes($_REQUEST['days_to_store']));
-        update_option('wgojnj_im_behind_proxy', stripslashes($_REQUEST['im_behind_proxy']));
-        update_option('wgojnj_notification_email', stripslashes($_REQUEST['notification_email']));
+        update_option('wgo_items_per_page', stripslashes($_REQUEST['items_per_page']));
+        update_option('wgo_days_to_store', stripslashes($_REQUEST['days_to_store']));
+        update_option('wgo_im_behind_proxy', stripslashes($_REQUEST['im_behind_proxy']));
+        update_option('wgo_notification_email', stripslashes($_REQUEST['notification_email']));
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
     }
@@ -198,7 +198,7 @@ class WhatsGoingOnBackendController
     private function _check_email()
     {
         wp_mail(
-            get_option('wgojnj_notification_email'),
+            get_option('wgo_notification_email'),
             get_bloginfo('name').': What\'s going on: checking email',
             'This is a check for testing that email is working.'
         );
@@ -208,18 +208,18 @@ class WhatsGoingOnBackendController
 
     private function _save_dos_configs()
     {
-        update_option('wgojnj_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
-        update_option('wgojnj_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
+        update_option('wgo_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
+        update_option('wgo_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>DoS configs saved!</p></div>';
     }
 
     private function _save_ddos_configs()
     {
-        update_option('wgojnj_notify_requests_more_than_sd', stripslashes($_REQUEST['notify_requests_more_than_sd']));
-        update_option('wgojnj_notify_requests_more_than_2sd', stripslashes($_REQUEST['notify_requests_more_than_2sd']));
-        update_option('wgojnj_notify_requests_more_than_3sd', stripslashes($_REQUEST['notify_requests_more_than_3sd']));
-        update_option('wgojnj_notify_requests_less_than_25_percent', stripslashes($_REQUEST['notify_requests_less_than_25_percent']));
+        update_option('wgo_notify_requests_more_than_sd', stripslashes($_REQUEST['notify_requests_more_than_sd']));
+        update_option('wgo_notify_requests_more_than_2sd', stripslashes($_REQUEST['notify_requests_more_than_2sd']));
+        update_option('wgo_notify_requests_more_than_3sd', stripslashes($_REQUEST['notify_requests_more_than_3sd']));
+        update_option('wgo_notify_requests_less_than_25_percent', stripslashes($_REQUEST['notify_requests_less_than_25_percent']));
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>DDoS configs saved!</p></div>';
     }
@@ -261,8 +261,8 @@ class WhatsGoingOnBackendController
 
     private function _save_ip_lists()
     {
-        $this->_save_clean_file($_REQUEST['txt_block_list'], WGOJNJ_PATH.'block-list.php');
-        $this->_save_clean_file($_REQUEST['txt_allow_list'], WGOJNJ_PATH.'allow-list.php');
+        $this->_save_clean_file($_REQUEST['txt_block_list'], WGO_PATH.'block-list.php');
+        $this->_save_clean_file($_REQUEST['txt_allow_list'], WGO_PATH.'allow-list.php');
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
     }
@@ -271,7 +271,7 @@ class WhatsGoingOnBackendController
     {
         // Save Regexes
         if (!empty($_FILES['file_regexes_uri']['tmp_name'])) {
-            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_uri']['tmp_name']), WGOJNJ_PATH.'block-regexes-uri.php');
+            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_uri']['tmp_name']), WGO_PATH.'block-regexes-uri.php');
             $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for request uri saved!</p></div>';
         } else {
             $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
@@ -284,7 +284,7 @@ class WhatsGoingOnBackendController
     {
         // Save Regexes
         if (!empty($_FILES['file_regexes_payload']['tmp_name'])) {
-            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_payload']['tmp_name']), WGOJNJ_PATH.'block-regexes-payload.php');
+            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_payload']['tmp_name']), WGO_PATH.'block-regexes-payload.php');
             $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for payload saved!</p></div>';
         } else {
             $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
@@ -293,22 +293,24 @@ class WhatsGoingOnBackendController
         return $wgoSms;
     }
 
-    private function _truncate_payloads_log(){
-        file_put_contents(WGOJNJ_PATH.'waf-payloads.log', '');
+    private function _truncate_payloads_log()
+    {
+        file_put_contents(WGO_PATH.'waf-payloads.log', '');
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Payloads log truncated!</p></div>';
     }
 
     private function _save_regexes_configs()
     {
-        update_option('wgojnj_save_payloads', stripslashes($_REQUEST['save_payloads']));
+        update_option('wgo_save_payloads', $_REQUEST['save_payloads']);
+        update_option('wgo_save_only_payloads_matching_regex', $_REQUEST['save_only_payloads_matching_regex']);
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Regexes configs saved!</p></div>';
     }
 
     private function _remove_regexes_errors_log()
     {
-        unlink(WGOJNJ_PATH.'waf-errors.log');
+        unlink(WGO_PATH.'waf-errors.log');
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Log file with errors removed!</p></div>';
     }
@@ -333,8 +335,8 @@ class WhatsGoingOnBackendController
     {
         $add_countries = $_REQUEST['select_block_countries'];
 
-        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        if (file_exists(WGO_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
@@ -342,7 +344,7 @@ class WhatsGoingOnBackendController
         foreach ($add_countries as $country_to_block) {
             $current_blocking_countries[] = $country_to_block;
         }
-        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
+        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $_REQUEST['select_block_countries']).')!</p></div>';
     }
@@ -351,13 +353,13 @@ class WhatsGoingOnBackendController
     {
         $remove_countries = $_REQUEST['select_unblock_countries'];
 
-        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        if (file_exists(WGO_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
         }
-        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
+        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $_REQUEST['select_unblock_countries']).')!</p></div>';
     }
@@ -367,7 +369,7 @@ class WhatsGoingOnBackendController
         $continent_to_block = $_REQUEST['select_block_continent'][0];
 
         $add_countries = [];
-        $array_countries_continents = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'lib/isoCountriesContinents.csv'));
+        $array_countries_continents = explode(PHP_EOL, file_get_contents(WGO_PATH.'lib/isoCountriesContinents.csv'));
         foreach ($array_countries_continents as $row) {
             if (!empty($row)) {
                 $row_country_code = explode(',', $row)[0];
@@ -379,8 +381,8 @@ class WhatsGoingOnBackendController
         }
         //var_dump($add_countries);
 
-        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        if (file_exists(WGO_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
@@ -389,7 +391,7 @@ class WhatsGoingOnBackendController
             $current_blocking_countries[] = $country_to_block;
         }
         $current_blocking_countries = array_unique($current_blocking_countries);
-        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
+        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $add_countries).')!</p></div>';
     }
@@ -399,7 +401,7 @@ class WhatsGoingOnBackendController
         $continent_to_unblock = $_REQUEST['select_unblock_continent'][0];
 
         $remove_countries = [];
-        $array_countries_continents = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'lib/isoCountriesContinents.csv'));
+        $array_countries_continents = explode(PHP_EOL, file_get_contents(WGO_PATH.'lib/isoCountriesContinents.csv'));
         foreach ($array_countries_continents as $row) {
             if (!empty($row)) {
                 $row_country_code = explode(',', $row)[0];
@@ -411,13 +413,13 @@ class WhatsGoingOnBackendController
         }
         //var_dump($remove_countries);
 
-        if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+        if (file_exists(WGO_PATH.'block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
         }
-        file_put_contents(WGOJNJ_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
+        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $remove_countries).')!</p></div>';
     }

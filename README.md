@@ -34,9 +34,12 @@ Plugin website: \
 * Detection and notification of possible DDoS attacks.
 * It can protect you against SQL injection, XSS and Xploit attacks using your own Regexes.
 * Permanent block or bypass of custom IPs, it allows you to configure IPs with your own Regexes too.
-* Log and show Regex errors in the admin panel, for debug and improve your Regexes.
-* 404s detections.
+* Log and show Regex errors, for debug and improve your Regexes.
+* Save payloads, all or only when match a regex.
 * Block and allow countries and continents.
+* 404s detections.
+* Show IPs that are doing most of the visits.
+* Show URLs most visited.
 
 ## Installation
 
@@ -70,7 +73,7 @@ Yes. By default, you cannot block yourself while you are activating the plugin. 
 
 * I blocked myself, how can I disable it without access to the backend?
 
-In case of emergency, you can remove the file .user.ini and the directory /wp-content/plugins/whats-going-on/. Maybe you also want to restart PHP-fpm or Apache/Nginx if WAF is cached.
+If something is broken because of this WAF, edit and empty the file /wp-content/plugins/whats-going-on/waf-going-on.php. Do not remove it, you can rename it and make an empty one with the same name. It will continue working, but doing nothing.
 
 ## Screenshots
 
@@ -92,19 +95,30 @@ In case of emergency, you can remove the file .user.ini and the directory /wp-co
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-5.png)
 
-6. Lasts blocks done.
+6. Last blocks reasons and times blocked, 2 total blocks, with a total of 2 IPs recorded.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-6.png)
 
-7. Lasts 404s done.
+7. Top 10 of IPs doing 404s, with a total of 15 IPs recorded.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-7.png)
 
-8. Regexes errors to review.
+8. Top 10 of URLs doing 404s, with a total of 50 IPs recorded.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-8.png)
 
+9. Top 10 of IPs visiting.
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-9.png)
+
 ## Changelog
+
+### v0.5
+
+* AJAX loading of more info.
+* Payloads saving, for all or only when matching a regex.
+* A better install for all subdirs of WordPress. 
+* Some bugfix.
 
 ### v0.4
 

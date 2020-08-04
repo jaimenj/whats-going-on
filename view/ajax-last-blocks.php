@@ -10,7 +10,7 @@ if (!current_user_can('administrator')) {
         <tr>
             <td>Time</td>
             <td>URL</td>
-            <td>Remote IP : Port</td>
+            <td>Remote IP</td>
             <td>Country</td>
             <td>User Agent</td>
             <td>Comments</td>

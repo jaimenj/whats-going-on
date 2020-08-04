@@ -35,8 +35,9 @@ if (!current_user_can('administrator')) {
     overflow-x: auto;
 }
 #x2 {
-    position: relative;
-    float: right;
+    position: absolute;
+    right: 15px;
+    top: 3px;
     background: transparent;
     color: black;
     border: 0px;
@@ -45,6 +46,14 @@ if (!current_user_can('administrator')) {
     margin-top: 0px;
     height: 30px;
     font-size: 30px;
+}
+pre { 
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
 }
 </style>
 

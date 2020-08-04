@@ -20,7 +20,7 @@ if (!current_user_can('administrator')) {
                 <tr>
                     <td>
                         <?php
-                        $file_path = WGOJNJ_PATH.'block-regexes-uri.php';
+                        $file_path = WGO_PATH.'block-regexes-uri.php';
                         if (file_exists($file_path)) {
                             $the_file = file($file_path);
 
@@ -51,7 +51,7 @@ if (!current_user_can('administrator')) {
                 <tr>
                     <td>
                         <?php
-                        $file_path = WGOJNJ_PATH.'block-regexes-payload.php';
+                        $file_path = WGO_PATH.'block-regexes-payload.php';
                         if (file_exists($file_path)) {
                             $the_file = file($file_path);
 
@@ -75,19 +75,24 @@ if (!current_user_can('administrator')) {
     </div>
 
     <p>
+        <a href="javascript:showPayloadsLog()" class="button button-primary">Show payloads log</a>
         <input type="submit" name="submit-truncate-payloads-log" id="submit-truncate-payloads-log" class="button button-red" value="Truncate payloads log (current <?php
-        if (file_exists(WGOJNJ_PATH.'waf-payloads.log')) {
-            echo number_format(filesize(WGOJNJ_PATH.'waf-payloads.log') / 1024, 2);
+        if (file_exists(WGO_PATH.'waf-payloads.log')) {
+            echo number_format(filesize(WGO_PATH.'waf-payloads.log') / 1024, 2);
         } else {
             echo '0';
         }
         ?> KB)">
-        <label for="save_payloads">Save payloads in the log file</label>
+        <label for="save_payloads">Save payloads in the log file (be careful with this)</label>
         <select name="save_payloads" id="save_payloads">
             <option value="0"<?= (0 == $save_payloads ? ' selected' : ''); ?>>No</option>
             <option value="1"<?= (1 == $save_payloads ? ' selected' : ''); ?>>Yes</option>
         </select>
-        <a href="javascript:showPayloadsLog()" class="button button-primary">Show payloads log</a>
+        <label for="save_only_payloads_matching_regex">Save only payloads matching a regex</label>
+        <select name="save_only_payloads_matching_regex" id="save_only_payloads_matching_regex">
+            <option value="0"<?= (0 == $save_only_payloads_matching_regex ? ' selected' : ''); ?>>No</option>
+            <option value="1"<?= (1 == $save_only_payloads_matching_regex ? ' selected' : ''); ?>>Yes</option>
+        </select>
         <input type="submit" name="submit-regexes-configs" id="submit-regexes-configs" class="button button-green" value="Save Regexes configs">
     </p>
 

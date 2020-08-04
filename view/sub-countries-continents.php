@@ -77,8 +77,8 @@ if (!current_user_can('administrator')) {
     </div>
 
     <?php
-    if (file_exists(WGOJNJ_PATH.'block-countries.php')) {
-        $blocking_countries = explode(PHP_EOL, file_get_contents(WGOJNJ_PATH.'block-countries.php'));
+    if (file_exists(WGO_PATH.'block-countries.php')) {
+        $blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
         unset($blocking_countries[0]);
     } else {
         $blocking_countries = [];
@@ -89,7 +89,7 @@ if (!current_user_can('administrator')) {
     }
     asort($blocking_countries_array_ordered);
 
-    $available_countries = file(WGOJNJ_PATH.'lib/isoCountriesCodes.csv');
+    $available_countries = file(WGO_PATH.'lib/isoCountriesCodes.csv');
     $available_countries_array_ordered = [];
     foreach ($available_countries as $key => $country) {
         $country_code = explode(',', $country)[0];
