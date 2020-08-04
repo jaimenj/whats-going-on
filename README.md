@@ -118,7 +118,7 @@ If something is broken because of this WAF, edit and empty the file /wp-content/
 * AJAX loading of more info.
 * Payloads saving, for all or only when matching a regex.
 * A better install for all subdirs of WordPress. 
-* Some bugfix.
+* Some other bugfixes.
 
 ### v0.4
 
