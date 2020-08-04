@@ -95,17 +95,21 @@ If something is broken because of this WAF, edit and empty the file /wp-content/
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-5.png)
 
-6. Lasts blocks done.
+6. Last blocks reasons and times blocked, 2 total blocks, with a total of 2 IPs recorded.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-6.png)
 
-7. Lasts 404s done.
+7. Top 10 of IPs doing 404s, with a total of 15 IPs recorded.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-7.png)
 
-8. Regexes errors to review.
+8. Top 10 of URLs doing 404s, with a total of 50 IPs recorded.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-8.png)
+
+9. Top 10 of IPs visiting.
+
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-9.png)
 
 ## Changelog
 
