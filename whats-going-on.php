@@ -8,11 +8,11 @@
  * Author URI: https://jnjsite.com/.
  */
 defined('ABSPATH') or die('No no no');
-define('WGOJNJ_PATH', plugin_dir_path(__FILE__));
+define('WGO_PATH', plugin_dir_path(__FILE__));
 
-include_once WGOJNJ_PATH.'cronjobs.php';
-include_once WGOJNJ_PATH.'backend-controller.php';
-include_once WGOJNJ_PATH.'ajax-controller.php';
+include_once WGO_PATH.'cronjobs.php';
+include_once WGO_PATH.'backend-controller.php';
+include_once WGO_PATH.'ajax-controller.php';
 
 class WhatsGoingOn
 {
@@ -85,31 +85,31 @@ class WhatsGoingOn
             .');';
         $wpdb->get_results($sql);
 
-        register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_minute');
-        register_setting('wgojnj_options_group', 'wgojnj_limit_requests_per_hour');
-        register_setting('wgojnj_options_group', 'wgojnj_items_per_page');
-        register_setting('wgojnj_options_group', 'wgojnj_days_to_store');
-        register_setting('wgojnj_options_group', 'wgojnj_im_behind_proxy');
-        register_setting('wgojnj_options_group', 'wgojnj_notification_email');
-        register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_sd');
-        register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_2sd');
-        register_setting('wgojnj_options_group', 'wgojnj_notify_requests_more_than_3sd');
-        register_setting('wgojnj_options_group', 'wgojnj_notify_requests_less_than_25_percent');
-        register_setting('wgojnj_options_group', 'wgojnj_save_payloads');
-        register_setting('wgojnj_options_group', 'wgojnj_save_only_payloads_matching_regex');
+        register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
+        register_setting('wgo_options_group', 'wgo_limit_requests_per_hour');
+        register_setting('wgo_options_group', 'wgo_items_per_page');
+        register_setting('wgo_options_group', 'wgo_days_to_store');
+        register_setting('wgo_options_group', 'wgo_im_behind_proxy');
+        register_setting('wgo_options_group', 'wgo_notification_email');
+        register_setting('wgo_options_group', 'wgo_notify_requests_more_than_sd');
+        register_setting('wgo_options_group', 'wgo_notify_requests_more_than_2sd');
+        register_setting('wgo_options_group', 'wgo_notify_requests_more_than_3sd');
+        register_setting('wgo_options_group', 'wgo_notify_requests_less_than_25_percent');
+        register_setting('wgo_options_group', 'wgo_save_payloads');
+        register_setting('wgo_options_group', 'wgo_save_only_payloads_matching_regex');
 
-        add_option('wgojnj_limit_requests_per_minute', '-1');
-        add_option('wgojnj_limit_requests_per_hour', -1);
-        add_option('wgojnj_items_per_page', '10');
-        add_option('wgojnj_days_to_store', '7');
-        add_option('wgojnj_im_behind_proxy', 0);
-        add_option('wgojnj_notification_email', '');
-        add_option('wgojnj_notify_requests_more_than_sd', 0);
-        add_option('wgojnj_notify_requests_more_than_2sd', 0);
-        add_option('wgojnj_notify_requests_more_than_3sd', 0);
-        add_option('wgojnj_notify_requests_less_than_25_percent', 0);
-        add_option('wgojnj_save_payloads', 0);
-        add_option('wgojnj_save_only_payloads_matching_regex', 0);
+        add_option('wgo_limit_requests_per_minute', '-1');
+        add_option('wgo_limit_requests_per_hour', -1);
+        add_option('wgo_items_per_page', '10');
+        add_option('wgo_days_to_store', '7');
+        add_option('wgo_im_behind_proxy', 0);
+        add_option('wgo_notification_email', '');
+        add_option('wgo_notify_requests_more_than_sd', 0);
+        add_option('wgo_notify_requests_more_than_2sd', 0);
+        add_option('wgo_notify_requests_more_than_3sd', 0);
+        add_option('wgo_notify_requests_less_than_25_percent', 0);
+        add_option('wgo_save_payloads', 0);
+        add_option('wgo_save_only_payloads_matching_regex', 0);
     }
 
     public function deactivation()
@@ -127,17 +127,17 @@ class WhatsGoingOn
 
     public function uninstall()
     {
-        delete_option('wgojnj_limit_requests_per_minute');
-        delete_option('wgojnj_limit_requests_per_hour');
-        delete_option('wgojnj_items_per_page');
-        delete_option('wgojnj_days_to_store');
-        delete_option('wgojnj_im_behind_proxy');
-        delete_option('wgojnj_notification_email');
-        delete_option('wgojnj_notify_requests_more_than_sd');
-        delete_option('wgojnj_notify_requests_more_than_2sd');
-        delete_option('wgojnj_notify_requests_more_than_3sd');
-        delete_option('wgojnj_save_payloads');
-        delete_option('wgojnj_save_only_payloads_matching_regex');
+        delete_option('wgo_limit_requests_per_minute');
+        delete_option('wgo_limit_requests_per_hour');
+        delete_option('wgo_items_per_page');
+        delete_option('wgo_days_to_store');
+        delete_option('wgo_im_behind_proxy');
+        delete_option('wgo_notification_email');
+        delete_option('wgo_notify_requests_more_than_sd');
+        delete_option('wgo_notify_requests_more_than_2sd');
+        delete_option('wgo_notify_requests_more_than_3sd');
+        delete_option('wgo_save_payloads');
+        delete_option('wgo_save_only_payloads_matching_regex');
 
         WhatsGoingOnBackendController::get_instance()->_uninstall_waf();
     }
@@ -183,12 +183,12 @@ class WhatsGoingOn
      */
     public function enqueue_admin_css_js($hook)
     {
-        wp_enqueue_style('wgojnj_custom_style', plugin_dir_url(__FILE__).'lib/wgojnj.css', false, '1.0.1');
-        wp_enqueue_style('wgojnj_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
-        wp_enqueue_style('wgojnj_map_style', plugin_dir_url(__FILE__).'lib/svgMap.min.css', false, '1');
-        wp_enqueue_script('wgojnj_custom_script', plugin_dir_url(__FILE__).'lib/wgojnj.js', [], '1.0.1');
-        wp_enqueue_script('wgojnj_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
-        wp_enqueue_script('wgojnj_map_script', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '1');
+        wp_enqueue_style('wgo_custom_style', plugin_dir_url(__FILE__).'lib/wgo.css', false, '1.0.2');
+        wp_enqueue_style('wgo_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
+        wp_enqueue_style('wgo_map_style', plugin_dir_url(__FILE__).'lib/svgMap.min.css', false, '1');
+        wp_enqueue_script('wgo_custom_script', plugin_dir_url(__FILE__).'lib/wgo.js', [], '1.0.2');
+        wp_enqueue_script('wgo_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
+        wp_enqueue_script('wgo_map_script', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '1');
     }
 }
 

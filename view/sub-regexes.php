@@ -20,7 +20,7 @@ if (!current_user_can('administrator')) {
                 <tr>
                     <td>
                         <?php
-                        $file_path = WGOJNJ_PATH.'block-regexes-uri.php';
+                        $file_path = WGO_PATH.'block-regexes-uri.php';
                         if (file_exists($file_path)) {
                             $the_file = file($file_path);
 
@@ -51,7 +51,7 @@ if (!current_user_can('administrator')) {
                 <tr>
                     <td>
                         <?php
-                        $file_path = WGOJNJ_PATH.'block-regexes-payload.php';
+                        $file_path = WGO_PATH.'block-regexes-payload.php';
                         if (file_exists($file_path)) {
                             $the_file = file($file_path);
 
@@ -77,8 +77,8 @@ if (!current_user_can('administrator')) {
     <p>
         <a href="javascript:showPayloadsLog()" class="button button-primary">Show payloads log</a>
         <input type="submit" name="submit-truncate-payloads-log" id="submit-truncate-payloads-log" class="button button-red" value="Truncate payloads log (current <?php
-        if (file_exists(WGOJNJ_PATH.'waf-payloads.log')) {
-            echo number_format(filesize(WGOJNJ_PATH.'waf-payloads.log') / 1024, 2);
+        if (file_exists(WGO_PATH.'waf-payloads.log')) {
+            echo number_format(filesize(WGO_PATH.'waf-payloads.log') / 1024, 2);
         } else {
             echo '0';
         }

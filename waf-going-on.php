@@ -481,11 +481,11 @@ class WafGoingOn
     private function _get_options($mysql_connection, $the_table_full_prefix)
     {
         $options_to_search = [
-            'wgojnj_limit_requests_per_minute',
-            'wgojnj_limit_requests_per_hour',
-            'wgojnj_im_behind_proxy',
-            'wgojnj_save_payloads',
-            'wgojnj_save_only_payloads_matching_regex',
+            'wgo_limit_requests_per_minute',
+            'wgo_limit_requests_per_hour',
+            'wgo_im_behind_proxy',
+            'wgo_save_payloads',
+            'wgo_save_only_payloads_matching_regex',
         ];
 
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '
