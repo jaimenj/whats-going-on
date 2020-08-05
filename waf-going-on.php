@@ -496,7 +496,7 @@ class WafGoingOn
             //var_dump($result);
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_array($result)) {
-                    $option_name = substr($row['option_name'], 7, strlen($row['option_name']) - 7);
+                    $option_name = substr($row['option_name'], strlen('wgo_'), strlen($row['option_name']) - strlen('wgo_'));
                     $this->wp_options[$option_name] = $row['option_value'];
                 }
                 mysqli_free_result($result);
