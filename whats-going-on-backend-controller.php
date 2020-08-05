@@ -157,6 +157,8 @@ class WhatsGoingOnBackendController
         $this->_install_recursive_waf('wp-content/');
         $this->_install_recursive_waf('wp-includes/');
 
+        update_option('wgo_waf_installed', 1);
+
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
     }
 
@@ -183,6 +185,8 @@ class WhatsGoingOnBackendController
         $this->_uninstall_recursive_waf('wp-admin/');
         $this->_uninstall_recursive_waf('wp-content/');
         $this->_uninstall_recursive_waf('wp-includes/');
+
+        update_option('wgo_waf_installed', 0);
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Uninstalled!</p></div>';
     }
