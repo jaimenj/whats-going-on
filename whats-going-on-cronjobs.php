@@ -23,6 +23,12 @@ class WhatsGoingOnCronjobs
         // Add some new cron schedules..
         add_filter('cron_schedules', [$this, 'add_cron_intervals']);
 
+        // Job for checking installation of WAF..
+        add_action('wgo_cron_check_waf_install', [$this, 'check_waf_install']);
+        if (!wp_next_scheduled('wgo_cron_check_waf_install')) {
+            wp_schedule_event(time(), 'hourly', 'wgo_cron_check_waf_install');
+        }
+
         // Job remove old records from DB..
         add_action('wgo_cron_remove_old_data_hook', [$this, 'remove_old_data']);
         if (!wp_next_scheduled('wgo_cron_remove_old_data_hook')) {
@@ -39,6 +45,24 @@ class WhatsGoingOnCronjobs
         add_action('wgo_cron_notify_ddos_hook', [$this, 'notify_ddos']);
         if (!wp_next_scheduled('wgo_cron_notify_ddos_hook')) {
             wp_schedule_event(time(), 'half-hour', 'wgo_cron_notify_ddos_hook');
+        }
+    }
+
+    public function check_waf_install()
+    {
+        echo 'WAF is installed: '.WhatsGoingOnBackendController::get_instance()->is_waf_installed().PHP_EOL;
+
+        if (get_option('wgo_waf_installed')) {
+            if (WhatsGoingOnBackendController::get_instance()->is_waf_installed()) {
+                WhatsGoingOnBackendController::get_instance()->install_recursive_waf('wp-admin/');
+                WhatsGoingOnBackendController::get_instance()->install_recursive_waf('wp-content/');
+                WhatsGoingOnBackendController::get_instance()->install_recursive_waf('wp-includes/');
+
+                echo '..only reinstalling subdirectories!'.PHP_EOL;
+            } else {
+                WhatsGoingOnBackendController::get_instance()->install_waf();
+                echo '..reinstalling subdirectories and main file!'.PHP_EOL;
+            }
         }
     }
 

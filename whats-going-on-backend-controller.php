@@ -123,7 +123,7 @@ class WhatsGoingOnBackendController
                 } elseif (isset($_REQUEST['submit-unblock-continent'])) {
                     $wgoSms = $this->_unblock_continent();
                 } elseif (isset($_REQUEST['submit-install-full-waf'])) {
-                    $wgoSms = $this->_install_waf();
+                    $wgoSms = $this->install_waf();
                 } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
                     $wgoSms = $this->_uninstall_waf();
                 } else {
@@ -150,19 +150,19 @@ class WhatsGoingOnBackendController
         return $its_ok;
     }
 
-    private function _install_waf()
+    public function install_waf()
     {
         file_put_contents(ABSPATH.'.user.ini', $this->config_line, FILE_APPEND);
-        $this->_install_recursive_waf('wp-admin/');
-        $this->_install_recursive_waf('wp-content/');
-        $this->_install_recursive_waf('wp-includes/');
+        $this->install_recursive_waf('wp-admin/');
+        $this->install_recursive_waf('wp-content/');
+        $this->install_recursive_waf('wp-includes/');
 
         update_option('wgo_waf_installed', 1);
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
     }
 
-    private function _install_recursive_waf($current_path)
+    public function install_recursive_waf($current_path)
     {
         file_put_contents(ABSPATH.$current_path.'.user.ini', $this->config_line);
 
@@ -171,7 +171,7 @@ class WhatsGoingOnBackendController
             $new_current_path = $current_path.$entry.'/';
             if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
                 //echo $new_current_path.'<br>';
-                $this->_install_recursive_waf($new_current_path);
+                $this->install_recursive_waf($new_current_path);
             }
         }
         $dir->close();
