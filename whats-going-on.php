@@ -10,9 +10,9 @@
 defined('ABSPATH') or die('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
 
-include_once WGO_PATH.'cronjobs.php';
-include_once WGO_PATH.'backend-controller.php';
-include_once WGO_PATH.'ajax-controller.php';
+include_once WGO_PATH.'whats-going-on-cronjobs.php';
+include_once WGO_PATH.'whats-going-on-backend-controller.php';
+include_once WGO_PATH.'whats-going-on-ajax-controller.php';
 
 class WhatsGoingOn
 {
@@ -85,6 +85,7 @@ class WhatsGoingOn
             .');';
         $wpdb->get_results($sql);
 
+        register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_hour');
         register_setting('wgo_options_group', 'wgo_items_per_page');
@@ -98,10 +99,11 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_save_payloads');
         register_setting('wgo_options_group', 'wgo_save_only_payloads_matching_regex');
 
-        add_option('wgo_limit_requests_per_minute', '-1');
+        add_option('wgo_waf_installed', 0);
+        add_option('wgo_limit_requests_per_minute', -1);
         add_option('wgo_limit_requests_per_hour', -1);
-        add_option('wgo_items_per_page', '10');
-        add_option('wgo_days_to_store', '7');
+        add_option('wgo_items_per_page', 10);
+        add_option('wgo_days_to_store', 7);
         add_option('wgo_im_behind_proxy', 0);
         add_option('wgo_notification_email', '');
         add_option('wgo_notify_requests_more_than_sd', 0);
@@ -127,6 +129,7 @@ class WhatsGoingOn
 
     public function uninstall()
     {
+        delete_option('wgo_waf_installed');
         delete_option('wgo_limit_requests_per_minute');
         delete_option('wgo_limit_requests_per_hour');
         delete_option('wgo_items_per_page');
