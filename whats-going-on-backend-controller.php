@@ -6,6 +6,8 @@ class WhatsGoingOnBackendController
 {
     private static $instance;
 
+    private $config_line;
+
     public static function get_instance()
     {
         if (!isset(self::$instance)) {
@@ -19,6 +21,8 @@ class WhatsGoingOnBackendController
     {
         add_action('admin_bar_menu', [$this, 'add_admin_bar_menu'], 99);
         add_action('admin_menu', [$this, 'add_admin_page']);
+
+        $this->config_line = PHP_EOL."auto_prepend_file = '".WGO_PATH."waf-going-on.php';".PHP_EOL;
     }
 
     public function add_admin_bar_menu($admin_bar)
@@ -132,27 +136,40 @@ class WhatsGoingOnBackendController
         include WGO_PATH.'view/whats-going-on-view.php';
     }
 
+    public function is_waf_installed()
+    {
+        $its_ok = false;
+
+        if (file_exists(ABSPATH.'.user.ini')) {
+            $main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
+            if (false !== strpos($main_user_ini_content, $this->config_line)) {
+                $its_ok = true;
+            }
+        }
+
+        return $its_ok;
+    }
+
     private function _install_waf()
     {
-        $config_line = "auto_prepend_file = '".WGO_PATH."waf-going-on.php';".PHP_EOL;
-        file_put_contents(ABSPATH.'.user.ini', $config_line);
-        $this->_install_recursive_waf('wp-admin/', $config_line);
-        $this->_install_recursive_waf('wp-content/', $config_line);
-        $this->_install_recursive_waf('wp-includes/', $config_line);
+        file_put_contents(ABSPATH.'.user.ini', $this->config_line, FILE_APPEND);
+        $this->_install_recursive_waf('wp-admin/');
+        $this->_install_recursive_waf('wp-content/');
+        $this->_install_recursive_waf('wp-includes/');
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
     }
 
-    private function _install_recursive_waf($current_path, $config_line)
+    private function _install_recursive_waf($current_path)
     {
-        file_put_contents(ABSPATH.$current_path.'.user.ini', $config_line);
+        file_put_contents(ABSPATH.$current_path.'.user.ini', $this->config_line);
 
         $dir = dir(ABSPATH.$current_path);
         while (false !== ($entry = $dir->read())) {
             $new_current_path = $current_path.$entry.'/';
             if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
                 //echo $new_current_path.'<br>';
-                $this->_install_recursive_waf($new_current_path, $config_line);
+                $this->_install_recursive_waf($new_current_path);
             }
         }
         $dir->close();
@@ -160,7 +177,9 @@ class WhatsGoingOnBackendController
 
     public function _uninstall_waf()
     {
-        unlink(ABSPATH.'.user.ini');
+        $new_main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
+        $new_main_user_ini_content = str_replace($this->config_line, '', $new_main_user_ini_content);
+        file_put_contents(ABSPATH.'.user.ini', $new_main_user_ini_content);
         $this->_uninstall_recursive_waf('wp-admin/');
         $this->_uninstall_recursive_waf('wp-content/');
         $this->_uninstall_recursive_waf('wp-includes/');

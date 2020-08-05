@@ -10,9 +10,9 @@
 defined('ABSPATH') or die('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
 
-include_once WGO_PATH.'cronjobs.php';
-include_once WGO_PATH.'backend-controller.php';
-include_once WGO_PATH.'ajax-controller.php';
+include_once WGO_PATH.'whats-going-on-cronjobs.php';
+include_once WGO_PATH.'whats-going-on-backend-controller.php';
+include_once WGO_PATH.'whats-going-on-ajax-controller.php';
 
 class WhatsGoingOn
 {
