@@ -391,7 +391,7 @@ echo $_SERVER['REQUEST_URI'];
             
             <span class="span-install">
                 <?php
-                if (!WhatsGoingOnBackendController::get_instance()->is_waf_installed()) {
+                if (!WhatsGoingOn::get_instance()->is_waf_installed()) {
                     ?>
                     <input type="submit" name="submit-install-full-waf" id="submit-install-full-waf" class="button" value="Install .user.ini">
                 <?php

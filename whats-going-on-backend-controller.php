@@ -6,8 +6,6 @@ class WhatsGoingOnBackendController
 {
     private static $instance;
 
-    private $config_line;
-
     public static function get_instance()
     {
         if (!isset(self::$instance)) {
@@ -21,8 +19,6 @@ class WhatsGoingOnBackendController
     {
         add_action('admin_bar_menu', [$this, 'add_admin_bar_menu'], 99);
         add_action('admin_menu', [$this, 'add_admin_page']);
-
-        $this->config_line = PHP_EOL."auto_prepend_file = '".WGO_PATH."waf-going-on.php';".PHP_EOL;
     }
 
     public function add_admin_bar_menu($admin_bar)
@@ -123,7 +119,7 @@ class WhatsGoingOnBackendController
                 } elseif (isset($_REQUEST['submit-unblock-continent'])) {
                     $wgoSms = $this->_unblock_continent();
                 } elseif (isset($_REQUEST['submit-install-full-waf'])) {
-                    $wgoSms = $this->install_waf();
+                    $wgoSms = $this->_install_waf();
                 } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
                     $wgoSms = $this->_uninstall_waf();
                 } else {
@@ -136,76 +132,18 @@ class WhatsGoingOnBackendController
         include WGO_PATH.'view/whats-going-on-view.php';
     }
 
-    public function is_waf_installed()
+    private function _install_waf()
     {
-        $its_ok = false;
-
-        if (file_exists(ABSPATH.'.user.ini')) {
-            $main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
-            if (false !== strpos($main_user_ini_content, $this->config_line)) {
-                $its_ok = true;
-            }
-        }
-
-        return $its_ok;
-    }
-
-    public function install_waf()
-    {
-        file_put_contents(ABSPATH.'.user.ini', $this->config_line, FILE_APPEND);
-        $this->install_recursive_waf('wp-admin/');
-        $this->install_recursive_waf('wp-content/');
-        $this->install_recursive_waf('wp-includes/');
-
-        update_option('wgo_waf_installed', 1);
+        WhatsGoingOn::get_instance()->install_waf();
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
     }
 
-    public function install_recursive_waf($current_path)
+    private function _uninstall_waf()
     {
-        file_put_contents(ABSPATH.$current_path.'.user.ini', $this->config_line);
-
-        $dir = dir(ABSPATH.$current_path);
-        while (false !== ($entry = $dir->read())) {
-            $new_current_path = $current_path.$entry.'/';
-            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
-                //echo $new_current_path.'<br>';
-                $this->install_recursive_waf($new_current_path);
-            }
-        }
-        $dir->close();
-    }
-
-    public function _uninstall_waf()
-    {
-        $new_main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
-        $new_main_user_ini_content = str_replace($this->config_line, '', $new_main_user_ini_content);
-        file_put_contents(ABSPATH.'.user.ini', $new_main_user_ini_content);
-        $this->_uninstall_recursive_waf('wp-admin/');
-        $this->_uninstall_recursive_waf('wp-content/');
-        $this->_uninstall_recursive_waf('wp-includes/');
-
-        update_option('wgo_waf_installed', 0);
+        WhatsGoingOn::get_instance()->uninstall_waf();
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Uninstalled!</p></div>';
-    }
-
-    private function _uninstall_recursive_waf($current_path)
-    {
-        if (file_exists(ABSPATH.$current_path.'.user.ini')) {
-            unlink(ABSPATH.$current_path.'.user.ini');
-        }
-
-        $dir = dir(ABSPATH.$current_path);
-        while (false !== ($entry = $dir->read())) {
-            $new_current_path = $current_path.$entry.'/';
-            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
-                //echo $new_current_path.'<br>';
-                $this->_uninstall_recursive_waf($new_current_path);
-            }
-        }
-        $dir->close();
     }
 
     private function _save_main_configs()

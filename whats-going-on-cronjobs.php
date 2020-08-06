@@ -50,17 +50,17 @@ class WhatsGoingOnCronjobs
 
     public function check_waf_install()
     {
-        echo 'WAF is installed: '.WhatsGoingOnBackendController::get_instance()->is_waf_installed().PHP_EOL;
+        echo 'WAF is installed: '.WhatsGoingOn::get_instance()->is_waf_installed().PHP_EOL;
 
         if (get_option('wgo_waf_installed')) {
-            if (WhatsGoingOnBackendController::get_instance()->is_waf_installed()) {
-                WhatsGoingOnBackendController::get_instance()->install_recursive_waf('wp-admin/');
-                WhatsGoingOnBackendController::get_instance()->install_recursive_waf('wp-content/');
-                WhatsGoingOnBackendController::get_instance()->install_recursive_waf('wp-includes/');
+            if (WhatsGoingOn::get_instance()->is_waf_installed()) {
+                WhatsGoingOn::get_instance()->install_recursive_waf('wp-admin/');
+                WhatsGoingOn::get_instance()->install_recursive_waf('wp-content/');
+                WhatsGoingOn::get_instance()->install_recursive_waf('wp-includes/');
 
                 echo '..only reinstalling subdirectories!'.PHP_EOL;
             } else {
-                WhatsGoingOnBackendController::get_instance()->install_waf();
+                WhatsGoingOn::get_instance()->install_waf();
                 echo '..reinstalling subdirectories and main file!'.PHP_EOL;
             }
         }

@@ -111,16 +111,12 @@ class WafGoingOn
             $this->retry_time = 3600;
         }
 
-        // Regexes errors
+        // Regexes for IPs, URIs and payloads..
         $regexes_errors_file = __DIR__.'/waf-errors.log';
         $regexes_errors = file($regexes_errors_file);
-
-        //var_dump($regexes_errors_file);
-
         $this->_check_block_list($comments, $regexes_errors);
         $this->_check_regexes_uri($comments, $regexes_errors);
-        $payload_matches = false;
-        $this->_check_regexes_payload($comments, $regexes_errors, $payload_matches);
+        $payload_matches = $this->_check_regexes_payload($comments, $regexes_errors);
         if (($this->wp_options['save_payloads'] and !$this->wp_options['save_only_payloads_matching_regex'])
         or ($this->wp_options['save_payloads'] and $this->wp_options['save_only_payloads_matching_regex']) and $payload_matches) {
             $this->_save_payloads();
@@ -260,12 +256,13 @@ class WafGoingOn
         }
     }
 
-    private function _check_regexes_payload(&$comments, &$regexes_errors, &$payload_matches)
+    private function _check_regexes_payload(&$comments, &$regexes_errors)
     {
+        $to_block = false;
+
         // If hits a regex for post data..
         if (file_exists($this->block_regexes_payload_file_path)) {
             $file_content = file($this->block_regexes_payload_file_path);
-            $to_block = false;
             $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
                 $payload_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
@@ -294,7 +291,7 @@ class WafGoingOn
             }
         }
 
-        $payload_matches = $to_block;
+        return $to_block;
     }
 
     private function _recursive_payload_check($payload_regex, $i, $post_value, &$to_block, &$to_block_regex_num, &$regexes_errors)

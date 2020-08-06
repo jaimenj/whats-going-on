@@ -1,9 +1,10 @@
 <?php
 /**
- * Plugin Name: What's going on WAF
+ * Plugin Name: What's going on
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
- * Description: A tiny WAF, a tool for showing what kind of requests are being made in real time.
- * Version: 1.0
+ * License: GPLv2 or later
+ * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
+ * Version: 0.5
  * Author: Jaime Niñoles
  * Author URI: https://jnjsite.com/.
  */
@@ -18,6 +19,8 @@ class WhatsGoingOn
 {
     private static $instance;
 
+    private $waf_config_line;
+
     public static function get_instance()
     {
         if (!isset(self::$instance)) {
@@ -29,6 +32,8 @@ class WhatsGoingOn
 
     private function __construct()
     {
+        $this->waf_config_line = PHP_EOL."auto_prepend_file = '".WGO_PATH."waf-going-on.php';".PHP_EOL;
+
         // Activation and deactivation..
         register_activation_hook(__FILE__, [$this, 'activation']);
         register_deactivation_hook(__FILE__, [$this, 'deactivation']);
@@ -192,6 +197,78 @@ class WhatsGoingOn
         wp_enqueue_script('wgo_custom_script', plugin_dir_url(__FILE__).'lib/wgo.js', [], '1.0.2');
         wp_enqueue_script('wgo_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
         wp_enqueue_script('wgo_map_script', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '1');
+    }
+
+    public function is_waf_installed()
+    {
+        $its_ok = false;
+
+        if (file_exists(ABSPATH.'.user.ini')) {
+            $main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
+            if (false !== strpos($main_user_ini_content, $this->waf_config_line)) {
+                $its_ok = true;
+            }
+        }
+
+        return $its_ok;
+    }
+
+    public function install_waf()
+    {
+        file_put_contents(ABSPATH.'.user.ini', $this->waf_config_line, FILE_APPEND);
+        $this->_install_recursive_waf('wp-admin/');
+        $this->_install_recursive_waf('wp-content/');
+        $this->_install_recursive_waf('wp-includes/');
+
+        update_option('wgo_waf_installed', 1);
+    }
+
+    public function install_recursive_waf($current_path)
+    {
+        $this->_install_recursive_waf($current_path);
+    }
+
+    private function _install_recursive_waf($current_path)
+    {
+        file_put_contents(ABSPATH.$current_path.'.user.ini', $this->waf_config_line);
+
+        $dir = dir(ABSPATH.$current_path);
+        while (false !== ($entry = $dir->read())) {
+            $new_current_path = $current_path.$entry.'/';
+            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
+                $this->_install_recursive_waf($new_current_path);
+            }
+        }
+        $dir->close();
+    }
+
+    public function uninstall_waf()
+    {
+        $new_main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
+        $new_main_user_ini_content = str_replace($this->waf_config_line, '', $new_main_user_ini_content);
+        file_put_contents(ABSPATH.'.user.ini', $new_main_user_ini_content);
+        $this->_uninstall_recursive_waf('wp-admin/');
+        $this->_uninstall_recursive_waf('wp-content/');
+        $this->_uninstall_recursive_waf('wp-includes/');
+
+        update_option('wgo_waf_installed', 0);
+    }
+
+    private function _uninstall_recursive_waf($current_path)
+    {
+        if (file_exists(ABSPATH.$current_path.'.user.ini')) {
+            unlink(ABSPATH.$current_path.'.user.ini');
+        }
+
+        $dir = dir(ABSPATH.$current_path);
+        while (false !== ($entry = $dir->read())) {
+            $new_current_path = $current_path.$entry.'/';
+            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
+                //echo $new_current_path.'<br>';
+                $this->_uninstall_recursive_waf($new_current_path);
+            }
+        }
+        $dir->close();
     }
 }
 
