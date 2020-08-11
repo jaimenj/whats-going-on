@@ -117,6 +117,15 @@ class WhatsGoingOn
         add_option('wgo_notify_requests_less_than_25_percent', 0);
         add_option('wgo_save_payloads', 0);
         add_option('wgo_save_only_payloads_matching_regex', 0);
+
+        if (!file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
+            mkdir(ABSPATH.'/wp-content/uploads/wgo-things');
+        }
+        file_put_contents(
+            ABSPATH.'/wp-content/uploads/wgo-things/.htaccess',
+            'Order allow,deny'.PHP_EOL
+            .'Deny from all'.PHP_EOL
+        );
     }
 
     public function deactivation()
@@ -129,7 +138,7 @@ class WhatsGoingOn
         $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_404s;';
         $wpdb->get_results($sql);
 
-        WhatsGoingOnBackendController::get_instance()->_uninstall_waf();
+        WhatsGoingOn::get_instance()->uninstall_waf();
     }
 
     public function uninstall()
@@ -147,7 +156,7 @@ class WhatsGoingOn
         delete_option('wgo_save_payloads');
         delete_option('wgo_save_only_payloads_matching_regex');
 
-        WhatsGoingOnBackendController::get_instance()->_uninstall_waf();
+        WhatsGoingOn::get_instance()->uninstall_waf();
     }
 
     /**

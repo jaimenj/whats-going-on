@@ -122,7 +122,7 @@ class WhatsGoingOnCronjobs
         echo 'Filling countries..'.PHP_EOL;
 
         global $wpdb;
-        $reader = new Reader(WGO_PATH.'lib/GeoLite2-City.mmdb');
+        $reader = new Reader(WGO_PATH.'lib/GeoLite2-Country.mmdb');
         $im_behind_proxy = get_option('wgo_im_behind_proxy');
 
         $tableNames = ['whats_going_on', 'whats_going_on_block', 'whats_going_on_404s'];
@@ -141,7 +141,7 @@ class WhatsGoingOnCronjobs
                 }
 
                 try {
-                    $record = $reader->city($ip);
+                    $record = $reader->country($ip);
 
                     if (!empty($record->country->isoCode)) {
                         // Update records..

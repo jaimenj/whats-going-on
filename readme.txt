@@ -6,7 +6,6 @@ Tested up to: 5.4
 Requires PHP: 7.2
 Stable tag: 0.5
 License: GPLv2 or later
-Donate link: https://www.paypal.me/jaimeninoles
 Repository URL: https://github.com/jaimenj/whats-going-on
 Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
 
@@ -19,7 +18,6 @@ A very simple plugin for WordPress that allows you to see all real requests to y
 Features:
 
 * Feel free to contribute in GitHub to improve the project.
-* ..
 * It’s free, completely free.
 * Detection and protection of DoS attacks.
 * Detection and notification of possible DDoS attacks.

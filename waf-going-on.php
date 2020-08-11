@@ -345,7 +345,7 @@ class WafGoingOn
     private function _check_countries(&$comments, &$regexes_errors)
     {
         if (file_exists($this->block_countries)) {
-            $reader = new Reader(__DIR__.'/lib/GeoLite2-City.mmdb');
+            $reader = new Reader(__DIR__.'/lib/GeoLite2-Country.mmdb');
             $request_country = '';
             $to_block = false;
 
@@ -364,7 +364,7 @@ class WafGoingOn
             }
 
             try {
-                $record = $reader->city($ip);
+                $record = $reader->country($ip);
                 $request_country = $record->country->isoCode;
             } catch (\Throwable $th) {
             }
