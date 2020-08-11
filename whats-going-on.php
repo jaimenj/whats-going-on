@@ -126,6 +126,13 @@ class WhatsGoingOn
             'Order allow,deny'.PHP_EOL
             .'Deny from all'.PHP_EOL
         );
+        file_put_contents(
+            ABSPATH.'/wp-content/uploads/wgo-things/.config',
+            'DB_NAME='.DB_NAME.PHP_EOL
+            .'DB_USER='.DB_USER.PHP_EOL
+            .'DB_PASSWORD='.DB_PASSWORD.PHP_EOL
+            .'DB_HOST='.DB_PASSWORD.PHP_EOL
+        );
     }
 
     public function deactivation()
@@ -139,6 +146,17 @@ class WhatsGoingOn
         $wpdb->get_results($sql);
 
         WhatsGoingOn::get_instance()->uninstall_waf();
+        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
+            $dir = dir(ABSPATH.'/wp-content/uploads/wgo-things');
+            while (false !== ($entry = $dir->read())) {
+                $current_path = ABSPATH.'/wp-content/uploads/wgo-things/'.$entry;
+                if ('.' != $entry and '..' != $entry) {
+                    unlink($current_path);
+                }
+            }
+            $dir->close();
+            rmdir(ABSPATH.'/wp-content/uploads/wgo-things');
+        }
     }
 
     public function uninstall()
