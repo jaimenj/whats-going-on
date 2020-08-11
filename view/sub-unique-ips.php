@@ -33,7 +33,7 @@ if (!current_user_can('administrator')) {
                                 $the_file = file($file_path);
                                 if (count($the_file) > 1) {
                                     for ($i = 1; $i < count($the_file); ++$i) {
-                                        echo $the_file[$i];
+                                        echo esc_textarea($the_file[$i]);
                                     }
                                 }
                             }
@@ -65,7 +65,7 @@ if (!current_user_can('administrator')) {
                                 $the_file = file($file_path);
                                 if (count($the_file) > 1) {
                                     for ($i = 1; $i < count($the_file); ++$i) {
-                                        echo $the_file[$i];
+                                        echo esc_textarea($the_file[$i]);
                                     }
                                 }
                             }

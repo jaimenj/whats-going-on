@@ -46,11 +46,11 @@ $maxs_reached_sql = 'SELECT max(last_minute) max_hits_minute_reached, max(last_h
 
 $add_sql = '';
 if (isset($_GET['filter-url'])) {
-    $add_sql .= " WHERE url = '".$_GET['filter-url']."'";
+    $add_sql .= " WHERE url = '".sanitize_text_field($_GET['filter-url'])."'";
 } elseif (isset($_GET['filter-ip'])) {
-    $add_sql .= " WHERE remote_ip = '".$_GET['filter-ip']."'";
+    $add_sql .= " WHERE remote_ip = '".sanitize_text_field($_GET['filter-ip'])."'";
 } elseif (isset($_GET['filter-method'])) {
-    $add_sql .= " WHERE method = '".urldecode($_GET['filter-method'])."'";
+    $add_sql .= " WHERE method = '".sanitize_text_field($_GET['filter-method'])."'";
 }
 $total_sql .= $add_sql;
 $main_sql .= $add_sql;
@@ -67,8 +67,6 @@ $results = $wpdb->get_results($main_sql);
 $maxs_reached = $wpdb->get_results(
     $maxs_reached_sql
 );
-//var_dump($maxs_reached);
-//$current_page = (isset($_POST['current_page']) ? $_POST['current_page'] : 1);
 ?>
 
 <form method="post" enctype="multipart/form-data" action="<?php

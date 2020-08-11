@@ -61,7 +61,7 @@ class WhatsGoingOnBackendController
         } else {
             $current_page = 1;
         }
-        //var_export($current_page);
+        //var_dump($current_page);
 
         $submitting = false;
         foreach ($_REQUEST as $key => $value) {
@@ -148,10 +148,10 @@ class WhatsGoingOnBackendController
 
     private function _save_main_configs()
     {
-        update_option('wgo_items_per_page', stripslashes($_REQUEST['items_per_page']));
-        update_option('wgo_days_to_store', stripslashes($_REQUEST['days_to_store']));
-        update_option('wgo_im_behind_proxy', stripslashes($_REQUEST['im_behind_proxy']));
-        update_option('wgo_notification_email', stripslashes($_REQUEST['notification_email']));
+        update_option('wgo_items_per_page', intval($_REQUEST['items_per_page']));
+        update_option('wgo_days_to_store', intval($_REQUEST['days_to_store']));
+        update_option('wgo_im_behind_proxy', intval($_REQUEST['im_behind_proxy']));
+        update_option('wgo_notification_email', sanitize_email($_REQUEST['notification_email']));
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
     }
@@ -169,18 +169,18 @@ class WhatsGoingOnBackendController
 
     private function _save_dos_configs()
     {
-        update_option('wgo_limit_requests_per_minute', stripslashes($_REQUEST['limit_requests_per_minute']));
-        update_option('wgo_limit_requests_per_hour', stripslashes($_REQUEST['limit_requests_per_hour']));
+        update_option('wgo_limit_requests_per_minute', intval($_REQUEST['limit_requests_per_minute']));
+        update_option('wgo_limit_requests_per_hour', intval($_REQUEST['limit_requests_per_hour']));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>DoS configs saved!</p></div>';
     }
 
     private function _save_ddos_configs()
     {
-        update_option('wgo_notify_requests_more_than_sd', stripslashes($_REQUEST['notify_requests_more_than_sd']));
-        update_option('wgo_notify_requests_more_than_2sd', stripslashes($_REQUEST['notify_requests_more_than_2sd']));
-        update_option('wgo_notify_requests_more_than_3sd', stripslashes($_REQUEST['notify_requests_more_than_3sd']));
-        update_option('wgo_notify_requests_less_than_25_percent', stripslashes($_REQUEST['notify_requests_less_than_25_percent']));
+        update_option('wgo_notify_requests_more_than_sd', intval($_REQUEST['notify_requests_more_than_sd']));
+        update_option('wgo_notify_requests_more_than_2sd', intval($_REQUEST['notify_requests_more_than_2sd']));
+        update_option('wgo_notify_requests_more_than_3sd', intval($_REQUEST['notify_requests_more_than_3sd']));
+        update_option('wgo_notify_requests_less_than_25_percent', intval($_REQUEST['notify_requests_less_than_25_percent']));
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>DDoS configs saved!</p></div>';
     }
@@ -208,22 +208,22 @@ class WhatsGoingOnBackendController
         global $wpdb;
 
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-            ."WHERE remote_ip = '".$_REQUEST['txt_this_ip']."';";
+            ."WHERE remote_ip = '".sanitize_text_field($_REQUEST['txt_this_ip'])."';";
         $results = $wpdb->get_results($sql);
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-            ."WHERE remote_ip = '".$_REQUEST['txt_this_ip']."';";
+            ."WHERE remote_ip = '".sanitize_text_field($_REQUEST['txt_this_ip'])."';";
         $results = $wpdb->get_results($sql);
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-            ."WHERE remote_ip = '".$_REQUEST['txt_this_ip']."';";
+            ."WHERE remote_ip = '".sanitize_text_field($_REQUEST['txt_this_ip'])."';";
         $results = $wpdb->get_results($sql);
 
-        return '<div id="message" class="notice notice-success is-dismissible"><p>Records with IP '.$_REQUEST['txt_this_ip'].' removed!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Records with IP '.sanitize_text_field($_REQUEST['txt_this_ip']).' removed!</p></div>';
     }
 
     private function _save_ip_lists()
     {
-        $this->_save_clean_file($_REQUEST['txt_block_list'], WGO_PATH.'block-list.php');
-        $this->_save_clean_file($_REQUEST['txt_allow_list'], WGO_PATH.'allow-list.php');
+        $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_block_list']), WGO_PATH.'block-list.php');
+        $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_allow_list']), WGO_PATH.'allow-list.php');
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
     }
@@ -263,8 +263,8 @@ class WhatsGoingOnBackendController
 
     private function _save_regexes_configs()
     {
-        update_option('wgo_save_payloads', $_REQUEST['save_payloads']);
-        update_option('wgo_save_only_payloads_matching_regex', $_REQUEST['save_only_payloads_matching_regex']);
+        update_option('wgo_save_payloads', intval($_REQUEST['save_payloads']));
+        update_option('wgo_save_only_payloads_matching_regex', intval($_REQUEST['save_only_payloads_matching_regex']));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Regexes configs saved!</p></div>';
     }
@@ -294,7 +294,7 @@ class WhatsGoingOnBackendController
 
     private function _add_countries_to_block()
     {
-        $add_countries = $_REQUEST['select_block_countries'];
+        $add_countries = sanitize_text_field($_REQUEST['select_block_countries']);
 
         if (file_exists(WGO_PATH.'block-countries.php')) {
             $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
@@ -307,12 +307,12 @@ class WhatsGoingOnBackendController
         }
         file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
 
-        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $_REQUEST['select_block_countries']).')!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $add_countries).')!</p></div>';
     }
 
     private function _remove_countries_to_block()
     {
-        $remove_countries = $_REQUEST['select_unblock_countries'];
+        $remove_countries = sanitize_text_field($_REQUEST['select_unblock_countries']);
 
         if (file_exists(WGO_PATH.'block-countries.php')) {
             $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
@@ -322,12 +322,12 @@ class WhatsGoingOnBackendController
         }
         file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
 
-        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $_REQUEST['select_unblock_countries']).')!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $remove_countries).')!</p></div>';
     }
 
     private function _block_continent()
     {
-        $continent_to_block = $_REQUEST['select_block_continent'][0];
+        $continent_to_block = sanitize_text_field($_REQUEST['select_block_continent'][0]);
 
         $add_countries = [];
         $array_countries_continents = explode(PHP_EOL, file_get_contents(WGO_PATH.'lib/isoCountriesContinents.csv'));
@@ -359,7 +359,7 @@ class WhatsGoingOnBackendController
 
     private function _unblock_continent()
     {
-        $continent_to_unblock = $_REQUEST['select_unblock_continent'][0];
+        $continent_to_unblock = sanitize_text_field($_REQUEST['select_unblock_continent'][0]);
 
         $remove_countries = [];
         $array_countries_continents = explode(PHP_EOL, file_get_contents(WGO_PATH.'lib/isoCountriesContinents.csv'));
