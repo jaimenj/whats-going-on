@@ -6,17 +6,15 @@ A simple Web Application Firewall for WordPress.
 
 ## Main info
 
-* Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
 * Contributors: jaimenj
 * Tags: wordpress, security, waf
 * Requires at least: 5.0
 * Tested up to: 5.4
 * Requires PHP: 7.2
-* Stable tag: 1.0
-* License: GPLv3
-* License URI: https://www.gnu.org/licenses/gpl-3.0.html
-* Donate link: https://www.paypal.me/jaimeninoles
+* Stable tag: 0.5
+* License: GPLv2 or later
 * Repository URL: https://github.com/jaimenj/whats-going-on
+* Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
 
 ## Description
 
@@ -27,8 +25,7 @@ Plugin website: \
 
 ## Features
 
-* This plugins is under construction, feel free to contribute in GitHub to improve the project.
-* ..
+* Feel free to contribute in GitHub to improve the project.
 * It’s free, completely free.
 * Detection and protection of DoS attacks.
 * Detection and notification of possible DDoS attacks.
