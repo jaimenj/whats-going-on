@@ -483,6 +483,7 @@ class WafGoingOn
             'wgo_im_behind_proxy',
             'wgo_save_payloads',
             'wgo_save_payloads_matching_uri_regex',
+            'wgo_save_payloads_matching_payload_regex',
         ];
 
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '
