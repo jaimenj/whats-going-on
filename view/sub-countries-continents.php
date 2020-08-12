@@ -77,8 +77,8 @@ if (!current_user_can('administrator')) {
     </div>
 
     <?php
-    if (file_exists(WGO_PATH.'block-countries.php')) {
-        $blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
+    if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php')) {
+        $blocking_countries = explode(PHP_EOL, file_get_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php'));
         unset($blocking_countries[0]);
     } else {
         $blocking_countries = [];

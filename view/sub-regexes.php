@@ -20,7 +20,7 @@ if (!current_user_can('administrator')) {
                 <tr>
                     <td>
                         <?php
-                        $file_path = WGO_PATH.'block-regexes-uri.php';
+                        $file_path = ABSPATH.'/wp-content/uploads/wgo-things/block-regexes-uri.php';
                         if (file_exists($file_path)) {
                             $the_file = file($file_path);
 
@@ -51,7 +51,7 @@ if (!current_user_can('administrator')) {
                 <tr>
                     <td>
                         <?php
-                        $file_path = WGO_PATH.'block-regexes-payload.php';
+                        $file_path = ABSPATH.'/wp-content/uploads/wgo-things/block-regexes-payload.php';
                         if (file_exists($file_path)) {
                             $the_file = file($file_path);
 
