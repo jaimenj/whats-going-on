@@ -1,22 +1,25 @@
 <?php
 /**
- * Plugin Name: What's going on WAF
+ * Plugin Name: What's going on
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
- * Description: A tiny WAF, a tool for showing what kind of requests are being made in real time.
- * Version: 1.0
+ * License: GPLv2 or later
+ * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
+ * Version: 0.5
  * Author: Jaime Niñoles
  * Author URI: https://jnjsite.com/.
  */
 defined('ABSPATH') or die('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
 
-include_once WGO_PATH.'cronjobs.php';
-include_once WGO_PATH.'backend-controller.php';
-include_once WGO_PATH.'ajax-controller.php';
+include_once WGO_PATH.'whats-going-on-cronjobs.php';
+include_once WGO_PATH.'whats-going-on-backend-controller.php';
+include_once WGO_PATH.'whats-going-on-ajax-controller.php';
 
 class WhatsGoingOn
 {
     private static $instance;
+
+    private $waf_config_line;
 
     public static function get_instance()
     {
@@ -29,6 +32,8 @@ class WhatsGoingOn
 
     private function __construct()
     {
+        $this->waf_config_line = PHP_EOL."auto_prepend_file = '".ABSPATH."waf-going-on.php';".PHP_EOL;
+
         // Activation and deactivation..
         register_activation_hook(__FILE__, [$this, 'activation']);
         register_deactivation_hook(__FILE__, [$this, 'deactivation']);
@@ -85,6 +90,7 @@ class WhatsGoingOn
             .');';
         $wpdb->get_results($sql);
 
+        register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_hour');
         register_setting('wgo_options_group', 'wgo_items_per_page');
@@ -96,12 +102,14 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_notify_requests_more_than_3sd');
         register_setting('wgo_options_group', 'wgo_notify_requests_less_than_25_percent');
         register_setting('wgo_options_group', 'wgo_save_payloads');
-        register_setting('wgo_options_group', 'wgo_save_only_payloads_matching_regex');
+        register_setting('wgo_options_group', 'wgo_save_payloads_matching_uri_regex');
+        register_setting('wgo_options_group', 'wgo_save_payloads_matching_payload_regex');
 
-        add_option('wgo_limit_requests_per_minute', '-1');
+        add_option('wgo_waf_installed', 0);
+        add_option('wgo_limit_requests_per_minute', -1);
         add_option('wgo_limit_requests_per_hour', -1);
-        add_option('wgo_items_per_page', '10');
-        add_option('wgo_days_to_store', '7');
+        add_option('wgo_items_per_page', 10);
+        add_option('wgo_days_to_store', 7);
         add_option('wgo_im_behind_proxy', 0);
         add_option('wgo_notification_email', '');
         add_option('wgo_notify_requests_more_than_sd', 0);
@@ -109,7 +117,26 @@ class WhatsGoingOn
         add_option('wgo_notify_requests_more_than_3sd', 0);
         add_option('wgo_notify_requests_less_than_25_percent', 0);
         add_option('wgo_save_payloads', 0);
-        add_option('wgo_save_only_payloads_matching_regex', 0);
+        add_option('wgo_save_payloads_matching_uri_regex', 0);
+        add_option('wgo_save_payloads_matching_payload_regex', 0);
+
+        if (!file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
+            mkdir(ABSPATH.'/wp-content/uploads/wgo-things');
+        }
+        file_put_contents(
+            ABSPATH.'/wp-content/uploads/wgo-things/.htaccess',
+            'Order allow,deny'.PHP_EOL
+            .'Deny from all'.PHP_EOL
+        );
+        file_put_contents(
+            ABSPATH.'/wp-content/uploads/wgo-things/.config',
+            'ABSPATH='.ABSPATH.PHP_EOL
+            .'DB_NAME='.DB_NAME.PHP_EOL
+            .'DB_USER='.DB_USER.PHP_EOL
+            .'DB_PASSWORD='.DB_PASSWORD.PHP_EOL
+            .'DB_HOST='.DB_HOST.PHP_EOL
+            .'TABLE_PREFIX='.$wpdb->prefix.PHP_EOL
+        );
     }
 
     public function deactivation()
@@ -122,11 +149,23 @@ class WhatsGoingOn
         $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_404s;';
         $wpdb->get_results($sql);
 
-        WhatsGoingOnBackendController::get_instance()->_uninstall_waf();
+        WhatsGoingOn::get_instance()->uninstall_waf();
+        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
+            $dir = dir(ABSPATH.'/wp-content/uploads/wgo-things');
+            while (false !== ($entry = $dir->read())) {
+                $current_path = ABSPATH.'/wp-content/uploads/wgo-things/'.$entry;
+                if ('.' != $entry and '..' != $entry) {
+                    unlink($current_path);
+                }
+            }
+            $dir->close();
+            rmdir(ABSPATH.'/wp-content/uploads/wgo-things');
+        }
     }
 
     public function uninstall()
     {
+        delete_option('wgo_waf_installed');
         delete_option('wgo_limit_requests_per_minute');
         delete_option('wgo_limit_requests_per_hour');
         delete_option('wgo_items_per_page');
@@ -137,9 +176,13 @@ class WhatsGoingOn
         delete_option('wgo_notify_requests_more_than_2sd');
         delete_option('wgo_notify_requests_more_than_3sd');
         delete_option('wgo_save_payloads');
-        delete_option('wgo_save_only_payloads_matching_regex');
+        delete_option('wgo_save_payloads_matching_uri_regex');
+        delete_option('wgo_save_payloads_matching_payload_regex');
 
-        WhatsGoingOnBackendController::get_instance()->_uninstall_waf();
+        WhatsGoingOn::get_instance()->uninstall_waf();
+        if (file_exists(ABSPATH.'waf-going-on.php')) {
+            unlink(ABSPATH.'waf-going-on.php');
+        }
     }
 
     /**
@@ -189,6 +232,79 @@ class WhatsGoingOn
         wp_enqueue_script('wgo_custom_script', plugin_dir_url(__FILE__).'lib/wgo.js', [], '1.0.2');
         wp_enqueue_script('wgo_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
         wp_enqueue_script('wgo_map_script', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '1');
+    }
+
+    public function is_waf_installed()
+    {
+        $its_ok = false;
+
+        if (file_exists(ABSPATH.'.user.ini')) {
+            $main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
+            if (false !== strpos($main_user_ini_content, $this->waf_config_line)) {
+                $its_ok = true;
+            }
+        }
+
+        return $its_ok;
+    }
+
+    public function install_waf()
+    {
+        file_put_contents(ABSPATH.'.user.ini', $this->waf_config_line, FILE_APPEND);
+        copy(WGO_PATH.'/waf-going-on.php', ABSPATH.'waf-going-on.php');
+        $this->_install_recursive_waf('wp-admin/');
+        $this->_install_recursive_waf('wp-content/');
+        $this->_install_recursive_waf('wp-includes/');
+
+        update_option('wgo_waf_installed', 1);
+    }
+
+    public function install_recursive_waf($current_path)
+    {
+        $this->_install_recursive_waf($current_path);
+    }
+
+    private function _install_recursive_waf($current_path)
+    {
+        file_put_contents(ABSPATH.$current_path.'.user.ini', $this->waf_config_line);
+
+        $dir = dir(ABSPATH.$current_path);
+        while (false !== ($entry = $dir->read())) {
+            $new_current_path = $current_path.$entry.'/';
+            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
+                $this->_install_recursive_waf($new_current_path);
+            }
+        }
+        $dir->close();
+    }
+
+    public function uninstall_waf()
+    {
+        $new_main_user_ini_content = file_get_contents(ABSPATH.'.user.ini');
+        $new_main_user_ini_content = str_replace($this->waf_config_line, '', $new_main_user_ini_content);
+        file_put_contents(ABSPATH.'.user.ini', $new_main_user_ini_content);
+        $this->_uninstall_recursive_waf('wp-admin/');
+        $this->_uninstall_recursive_waf('wp-content/');
+        $this->_uninstall_recursive_waf('wp-includes/');
+
+        update_option('wgo_waf_installed', 0);
+    }
+
+    private function _uninstall_recursive_waf($current_path)
+    {
+        if (file_exists(ABSPATH.$current_path.'.user.ini')) {
+            unlink(ABSPATH.$current_path.'.user.ini');
+        }
+
+        $dir = dir(ABSPATH.$current_path);
+        while (false !== ($entry = $dir->read())) {
+            $new_current_path = $current_path.$entry.'/';
+            if ('.' != $entry and '..' != $entry and is_dir(ABSPATH.$new_current_path)) {
+                //echo $new_current_path.'<br>';
+                $this->_uninstall_recursive_waf($new_current_path);
+            }
+        }
+        $dir->close();
     }
 }
 

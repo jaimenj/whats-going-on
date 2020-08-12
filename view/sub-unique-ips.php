@@ -28,12 +28,12 @@ if (!current_user_can('administrator')) {
                     <tr>
                         <td>
                             <textarea name="txt_block_list" id="txt_block_list" class="waf-textarea-config"><?php
-                            $file_path = WGO_PATH.'block-list.php';
+                            $file_path = ABSPATH.'/wp-content/uploads/wgo-things/block-list.php';
                             if (file_exists($file_path)) {
                                 $the_file = file($file_path);
                                 if (count($the_file) > 1) {
                                     for ($i = 1; $i < count($the_file); ++$i) {
-                                        echo $the_file[$i];
+                                        echo esc_textarea($the_file[$i]);
                                     }
                                 }
                             }
@@ -60,12 +60,12 @@ if (!current_user_can('administrator')) {
                     <tr>
                         <td>
                             <textarea name="txt_allow_list" id="txt_allow_list" class="waf-textarea-config"><?php
-                            $file_path = WGO_PATH.'allow-list.php';
+                            $file_path = ABSPATH.'/wp-content/uploads/wgo-things/allow-list.php';
                             if (file_exists($file_path)) {
                                 $the_file = file($file_path);
                                 if (count($the_file) > 1) {
                                     for ($i = 1; $i < count($the_file); ++$i) {
-                                        echo $the_file[$i];
+                                        echo esc_textarea($the_file[$i]);
                                     }
                                 }
                             }

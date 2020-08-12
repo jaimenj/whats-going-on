@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__.'/lib/geoip2.phar';
+include_once __DIR__.'/wp-content/plugins/whats-going-on/lib/geoip2.phar';
 use GeoIp2\Database\Reader;
 
 class WafGoingOn
@@ -49,12 +49,12 @@ class WafGoingOn
             5 => 'PREG_BAD_UTF8_OFFSET_ERROR',
             6 => 'PREG_JIT_STACKLIMIT_ERROR',
         ];
-        $this->block_list_file_path = __DIR__.'/block-list.php';
-        $this->allow_list_file_path = __DIR__.'/allow-list.php';
-        $this->block_regexes_uri_file_path = __DIR__.'/block-regexes-uri.php';
-        $this->block_regexes_payload_file_path = __DIR__.'/block-regexes-payload.php';
-        $this->block_countries = __DIR__.'/block-countries.php';
-        $this->payloads_file_path = __DIR__.'/waf-payloads.log';
+        $this->block_list_file_path = __DIR__.'/wp-content/uploads/wgo-things/block-list.php';
+        $this->allow_list_file_path = __DIR__.'/wp-content/uploads/wgo-things/allow-list.php';
+        $this->block_regexes_uri_file_path = __DIR__.'/wp-content/uploads/wgo-things/block-regexes-uri.php';
+        $this->block_regexes_payload_file_path = __DIR__.'/wp-content/uploads/wgo-things/block-regexes-payload.php';
+        $this->block_countries = __DIR__.'/wp-content/uploads/wgo-things/block-countries.php';
+        $this->payloads_file_path = __DIR__.'/wp-content/uploads/wgo-things/waf-payloads.log';
 
         // The main things of the WAF
         $this->_main();
@@ -111,18 +111,14 @@ class WafGoingOn
             $this->retry_time = 3600;
         }
 
-        // Regexes errors
-        $regexes_errors_file = __DIR__.'/waf-errors.log';
+        // Regexes for IPs, URIs and payloads..
+        $regexes_errors_file = __DIR__.'/wp-content/uploads/wgo-things/waf-errors.log';
         $regexes_errors = file($regexes_errors_file);
-
-        //var_dump($regexes_errors_file);
-
         $this->_check_block_list($comments, $regexes_errors);
-        $this->_check_regexes_uri($comments, $regexes_errors);
-        $payload_matches = false;
-        $this->_check_regexes_payload($comments, $regexes_errors, $payload_matches);
-        if (($this->wp_options['save_payloads'] and !$this->wp_options['save_only_payloads_matching_regex'])
-        or ($this->wp_options['save_payloads'] and $this->wp_options['save_only_payloads_matching_regex']) and $payload_matches) {
+        $uri_matches = $this->_check_regexes_uri($comments, $regexes_errors);
+        $payload_matches = $this->_check_regexes_payload($comments, $regexes_errors);
+        if (($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_uri_regex'] and $uri_matches)
+        or ($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_payload_regex']) and $payload_matches) {
             $this->_save_payloads();
         }
 
@@ -170,15 +166,11 @@ class WafGoingOn
     private function _load_configs(&$configs_array)
     {
         // Loading configs from wp-config.php file..
-        $config_file_path = __DIR__.'/../../../wp-config.php';
+        $config_file_path = __DIR__.'/wp-content/uploads/wgo-things/.config';
         $config_file_content = file($config_file_path);
         foreach ($config_file_content as $line) {
-            $matches = [];
-            if (preg_match('/DEFINE\(\'(.*?)\',\s*\'(.*)\'\);/i', $line, $matches)) {
+            if (preg_match('/(.*)=(.*)/i', $line, $matches)) {
                 $configs_array[$matches[1]] = $matches[2];
-            }
-            if (preg_match('/table_prefix.*\'(.*)\'/i', $line, $matches)) {
-                $configs_array['TABLE_PREFIX'] = $matches[1];
             }
         }
     }
@@ -221,10 +213,12 @@ class WafGoingOn
 
     private function _check_regexes_uri(&$comments, &$regexes_errors)
     {
+        $to_block = false;
+
         // If hits a regex for query string..
         if (file_exists($this->block_regexes_uri_file_path)) {
             $file_content = file($this->block_regexes_uri_file_path);
-            $to_block = false;
+            
             $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
                 $uri_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
@@ -258,14 +252,17 @@ class WafGoingOn
                 $this->retry_time = 86400;
             }
         }
+
+        return $to_block;
     }
 
-    private function _check_regexes_payload(&$comments, &$regexes_errors, &$payload_matches)
+    private function _check_regexes_payload(&$comments, &$regexes_errors)
     {
+        $to_block = false;
+
         // If hits a regex for post data..
         if (file_exists($this->block_regexes_payload_file_path)) {
             $file_content = file($this->block_regexes_payload_file_path);
-            $to_block = false;
             $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
                 $payload_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
@@ -294,7 +291,7 @@ class WafGoingOn
             }
         }
 
-        $payload_matches = $to_block;
+        return $to_block;
     }
 
     private function _recursive_payload_check($payload_regex, $i, $post_value, &$to_block, &$to_block_regex_num, &$regexes_errors)
@@ -348,7 +345,7 @@ class WafGoingOn
     private function _check_countries(&$comments, &$regexes_errors)
     {
         if (file_exists($this->block_countries)) {
-            $reader = new Reader(__DIR__.'/lib/GeoLite2-City.mmdb');
+            $reader = new Reader(__DIR__.'/wp-content/plugins/whats-going-on/lib/GeoLite2-Country.mmdb');
             $request_country = '';
             $to_block = false;
 
@@ -367,7 +364,7 @@ class WafGoingOn
             }
 
             try {
-                $record = $reader->city($ip);
+                $record = $reader->country($ip);
                 $request_country = $record->country->isoCode;
             } catch (\Throwable $th) {
             }
@@ -485,7 +482,7 @@ class WafGoingOn
             'wgo_limit_requests_per_hour',
             'wgo_im_behind_proxy',
             'wgo_save_payloads',
-            'wgo_save_only_payloads_matching_regex',
+            'wgo_save_payloads_matching_uri_regex',
         ];
 
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '

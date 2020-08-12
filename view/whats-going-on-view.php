@@ -33,7 +33,8 @@ $days_to_store = get_option('wgo_days_to_store');
 $im_behind_proxy = get_option('wgo_im_behind_proxy');
 $notification_email = get_option('wgo_notification_email');
 $save_payloads = get_option('wgo_save_payloads');
-$save_only_payloads_matching_regex = get_option('wgo_save_only_payloads_matching_regex');
+$save_payloads_matching_uri_regex = get_option('wgo_save_payloads_matching_uri_regex');
+$save_payloads_matching_payload_regex = get_option('wgo_save_payloads_matching_payload_regex');
 
 /*
  * Listing registers..
@@ -46,11 +47,11 @@ $maxs_reached_sql = 'SELECT max(last_minute) max_hits_minute_reached, max(last_h
 
 $add_sql = '';
 if (isset($_GET['filter-url'])) {
-    $add_sql .= " WHERE url = '".$_GET['filter-url']."'";
+    $add_sql .= " WHERE url = '".sanitize_text_field($_GET['filter-url'])."'";
 } elseif (isset($_GET['filter-ip'])) {
-    $add_sql .= " WHERE remote_ip = '".$_GET['filter-ip']."'";
+    $add_sql .= " WHERE remote_ip = '".sanitize_text_field($_GET['filter-ip'])."'";
 } elseif (isset($_GET['filter-method'])) {
-    $add_sql .= " WHERE method = '".urldecode($_GET['filter-method'])."'";
+    $add_sql .= " WHERE method = '".sanitize_text_field($_GET['filter-method'])."'";
 }
 $total_sql .= $add_sql;
 $main_sql .= $add_sql;
@@ -67,8 +68,6 @@ $results = $wpdb->get_results($main_sql);
 $maxs_reached = $wpdb->get_results(
     $maxs_reached_sql
 );
-//var_dump($maxs_reached);
-//$current_page = (isset($_POST['current_page']) ? $_POST['current_page'] : 1);
 ?>
 
 <form method="post" enctype="multipart/form-data" action="<?php
@@ -391,7 +390,7 @@ echo $_SERVER['REQUEST_URI'];
             
             <span class="span-install">
                 <?php
-                if (!file_exists(ABSPATH.'.user.ini')) {
+                if (!WhatsGoingOn::get_instance()->is_waf_installed()) {
                     ?>
                     <input type="submit" name="submit-install-full-waf" id="submit-install-full-waf" class="button" value="Install .user.ini">
                 <?php
