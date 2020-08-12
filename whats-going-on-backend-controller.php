@@ -256,7 +256,7 @@ class WhatsGoingOnBackendController
 
     private function _truncate_payloads_log()
     {
-        file_put_contents(WGO_PATH.'waf-payloads.log', '');
+        file_put_contents(ABSPATH.'/wp-content/uploads/wgo-things/waf-payloads.log', '');
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Payloads log truncated!</p></div>';
     }
