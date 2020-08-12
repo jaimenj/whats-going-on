@@ -1,8 +1,0 @@
-<Files waf-errors.log>
-Order allow,deny
-Deny from all
-</Files>
-<Files waf-payloads.log>
-Order allow,deny
-Deny from all
-</Files>

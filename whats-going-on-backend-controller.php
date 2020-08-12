@@ -272,7 +272,7 @@ class WhatsGoingOnBackendController
 
     private function _remove_regexes_errors_log()
     {
-        unlink(WGO_PATH.'waf-errors.log');
+        unlink(ABSPATH.'/wp-content/uploads/wgo-things/waf-errors.log');
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Log file with errors removed!</p></div>';
     }
