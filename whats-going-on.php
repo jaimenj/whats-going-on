@@ -102,7 +102,8 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_notify_requests_more_than_3sd');
         register_setting('wgo_options_group', 'wgo_notify_requests_less_than_25_percent');
         register_setting('wgo_options_group', 'wgo_save_payloads');
-        register_setting('wgo_options_group', 'wgo_save_only_payloads_matching_regex');
+        register_setting('wgo_options_group', 'wgo_save_payloads_matching_uri_regex');
+        register_setting('wgo_options_group', 'wgo_save_payloads_matching_payload_regex');
 
         add_option('wgo_waf_installed', 0);
         add_option('wgo_limit_requests_per_minute', -1);
@@ -116,7 +117,8 @@ class WhatsGoingOn
         add_option('wgo_notify_requests_more_than_3sd', 0);
         add_option('wgo_notify_requests_less_than_25_percent', 0);
         add_option('wgo_save_payloads', 0);
-        add_option('wgo_save_only_payloads_matching_regex', 0);
+        add_option('wgo_save_payloads_matching_uri_regex', 0);
+        add_option('wgo_save_payloads_matching_payload_regex', 0);
 
         if (!file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
             mkdir(ABSPATH.'/wp-content/uploads/wgo-things');
@@ -174,7 +176,8 @@ class WhatsGoingOn
         delete_option('wgo_notify_requests_more_than_2sd');
         delete_option('wgo_notify_requests_more_than_3sd');
         delete_option('wgo_save_payloads');
-        delete_option('wgo_save_only_payloads_matching_regex');
+        delete_option('wgo_save_payloads_matching_uri_regex');
+        delete_option('wgo_save_payloads_matching_payload_regex');
 
         WhatsGoingOn::get_instance()->uninstall_waf();
         if (file_exists(ABSPATH.'waf-going-on.php')) {

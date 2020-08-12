@@ -33,7 +33,8 @@ $days_to_store = get_option('wgo_days_to_store');
 $im_behind_proxy = get_option('wgo_im_behind_proxy');
 $notification_email = get_option('wgo_notification_email');
 $save_payloads = get_option('wgo_save_payloads');
-$save_only_payloads_matching_regex = get_option('wgo_save_only_payloads_matching_regex');
+$save_payloads_matching_uri_regex = get_option('wgo_save_payloads_matching_uri_regex');
+$save_payloads_matching_payload_regex = get_option('wgo_save_payloads_matching_payload_regex');
 
 /*
  * Listing registers..
