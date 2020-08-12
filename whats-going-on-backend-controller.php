@@ -264,7 +264,8 @@ class WhatsGoingOnBackendController
     private function _save_regexes_configs()
     {
         update_option('wgo_save_payloads', intval($_REQUEST['save_payloads']));
-        update_option('wgo_save_only_payloads_matching_regex', intval($_REQUEST['save_only_payloads_matching_regex']));
+        update_option('wgo_save_payloads_matching_uri_regex', intval($_REQUEST['save_payloads_matching_uri_regex']));
+        update_option('wgo_save_payloads_matching_payload_regex', intval($_REQUEST['save_payloads_matching_payload_regex']));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Regexes configs saved!</p></div>';
     }

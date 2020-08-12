@@ -83,15 +83,20 @@ if (!current_user_can('administrator')) {
             echo '0';
         }
         ?> KB)">
-        <label for="save_payloads">Save payloads in the log file (be careful with this)</label>
+        <label for="save_payloads">Save payloads (be careful)</label>
         <select name="save_payloads" id="save_payloads">
             <option value="0"<?= (0 == $save_payloads ? ' selected' : ''); ?>>No</option>
             <option value="1"<?= (1 == $save_payloads ? ' selected' : ''); ?>>Yes</option>
         </select>
-        <label for="save_only_payloads_matching_regex">Save only payloads matching a regex</label>
-        <select name="save_only_payloads_matching_regex" id="save_only_payloads_matching_regex">
-            <option value="0"<?= (0 == $save_only_payloads_matching_regex ? ' selected' : ''); ?>>No</option>
-            <option value="1"<?= (1 == $save_only_payloads_matching_regex ? ' selected' : ''); ?>>Yes</option>
+        <label for="save_payloads_matching_uri_regex">..when matching a URI regex</label>
+        <select name="save_payloads_matching_uri_regex" id="save_payloads_matching_uri_regex">
+            <option value="0"<?= (0 == $save_payloads_matching_uri_regex ? ' selected' : ''); ?>>No</option>
+            <option value="1"<?= (1 == $save_payloads_matching_uri_regex ? ' selected' : ''); ?>>Yes</option>
+        </select>
+        <label for="save_payloads_matching_payload_regex">..when matching a payload regex</label>
+        <select name="save_payloads_matching_payload_regex" id="save_payloads_matching_payload_regex">
+            <option value="0"<?= (0 == $save_payloads_matching_payload_regex ? ' selected' : ''); ?>>No</option>
+            <option value="1"<?= (1 == $save_payloads_matching_payload_regex ? ' selected' : ''); ?>>Yes</option>
         </select>
         <input type="submit" name="submit-regexes-configs" id="submit-regexes-configs" class="button button-green" value="Save Regexes configs">
     </p>

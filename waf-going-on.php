@@ -115,10 +115,10 @@ class WafGoingOn
         $regexes_errors_file = __DIR__.'/wp-content/uploads/wgo-things/waf-errors.log';
         $regexes_errors = file($regexes_errors_file);
         $this->_check_block_list($comments, $regexes_errors);
-        $this->_check_regexes_uri($comments, $regexes_errors);
+        $uri_matches = $this->_check_regexes_uri($comments, $regexes_errors);
         $payload_matches = $this->_check_regexes_payload($comments, $regexes_errors);
-        if (($this->wp_options['save_payloads'] and !$this->wp_options['save_only_payloads_matching_regex'])
-        or ($this->wp_options['save_payloads'] and $this->wp_options['save_only_payloads_matching_regex']) and $payload_matches) {
+        if (($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_uri_regex'] and $uri_matches)
+        or ($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_payload_regex']) and $payload_matches) {
             $this->_save_payloads();
         }
 
@@ -213,10 +213,12 @@ class WafGoingOn
 
     private function _check_regexes_uri(&$comments, &$regexes_errors)
     {
+        $to_block = false;
+
         // If hits a regex for query string..
         if (file_exists($this->block_regexes_uri_file_path)) {
             $file_content = file($this->block_regexes_uri_file_path);
-            $to_block = false;
+            
             $to_block_regex_num = [];
             for ($i = 1; $i < count($file_content); ++$i) {
                 $uri_regex = trim(str_replace(PHP_EOL, '', $file_content[$i]));
@@ -250,6 +252,8 @@ class WafGoingOn
                 $this->retry_time = 86400;
             }
         }
+
+        return $to_block;
     }
 
     private function _check_regexes_payload(&$comments, &$regexes_errors)
@@ -478,7 +482,7 @@ class WafGoingOn
             'wgo_limit_requests_per_hour',
             'wgo_im_behind_proxy',
             'wgo_save_payloads',
-            'wgo_save_only_payloads_matching_regex',
+            'wgo_save_payloads_matching_uri_regex',
         ];
 
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '
