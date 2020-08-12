@@ -77,8 +77,8 @@ if (!current_user_can('administrator')) {
     <p>
         <a href="javascript:showPayloadsLog()" class="button button-primary">Show payloads log</a>
         <input type="submit" name="submit-truncate-payloads-log" id="submit-truncate-payloads-log" class="button button-red" value="Truncate payloads log (current <?php
-        if (file_exists(WGO_PATH.'waf-payloads.log')) {
-            echo number_format(filesize(WGO_PATH.'waf-payloads.log') / 1024, 2);
+        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things/waf-payloads.log')) {
+            echo number_format(filesize(ABSPATH.'/wp-content/uploads/wgo-things/waf-payloads.log') / 1024, 2);
         } else {
             echo '0';
         }

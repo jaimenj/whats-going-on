@@ -64,6 +64,10 @@ class WhatsGoingOnCronjobs
                 echo '..reinstalling subdirectories and main file!'.PHP_EOL;
             }
         }
+
+        // Update WAF file outside WP..
+        file_put_contents(ABSPATH.'/waf-going-on.php', file_get_contents(WGO_PATH.'/waf-going-on.php'));
+        echo 'Overwrite waf-going-on.php file to update it..'.PHP_EOL;
     }
 
     public function add_cron_intervals($schedules)
