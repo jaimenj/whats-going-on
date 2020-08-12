@@ -32,7 +32,7 @@ class WhatsGoingOn
 
     private function __construct()
     {
-        $this->waf_config_line = PHP_EOL."auto_prepend_file = '".WGO_PATH."waf-going-on.php';".PHP_EOL;
+        $this->waf_config_line = PHP_EOL."auto_prepend_file = '".ABSPATH."waf-going-on.php';".PHP_EOL;
 
         // Activation and deactivation..
         register_activation_hook(__FILE__, [$this, 'activation']);
@@ -128,10 +128,12 @@ class WhatsGoingOn
         );
         file_put_contents(
             ABSPATH.'/wp-content/uploads/wgo-things/.config',
-            'DB_NAME='.DB_NAME.PHP_EOL
+            'ABSPATH='.ABSPATH.PHP_EOL
+            .'DB_NAME='.DB_NAME.PHP_EOL
             .'DB_USER='.DB_USER.PHP_EOL
             .'DB_PASSWORD='.DB_PASSWORD.PHP_EOL
-            .'DB_HOST='.DB_PASSWORD.PHP_EOL
+            .'DB_HOST='.DB_HOST.PHP_EOL
+            .'TABLE_PREFIX='.$wpdb->table_prefix.PHP_EOL
         );
     }
 
@@ -175,6 +177,9 @@ class WhatsGoingOn
         delete_option('wgo_save_only_payloads_matching_regex');
 
         WhatsGoingOn::get_instance()->uninstall_waf();
+        if (file_exists(ABSPATH.'waf-going-on.php')) {
+            unlink(ABSPATH.'waf-going-on.php');
+        }
     }
 
     /**
@@ -243,6 +248,7 @@ class WhatsGoingOn
     public function install_waf()
     {
         file_put_contents(ABSPATH.'.user.ini', $this->waf_config_line, FILE_APPEND);
+        copy(WGO_PATH.'/waf-going-on.php', ABSPATH.'waf-going-on.php');
         $this->_install_recursive_waf('wp-admin/');
         $this->_install_recursive_waf('wp-content/');
         $this->_install_recursive_waf('wp-includes/');
