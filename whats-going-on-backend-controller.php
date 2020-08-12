@@ -222,8 +222,8 @@ class WhatsGoingOnBackendController
 
     private function _save_ip_lists()
     {
-        $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_block_list']), WGO_PATH.'block-list.php');
-        $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_allow_list']), WGO_PATH.'allow-list.php');
+        $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_block_list']), ABSPATH.'/wp-content/uploads/wgo-things/block-list.php');
+        $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_allow_list']), ABSPATH.'/wp-content/uploads/wgo-things/allow-list.php');
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
     }
@@ -232,7 +232,7 @@ class WhatsGoingOnBackendController
     {
         // Save Regexes
         if (!empty($_FILES['file_regexes_uri']['tmp_name'])) {
-            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_uri']['tmp_name']), WGO_PATH.'block-regexes-uri.php');
+            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_uri']['tmp_name']), ABSPATH.'/wp-content/uploads/wgo-things/block-regexes-uri.php');
             $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for request uri saved!</p></div>';
         } else {
             $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
@@ -245,7 +245,7 @@ class WhatsGoingOnBackendController
     {
         // Save Regexes
         if (!empty($_FILES['file_regexes_payload']['tmp_name'])) {
-            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_payload']['tmp_name']), WGO_PATH.'block-regexes-payload.php');
+            $this->_save_clean_file(file_get_contents($_FILES['file_regexes_payload']['tmp_name']), ABSPATH.'/wp-content/uploads/wgo-things/block-regexes-payload.php');
             $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Regexes only for payload saved!</p></div>';
         } else {
             $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
@@ -296,8 +296,8 @@ class WhatsGoingOnBackendController
     {
         $add_countries = sanitize_text_field($_REQUEST['select_block_countries']);
 
-        if (file_exists(WGO_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
+        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
@@ -305,7 +305,7 @@ class WhatsGoingOnBackendController
         foreach ($add_countries as $country_to_block) {
             $current_blocking_countries[] = $country_to_block;
         }
-        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
+        file_put_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php', implode(PHP_EOL, $current_blocking_countries));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $add_countries).')!</p></div>';
     }
@@ -314,13 +314,13 @@ class WhatsGoingOnBackendController
     {
         $remove_countries = sanitize_text_field($_REQUEST['select_unblock_countries']);
 
-        if (file_exists(WGO_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
+        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
         }
-        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
+        file_put_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $remove_countries).')!</p></div>';
     }
@@ -342,8 +342,8 @@ class WhatsGoingOnBackendController
         }
         //var_dump($add_countries);
 
-        if (file_exists(WGO_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
+        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
@@ -352,7 +352,7 @@ class WhatsGoingOnBackendController
             $current_blocking_countries[] = $country_to_block;
         }
         $current_blocking_countries = array_unique($current_blocking_countries);
-        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, $current_blocking_countries));
+        file_put_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php', implode(PHP_EOL, $current_blocking_countries));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries blocked ('.implode(', ', $add_countries).')!</p></div>';
     }
@@ -374,13 +374,13 @@ class WhatsGoingOnBackendController
         }
         //var_dump($remove_countries);
 
-        if (file_exists(WGO_PATH.'block-countries.php')) {
-            $current_blocking_countries = explode(PHP_EOL, file_get_contents(WGO_PATH.'block-countries.php'));
+        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php')) {
+            $current_blocking_countries = explode(PHP_EOL, file_get_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php'));
         } else {
             $current_blocking_countries = [];
             $current_blocking_countries[] = '<?php/*';
         }
-        file_put_contents(WGO_PATH.'block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
+        file_put_contents(ABSPATH.'/wp-content/uploads/wgo-things/block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $remove_countries).')!</p></div>';
     }

@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__.'/lib/geoip2.phar';
+include_once __DIR__.'/wp-content/plugins/whats-going-on/lib/geoip2.phar';
 use GeoIp2\Database\Reader;
 
 class WafGoingOn
@@ -49,12 +49,12 @@ class WafGoingOn
             5 => 'PREG_BAD_UTF8_OFFSET_ERROR',
             6 => 'PREG_JIT_STACKLIMIT_ERROR',
         ];
-        $this->block_list_file_path = __DIR__.'/block-list.php';
-        $this->allow_list_file_path = __DIR__.'/allow-list.php';
-        $this->block_regexes_uri_file_path = __DIR__.'/block-regexes-uri.php';
-        $this->block_regexes_payload_file_path = __DIR__.'/block-regexes-payload.php';
-        $this->block_countries = __DIR__.'/block-countries.php';
-        $this->payloads_file_path = __DIR__.'/waf-payloads.log';
+        $this->block_list_file_path = __DIR__.'/wp-content/uploads/wgo-things/block-list.php';
+        $this->allow_list_file_path = __DIR__.'/wp-content/uploads/wgo-things/allow-list.php';
+        $this->block_regexes_uri_file_path = __DIR__.'/wp-content/uploads/wgo-things/block-regexes-uri.php';
+        $this->block_regexes_payload_file_path = __DIR__.'/wp-content/uploads/wgo-things/block-regexes-payload.php';
+        $this->block_countries = __DIR__.'/wp-content/uploads/wgo-things/block-countries.php';
+        $this->payloads_file_path = __DIR__.'/wp-content/uploads/wgo-things/waf-payloads.log';
 
         // The main things of the WAF
         $this->_main();
@@ -112,7 +112,7 @@ class WafGoingOn
         }
 
         // Regexes for IPs, URIs and payloads..
-        $regexes_errors_file = __DIR__.'/waf-errors.log';
+        $regexes_errors_file = __DIR__.'/wp-content/uploads/wgo-things/waf-errors.log';
         $regexes_errors = file($regexes_errors_file);
         $this->_check_block_list($comments, $regexes_errors);
         $this->_check_regexes_uri($comments, $regexes_errors);
@@ -166,15 +166,11 @@ class WafGoingOn
     private function _load_configs(&$configs_array)
     {
         // Loading configs from wp-config.php file..
-        $config_file_path = __DIR__.'/../../../wp-config.php';
+        $config_file_path = __DIR__.'/wp-content/uploads/wgo-things/.config';
         $config_file_content = file($config_file_path);
         foreach ($config_file_content as $line) {
-            $matches = [];
-            if (preg_match('/DEFINE\(\'(.*?)\',\s*\'(.*)\'\);/i', $line, $matches)) {
+            if (preg_match('/(.*)=(.*)/i', $line, $matches)) {
                 $configs_array[$matches[1]] = $matches[2];
-            }
-            if (preg_match('/table_prefix.*\'(.*)\'/i', $line, $matches)) {
-                $configs_array['TABLE_PREFIX'] = $matches[1];
             }
         }
     }
@@ -345,7 +341,7 @@ class WafGoingOn
     private function _check_countries(&$comments, &$regexes_errors)
     {
         if (file_exists($this->block_countries)) {
-            $reader = new Reader(__DIR__.'/lib/GeoLite2-Country.mmdb');
+            $reader = new Reader(__DIR__.'/wp-content/plugins/whats-going-on/lib/GeoLite2-Country.mmdb');
             $request_country = '';
             $to_block = false;
 
