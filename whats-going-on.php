@@ -133,7 +133,7 @@ class WhatsGoingOn
             .'DB_USER='.DB_USER.PHP_EOL
             .'DB_PASSWORD='.DB_PASSWORD.PHP_EOL
             .'DB_HOST='.DB_HOST.PHP_EOL
-            .'TABLE_PREFIX='.$wpdb->table_prefix.PHP_EOL
+            .'TABLE_PREFIX='.$wpdb->prefix.PHP_EOL
         );
     }
 
