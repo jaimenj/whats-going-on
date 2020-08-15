@@ -27,6 +27,7 @@ Features:
 * Save payloads, all or only when match a regex.
 * Block and allow countries and continents.
 * 404s detections.
+* Show URLs or IPs doing 404s.
 * Show IPs that are doing most of the visits.
 * Show URLs most visited.
 
@@ -58,11 +59,11 @@ All the options configured into the plugin are removed when plugin is deleted, n
 
 = Can I block myself? =
 
-Yes. By default, you cannot block yourself while you are activating the plugin. But be careful while setting restrictions for the firewall. 
+You cannot block yourself while you are activating the plugin. But you can block yourself while setting restrictions for the firewall. First read carefully and config it slowly, testing configurations and showing the results.
 
 = I blocked myself, how can I disable it without access to the backend? =
 
-If something is broken because of this WAF, edit and empty the file /wp-content/plugins/whats-going-on/waf-going-on.php. Do not remove it, you can rename it and make an empty one with the same name. It will continue working, but doing nothing.
+If something is broken because of this WAF, edit and empty the files /waf-going-on.php and /wp-content/plugins/whats-going-on/waf-going-on.php. Do not remove it, you can rename it and make an empty one with the same name. It will continue working, but doing nothing.
 
 == Screenshots ==
 
@@ -77,6 +78,12 @@ If something is broken because of this WAF, edit and empty the file /wp-content/
 9. Top 10 of IPs visiting.
 
 == Changelog ==
+
+= v0.6 =
+* Securize input and outputs in the backend.
+* Improving install of firewall outside of WordPress plugin files.
+* Config files and logs into uploads dir.
+* Some checks and fixes.
 
 = v0.5 =
 * AJAX loading of more info.

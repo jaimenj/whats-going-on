@@ -117,8 +117,10 @@ class WafGoingOn
         $this->_check_block_list($comments, $regexes_errors);
         $uri_matches = $this->_check_regexes_uri($comments, $regexes_errors);
         $payload_matches = $this->_check_regexes_payload($comments, $regexes_errors);
-        if (($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_uri_regex'] and $uri_matches)
-        or ($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_payload_regex']) and $payload_matches) {
+        if ('POST' === $_SERVER['REQUEST_METHOD'] and (
+            ($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_uri_regex'] and $uri_matches)
+            or ($this->wp_options['save_payloads'] and $this->wp_options['save_payloads_matching_payload_regex'] and $payload_matches)
+        )) {
             $this->_save_payloads();
         }
 
@@ -319,16 +321,14 @@ class WafGoingOn
 
     private function _save_payloads()
     {
-        if ('POST' === $_SERVER['REQUEST_METHOD']) {
-            file_put_contents($this->payloads_file_path,
-                date('Y-m-d H:i:s').' '.$this->_current_remote_ips().PHP_EOL
-                .urldecode($this->url).PHP_EOL
-                .'================================================================================'.PHP_EOL,
-                FILE_APPEND
-            );
-            $this->_recursive_save_payloads('', $_POST);
-            file_put_contents($this->payloads_file_path, '<<<'.PHP_EOL.PHP_EOL, FILE_APPEND);
-        }
+        file_put_contents($this->payloads_file_path,
+            date('Y-m-d H:i:s').' '.$this->_current_remote_ips().PHP_EOL
+            .urldecode($this->url).PHP_EOL
+            .'================================================================================'.PHP_EOL,
+            FILE_APPEND
+        );
+        $this->_recursive_save_payloads('', $_POST);
+        file_put_contents($this->payloads_file_path, '<<<'.PHP_EOL.PHP_EOL, FILE_APPEND);
     }
 
     private function _recursive_save_payloads($key_append = '', $post_items)
