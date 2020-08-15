@@ -52,8 +52,6 @@ class WhatsGoingOn
 
     public function activation()
     {
-        WhatsGoingOnDatabase::get_instance()->create_initial_tables();
-
         register_setting('wgo_options_group', 'wgo_db_version');
         register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
@@ -85,6 +83,9 @@ class WhatsGoingOn
         add_option('wgo_save_payloads', 0);
         add_option('wgo_save_payloads_matching_uri_regex', 0);
         add_option('wgo_save_payloads_matching_payload_regex', 0);
+
+        WhatsGoingOnDatabase::get_instance()->create_initial_tables();
+        WhatsGoingOnDatabase::get_instance()->update_if_needed();
 
         if (!file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
             mkdir(ABSPATH.'/wp-content/uploads/wgo-things');
@@ -214,7 +215,7 @@ class WhatsGoingOn
     public function install_waf()
     {
         file_put_contents(ABSPATH.'.user.ini', $this->waf_config_line, FILE_APPEND);
-        copy(WGO_PATH.'/waf-going-on.php', ABSPATH.'waf-going-on.php');
+        file_put_contents(ABSPATH.'waf-going-on.php', WGO_PATH.'/waf-going-on.php');
         $this->_install_recursive_waf('wp-admin/');
         $this->_install_recursive_waf('wp-content/');
         $this->_install_recursive_waf('wp-includes/');

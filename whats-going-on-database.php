@@ -63,6 +63,8 @@ class WhatsGoingOnDatabase
             .'method VARCHAR(8) NOT NULL'
             .');';
         $wpdb->get_results($sql);
+
+        update_option('wgo_db_version', 1);
     }
 
     public function remove_tables()
