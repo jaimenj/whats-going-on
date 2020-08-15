@@ -4,13 +4,14 @@
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
  * License: GPLv2 or later
  * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
- * Version: 0.5
+ * Version: 0.6
  * Author: Jaime Niñoles
  * Author URI: https://jnjsite.com/.
  */
 defined('ABSPATH') or die('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
 
+include_once WGO_PATH.'whats-going-on-database.php';
 include_once WGO_PATH.'whats-going-on-cronjobs.php';
 include_once WGO_PATH.'whats-going-on-backend-controller.php';
 include_once WGO_PATH.'whats-going-on-ajax-controller.php';
@@ -45,51 +46,15 @@ class WhatsGoingOn
         WhatsGoingOnCronjobs::get_instance();
         WhatsGoingOnBackendController::get_instance();
         WhatsGoingOnAjaxController::get_instance();
+
+        WhatsGoingOnDatabase::get_instance()->update_if_needed();
     }
 
     public function activation()
     {
-        global $wpdb;
+        WhatsGoingOnDatabase::get_instance()->create_initial_tables();
 
-        // Main table..
-        $sql = 'CREATE TABLE '.$wpdb->prefix.'whats_going_on ('
-            //."id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,"
-            .'time DATETIME NOT NULL,'
-            .'url VARCHAR(256) NOT NULL,'
-            .'remote_ip VARCHAR(64) NOT NULL,'
-            .'remote_port INT NOT NULL,'
-            .'country_code VARCHAR(2),'
-            .'user_agent VARCHAR(128) NOT NULL,'
-            .'method VARCHAR(8) NOT NULL,'
-            .'last_minute INT NOT NULL,'
-            .'last_hour INT NOT NULL'
-            .');';
-        $wpdb->get_results($sql);
-
-        // Blocks table..
-        $sql = 'CREATE TABLE '.$wpdb->prefix.'whats_going_on_block ('
-            .'time DATETIME NOT NULL,'
-            .'url VARCHAR(256) NOT NULL,'
-            .'remote_ip VARCHAR(64) NOT NULL,'
-            .'remote_port INT NOT NULL,'
-            .'country_code VARCHAR(2),'
-            .'user_agent VARCHAR(128) NOT NULL,'
-            .'comments VARCHAR(256)'
-            .');';
-        $wpdb->get_results($sql);
-
-        // 404s table..
-        $sql = 'CREATE TABLE '.$wpdb->prefix.'whats_going_on_404s ('
-            .'time DATETIME NOT NULL,'
-            .'url VARCHAR(256) NOT NULL,'
-            .'remote_ip VARCHAR(64) NOT NULL,'
-            .'remote_port INT NOT NULL,'
-            .'country_code VARCHAR(2),'
-            .'user_agent VARCHAR(128) NOT NULL,'
-            .'method VARCHAR(8) NOT NULL'
-            .');';
-        $wpdb->get_results($sql);
-
+        register_setting('wgo_options_group', 'wgo_db_version');
         register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_hour');
@@ -105,6 +70,7 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_uri_regex');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_payload_regex');
 
+        add_option('wgo_db_version', 1);
         add_option('wgo_waf_installed', 0);
         add_option('wgo_limit_requests_per_minute', -1);
         add_option('wgo_limit_requests_per_hour', -1);
@@ -141,15 +107,10 @@ class WhatsGoingOn
 
     public function deactivation()
     {
-        global $wpdb;
-        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on;';
-        $wpdb->get_results($sql);
-        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_block;';
-        $wpdb->get_results($sql);
-        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_404s;';
-        $wpdb->get_results($sql);
+        WhatsGoingOnDatabase::get_instance()->remove_tables();
 
-        WhatsGoingOn::get_instance()->uninstall_waf();
+        $this->uninstall_waf();
+
         if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
             $dir = dir(ABSPATH.'/wp-content/uploads/wgo-things');
             while (false !== ($entry = $dir->read())) {
@@ -165,6 +126,7 @@ class WhatsGoingOn
 
     public function uninstall()
     {
+        delete_option('wgo_db_version');
         delete_option('wgo_waf_installed');
         delete_option('wgo_limit_requests_per_minute');
         delete_option('wgo_limit_requests_per_hour');
@@ -179,7 +141,8 @@ class WhatsGoingOn
         delete_option('wgo_save_payloads_matching_uri_regex');
         delete_option('wgo_save_payloads_matching_payload_regex');
 
-        WhatsGoingOn::get_instance()->uninstall_waf();
+        $this->uninstall_waf();
+
         if (file_exists(ABSPATH.'waf-going-on.php')) {
             unlink(ABSPATH.'waf-going-on.php');
         }
