@@ -58,12 +58,14 @@ if (!current_user_can('administrator')) {
                                     applyData: 'rpc',
                                     values: {
                                         <?php
-                                        for ($i = 0; $i < count($countries_results) - 1; ++$i) {
-                                            echo $countries_results[$i]->country_code
-                                                .': {rpc: '.$countries_results[$i]->times.'},';
+                                        if (count($countries_results) > 0) {
+                                            for ($i = 0; $i < count($countries_results) - 1; ++$i) {
+                                                echo $countries_results[$i]->country_code
+                                                    .': {rpc: '.$countries_results[$i]->times.'},';
+                                            }
+                                            echo $countries_results[count($countries_results) - 1]->country_code
+                                                .': {rpc: '.$countries_results[count($countries_results) - 1]->times.'}';
                                         }
-                                        echo $countries_results[count($countries_results) - 1]->country_code
-                                            .': {rpc: '.$countries_results[count($countries_results) - 1]->times.'}';
                                         ?>
                                     }
                                 }
@@ -153,7 +155,7 @@ if (!current_user_can('administrator')) {
                             <select name="select_unblock_countries[]" id="select_unblock_countries" multiple size="20" class="waf-select-area-config">
                                 <?php
                                 foreach ($blocking_countries_array_ordered as $country_code => $country_name) {
-                                        echo '<option value="'.$country_code.'">'.$country_name.'</option>';
+                                    echo '<option value="'.$country_code.'">'.$country_name.'</option>';
                                 }
                                 ?>
                             </select>
