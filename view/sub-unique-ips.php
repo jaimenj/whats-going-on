@@ -28,7 +28,7 @@ if (!current_user_can('administrator')) {
                     <tr>
                         <td>
                             <textarea name="txt_block_list" id="txt_block_list" class="waf-textarea-config"><?php
-                            $file_path = ABSPATH.'/wp-content/uploads/wgo-things/block-list.php';
+                            $file_path = wp_upload_dir()['basedir'].'/wgo-things/block-list.php';
                             if (file_exists($file_path)) {
                                 $the_file = file($file_path);
                                 if (count($the_file) > 1) {
@@ -60,7 +60,7 @@ if (!current_user_can('administrator')) {
                     <tr>
                         <td>
                             <textarea name="txt_allow_list" id="txt_allow_list" class="waf-textarea-config"><?php
-                            $file_path = ABSPATH.'/wp-content/uploads/wgo-things/allow-list.php';
+                            $file_path = wp_upload_dir()['basedir'].'/wgo-things/allow-list.php';
                             if (file_exists($file_path)) {
                                 $the_file = file($file_path);
                                 if (count($the_file) > 1) {

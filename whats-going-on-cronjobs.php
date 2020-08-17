@@ -65,8 +65,7 @@ class WhatsGoingOnCronjobs
             }
         }
 
-        // Update WAF file outside WP..
-        file_put_contents(ABSPATH.'/waf-going-on.php', file_get_contents(WGO_PATH.'/waf-going-on.php'));
+        WhatsGoingOn::get_instance()->copy_main_waf_file();
         echo 'Overwrite waf-going-on.php file to update it..'.PHP_EOL;
     }
 
