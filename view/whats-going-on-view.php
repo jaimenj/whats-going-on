@@ -276,7 +276,7 @@ echo $_SERVER['REQUEST_URI'];
         }
         </script>
         <canvas id="mainChart" width="148" height="24"></canvas>
-        <p>A: Average. SD: Stardard Deviation. 2SD: Twice the Standard Deviation. 3SD..</p>
+        <p>A: Average. SD: Stardard Deviation. 2SD: Twice the Standard Deviation. 3SD.. (DB v<?= get_option('wgo_db_version') ?>)</p>
         <?php
         /////////////////////// END CHART
         ////////////////////////////////////////////////////////
