@@ -52,6 +52,8 @@ class WhatsGoingOn
 
     public function activation()
     {
+        global $wpdb;
+
         register_setting('wgo_options_group', 'wgo_db_version');
         register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
@@ -87,22 +89,13 @@ class WhatsGoingOn
         WhatsGoingOnDatabase::get_instance()->create_initial_tables();
         WhatsGoingOnDatabase::get_instance()->update_if_needed();
 
-        if (!file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
-            mkdir(ABSPATH.'/wp-content/uploads/wgo-things');
+        if (!file_exists(wp_upload_dir()['basedir'].'/wgo-things')) {
+            mkdir(wp_upload_dir()['basedir'].'/wgo-things');
         }
         file_put_contents(
-            ABSPATH.'/wp-content/uploads/wgo-things/.htaccess',
+            wp_upload_dir()['basedir'].'/wgo-things/.htaccess',
             'Order allow,deny'.PHP_EOL
             .'Deny from all'.PHP_EOL
-        );
-        file_put_contents(
-            ABSPATH.'/wp-content/uploads/wgo-things/.config',
-            'ABSPATH='.ABSPATH.PHP_EOL
-            .'DB_NAME='.DB_NAME.PHP_EOL
-            .'DB_USER='.DB_USER.PHP_EOL
-            .'DB_PASSWORD='.DB_PASSWORD.PHP_EOL
-            .'DB_HOST='.DB_HOST.PHP_EOL
-            .'TABLE_PREFIX='.$wpdb->prefix.PHP_EOL
         );
     }
 
@@ -111,18 +104,6 @@ class WhatsGoingOn
         WhatsGoingOnDatabase::get_instance()->remove_tables();
 
         $this->uninstall_waf();
-
-        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things')) {
-            $dir = dir(ABSPATH.'/wp-content/uploads/wgo-things');
-            while (false !== ($entry = $dir->read())) {
-                $current_path = ABSPATH.'/wp-content/uploads/wgo-things/'.$entry;
-                if ('.' != $entry and '..' != $entry) {
-                    unlink($current_path);
-                }
-            }
-            $dir->close();
-            rmdir(ABSPATH.'/wp-content/uploads/wgo-things');
-        }
     }
 
     public function uninstall()
@@ -143,6 +124,18 @@ class WhatsGoingOn
         delete_option('wgo_save_payloads_matching_payload_regex');
 
         $this->uninstall_waf();
+
+        if (file_exists(wp_upload_dir()['basedir'].'/wgo-things')) {
+            $dir = dir(wp_upload_dir()['basedir'].'/wgo-things');
+            while (false !== ($entry = $dir->read())) {
+                $current_path = wp_upload_dir()['basedir'].'/wgo-things/'.$entry;
+                if ('.' != $entry and '..' != $entry) {
+                    unlink($current_path);
+                }
+            }
+            $dir->close();
+            rmdir(wp_upload_dir()['basedir'].'/wgo-things');
+        }
 
         if (file_exists(ABSPATH.'waf-going-on.php')) {
             unlink(ABSPATH.'waf-going-on.php');
@@ -214,13 +207,36 @@ class WhatsGoingOn
 
     public function install_waf()
     {
-        file_put_contents(ABSPATH.'.user.ini', $this->waf_config_line, FILE_APPEND);
-        file_put_contents(ABSPATH.'waf-going-on.php', WGO_PATH.'/waf-going-on.php');
+        // Main .user.ini file..
+        if (!$this->is_waf_installed()) {
+            file_put_contents(ABSPATH.'.user.ini', $this->waf_config_line, FILE_APPEND);
+        }
+
+        $this->copy_main_waf_file();
+
         $this->_install_recursive_waf('wp-admin/');
-        $this->_install_recursive_waf('wp-content/');
+        $content_dir = explode('/', WP_CONTENT_DIR)[count(explode('/', WP_CONTENT_DIR)) - 1];
+        $this->_install_recursive_waf($content_dir.'/');
         $this->_install_recursive_waf('wp-includes/');
 
         update_option('wgo_waf_installed', 1);
+    }
+
+    public function copy_main_waf_file()
+    {
+        global $wpdb;
+
+        // WAF file and setting configs..
+        $waf_content = explode(PHP_EOL, file_get_contents(WGO_PATH.'waf-going-on.php'));
+        $waf_content[2] = "define('WGO_ABSPATH', '".ABSPATH."');";
+        $waf_content[3] = "define('WGO_DB_NAME', '".DB_NAME."');";
+        $waf_content[4] = "define('WGO_DB_USER', '".DB_USER."');";
+        $waf_content[5] = "define('WGO_DB_PASSWORD', '".DB_PASSWORD."');";
+        $waf_content[6] = "define('WGO_DB_HOST', '".DB_HOST."');";
+        $waf_content[7] = "define('WGO_TABLE_PREFIX', '".$wpdb->prefix."');";
+        $waf_content[8] = "define('WGO_WP_UPLOAD_DIR', '".wp_upload_dir()['basedir']."');";
+        $waf_content[9] = "define('WGO_PLUGIN_DIR_PATH', '".plugin_dir_path(__FILE__)."');";
+        file_put_contents(ABSPATH.'waf-going-on.php', implode(PHP_EOL, $waf_content));
     }
 
     public function install_recursive_waf($current_path)
@@ -248,7 +264,8 @@ class WhatsGoingOn
         $new_main_user_ini_content = str_replace($this->waf_config_line, '', $new_main_user_ini_content);
         file_put_contents(ABSPATH.'.user.ini', $new_main_user_ini_content);
         $this->_uninstall_recursive_waf('wp-admin/');
-        $this->_uninstall_recursive_waf('wp-content/');
+        $content_dir = explode('/', WP_CONTENT_DIR)[count(explode('/', WP_CONTENT_DIR)) - 1];
+        $this->_uninstall_recursive_waf($content_dir.'/');
         $this->_uninstall_recursive_waf('wp-includes/');
 
         update_option('wgo_waf_installed', 0);
