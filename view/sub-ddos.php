@@ -17,7 +17,7 @@ if (!current_user_can('administrator')) {
         $notify_requests_more_than_sd = get_option('wgo_notify_requests_more_than_sd');
         $notify_requests_more_than_2sd = get_option('wgo_notify_requests_more_than_2sd');
         $notify_requests_more_than_3sd = get_option('wgo_notify_requests_more_than_3sd');
-        $notify_requests_less_than_25_percent = get_option('wgo_notify_requests_less_than_25_percent');
+        $notify_requests_less_than_x_percent = get_option('wgo_notify_requests_less_than_x_percent');
         ?>
 
         <p>Average (A): <?= $average; ?> - Standard deviation (SD): <?= $standard_deviation; ?> - Variance (V): <?= $variance; ?></p>
@@ -40,10 +40,14 @@ if (!current_user_can('administrator')) {
             <option value="1"<?= (1 == $notify_requests_more_than_3sd ? ' selected' : ''); ?>>Yes</option>
         </select>
 
-        <label for="notify_requests_less_than_25_percent">or less than 25%A</label>
-        <select name="notify_requests_less_than_25_percent" id="notify_requests_less_than_25_percent">
-            <option value="0"<?= (0 == $notify_requests_less_than_25_percent ? ' selected' : ''); ?>>No</option>
-            <option value="1"<?= (1 == $notify_requests_less_than_25_percent ? ' selected' : ''); ?>>Yes</option>
+        <label for="notify_requests_less_than_x_percent">or less than X%A</label>
+        <select name="notify_requests_less_than_x_percent" id="notify_requests_less_than_x_percent">
+            <option value="-1"<?= (-1 == $notify_requests_less_than_x_percent ? ' selected' : ''); ?>>Disabled</option>
+            <?php
+            for ($i = 1; $i <= 90; ++$i) {
+                ?><option value="<?= $i; ?>"<?= ($i == $notify_requests_less_than_x_percent ? ' selected' : ''); ?>><?= $i; ?></option><?php
+            }
+            ?>
         </select>
 
         <input type="submit" name="submit-ddos-configs" id="submit-ddos-configs" class="button button-green" value="Save DDoS configs">

@@ -141,8 +141,8 @@ class WhatsGoingOnAjaxController
             wp_die(__('Sorry, you are not allowed to manage options for this site.'));
         }
 
-        if (file_exists(ABSPATH.'/wp-content/uploads/wgo-things/waf-payloads.log')) {
-            $waf_payloads_log = file_get_contents(ABSPATH.'/wp-content/uploads/wgo-things/waf-payloads.log');
+        if (file_exists(wp_upload_dir()['basedir'].'/wgo-things/waf-payloads.log')) {
+            $waf_payloads_log = file_get_contents(wp_upload_dir()['basedir'].'/wgo-things/waf-payloads.log');
             $waf_payloads_log = str_replace(PHP_EOL, '<br>', $waf_payloads_log);
         } else {
             $waf_payloads_log = 'EMPTY FILE';

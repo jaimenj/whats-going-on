@@ -53,20 +53,11 @@ class WhatsGoingOnCronjobs
         echo 'WAF is installed: '.WhatsGoingOn::get_instance()->is_waf_installed().PHP_EOL;
 
         if (get_option('wgo_waf_installed')) {
-            if (WhatsGoingOn::get_instance()->is_waf_installed()) {
-                WhatsGoingOn::get_instance()->install_recursive_waf('wp-admin/');
-                WhatsGoingOn::get_instance()->install_recursive_waf('wp-content/');
-                WhatsGoingOn::get_instance()->install_recursive_waf('wp-includes/');
-
-                echo '..only reinstalling subdirectories!'.PHP_EOL;
-            } else {
-                WhatsGoingOn::get_instance()->install_waf();
-                echo '..reinstalling subdirectories and main file!'.PHP_EOL;
-            }
+            WhatsGoingOn::get_instance()->install_waf();
+            echo '..reinstalling subdirectories and main file!'.PHP_EOL;
         }
 
-        // Update WAF file outside WP..
-        file_put_contents(ABSPATH.'/waf-going-on.php', file_get_contents(WGO_PATH.'/waf-going-on.php'));
+        WhatsGoingOn::get_instance()->copy_main_waf_file();
         echo 'Overwrite waf-going-on.php file to update it..'.PHP_EOL;
     }
 
@@ -172,7 +163,7 @@ class WhatsGoingOnCronjobs
         $notify_requests_more_than_sd = get_option('wgo_notify_requests_more_than_sd');
         $notify_requests_more_than_2sd = get_option('wgo_notify_requests_more_than_2sd');
         $notify_requests_more_than_3sd = get_option('wgo_notify_requests_more_than_3sd');
-        $notify_requests_less_than_25_percent = get_option('wgo_notify_requests_less_than_25_percent');
+        $notify_requests_less_than_x_percent = get_option('wgo_notify_requests_less_than_x_percent');
         $notification_email = get_option('wgo_notification_email');
 
         if (!empty($notification_email) and (
@@ -245,15 +236,15 @@ class WhatsGoingOnCronjobs
                     echo 'NOT Notify SD..'.PHP_EOL;
                 }
 
-                if ($notify_requests_less_than_25_percent and $last_hits < $average * 0.25) {
-                    echo 'Notify 25%A..'.PHP_EOL;
+                if ($last_hits < $average * ($notify_requests_less_than_x_percent / 100)) {
+                    echo 'Notify '.$notify_requests_less_than_x_percent.'%A..'.PHP_EOL;
                     wp_mail(
                         $notification_email,
-                        get_bloginfo('name').': What\'s going on: DDoS notification 25%A',
-                        'Requests have reached less than 25% of the average: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
+                        get_bloginfo('name').': What\'s going on: DDoS notification '.$notify_requests_less_than_x_percent.'%A',
+                        'Requests have reached less than '.$notify_requests_less_than_x_percent.'% of the average: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
                     );
                 } else {
-                    echo 'NOT Notify 25%A..'.PHP_EOL;
+                    echo 'NOT Notify '.$notify_requests_less_than_x_percent.'%A..'.PHP_EOL;
                 }
             }
         }
