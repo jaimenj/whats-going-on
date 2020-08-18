@@ -180,7 +180,7 @@ class WhatsGoingOnBackendController
         update_option('wgo_notify_requests_more_than_sd', intval($_REQUEST['notify_requests_more_than_sd']));
         update_option('wgo_notify_requests_more_than_2sd', intval($_REQUEST['notify_requests_more_than_2sd']));
         update_option('wgo_notify_requests_more_than_3sd', intval($_REQUEST['notify_requests_more_than_3sd']));
-        update_option('wgo_notify_requests_less_than_25_percent', intval($_REQUEST['notify_requests_less_than_25_percent']));
+        update_option('wgo_notify_requests_less_than_x_percent', intval($_REQUEST['notify_requests_less_than_x_percent']));
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>DDoS configs saved!</p></div>';
     }

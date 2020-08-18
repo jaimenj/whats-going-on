@@ -163,7 +163,7 @@ class WhatsGoingOnCronjobs
         $notify_requests_more_than_sd = get_option('wgo_notify_requests_more_than_sd');
         $notify_requests_more_than_2sd = get_option('wgo_notify_requests_more_than_2sd');
         $notify_requests_more_than_3sd = get_option('wgo_notify_requests_more_than_3sd');
-        $notify_requests_less_than_25_percent = get_option('wgo_notify_requests_less_than_25_percent');
+        $notify_requests_less_than_x_percent = get_option('wgo_notify_requests_less_than_x_percent');
         $notification_email = get_option('wgo_notification_email');
 
         if (!empty($notification_email) and (
@@ -236,15 +236,15 @@ class WhatsGoingOnCronjobs
                     echo 'NOT Notify SD..'.PHP_EOL;
                 }
 
-                if ($notify_requests_less_than_25_percent and $last_hits < $average * 0.25) {
-                    echo 'Notify 25%A..'.PHP_EOL;
+                if ($last_hits < $average * ($notify_requests_less_than_x_percent / 100)) {
+                    echo 'Notify '.$notify_requests_less_than_x_percent.'%A..'.PHP_EOL;
                     wp_mail(
                         $notification_email,
-                        get_bloginfo('name').': What\'s going on: DDoS notification 25%A',
-                        'Requests have reached less than 25% of the average: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
+                        get_bloginfo('name').': What\'s going on: DDoS notification '.$notify_requests_less_than_x_percent.'%A',
+                        'Requests have reached less than '.$notify_requests_less_than_x_percent.'% of the average: A='.$average.', SD='.$standard_deviation.', LastHits='.$last_hits
                     );
                 } else {
-                    echo 'NOT Notify 25%A..'.PHP_EOL;
+                    echo 'NOT Notify '.$notify_requests_less_than_x_percent.'%A..'.PHP_EOL;
                 }
             }
         }

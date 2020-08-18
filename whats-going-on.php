@@ -65,7 +65,7 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_notify_requests_more_than_sd');
         register_setting('wgo_options_group', 'wgo_notify_requests_more_than_2sd');
         register_setting('wgo_options_group', 'wgo_notify_requests_more_than_3sd');
-        register_setting('wgo_options_group', 'wgo_notify_requests_less_than_25_percent');
+        register_setting('wgo_options_group', 'wgo_notify_requests_less_than_x_percent');
         register_setting('wgo_options_group', 'wgo_save_payloads');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_uri_regex');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_payload_regex');
@@ -81,7 +81,7 @@ class WhatsGoingOn
         add_option('wgo_notify_requests_more_than_sd', 0);
         add_option('wgo_notify_requests_more_than_2sd', 0);
         add_option('wgo_notify_requests_more_than_3sd', 0);
-        add_option('wgo_notify_requests_less_than_25_percent', 0);
+        add_option('wgo_notify_requests_less_than_x_percent', -1);
         add_option('wgo_save_payloads', 0);
         add_option('wgo_save_payloads_matching_uri_regex', 0);
         add_option('wgo_save_payloads_matching_payload_regex', 0);
