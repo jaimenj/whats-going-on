@@ -40,7 +40,8 @@ if (!current_user_can('administrator')) {
             </tbody>
         </table>
         <input type="file" name="file_regexes_uri" id="file_regexes_uri">
-        <input type="submit" name="submit-save-regexes-uri" id="submit-save-regexes-uri" class="button button-green" value="Upload Regexes signatures only for request uri">
+        <input type="submit" name="submit-save-regexes-uri" id="submit-save-regexes-uri" class="button button-green" value="Upload Regexes signatures only for request uris">
+        <input type="submit" name="submit-set-default-regexes-uri" id="submit-set-default-regexes-uri" class="button button-green" value="Set default Regexes for request uris">
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
@@ -71,7 +72,8 @@ if (!current_user_can('administrator')) {
             </tbody>
         </table>
         <input type="file" name="file_regexes_payload" id="file_regexes_payload">
-        <input type="submit" name="submit-save-regexes-payload" id="submit-save-regexes-payload" class="button button-green" value="Upload Regexes signatures only for payload">
+        <input type="submit" name="submit-save-regexes-payload" id="submit-save-regexes-payload" class="button button-green" value="Upload Regexes signatures only for payloads">
+        <input type="submit" name="submit-set-default-regexes-payload" id="submit-set-default-regexes-payload" class="button button-green" value="Set default Regexes for payloads">
     </div>
 
     <p>

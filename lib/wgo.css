@@ -52,7 +52,13 @@
     width: 50%;
 }
 
-.waf-textarea-config, .waf-select-area-config {
+.waf-textarea-config,
+.waf-select-area-config {
     width: 100%;
     max-width: none !important;
+}
+
+#submit-set-default-regexes-uri,
+#submit-set-default-regexes-payload {
+    float: right;
 }
