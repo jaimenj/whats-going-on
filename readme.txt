@@ -1,10 +1,10 @@
 === What's going on ===
 Contributors: jaimenj
-Tags: wordpress, security, waf
+Tags: wordpress, security, waf, firewall
 Requires at least: 5.0
 Tested up to: 5.5
 Requires PHP: 7.2
-Stable tag: 0.6
+Stable tag: 0.7
 License: GPLv2 or later
 Repository URL: https://github.com/jaimenj/whats-going-on
 Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
@@ -13,7 +13,7 @@ A simple Web Application Firewall for WordPress.
 
 == Description ==
 
-A very simple plugin for WordPress that allows you to see all real requests to your website. It’s a WAF, a Web Application Firewall that is installed in front of WordPress. It’s installed in the server with the plugin, and it checks requests from the web browsers, bots or webcrawlers to your WordPress. It executes the WAF codes before every request to PHP files of WordPress, so it also works before every request to the WordPress cache.
+A very simple firewall for WordPress that allows you to see all real requests to your WordPress and protect you from Internet attacks. It’s a WAF, a Web Application Firewall that is installed in front of WordPress. It’s installed in the server with the plugin, and it checks requests from the web browsers, bots or webcrawlers to your WordPress. It executes the WAF codes before every request to PHP files of WordPress, so it also works before every request to the WordPress cache.
 
 Features:
 
@@ -72,12 +72,15 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 3. Regexes administration.
 4. DoS detection and prevention, DDoS detection and notification.
 5. Countries and continents administration.
-6. Last blocks reasons and times blocked, 2 total blocks, with a total of 2 IPs recorded.
-7. Top 10 of IPs doing 404s, with a total of 15 IPs recorded.
-8. Top 10 of URLs doing 404s, with a total of 50 IPs recorded.
+6. Last blocks reasons and times blocked.
+7. Top 10 of IPs doing 404s.
+8. Top 10 of URLs doing 404s.
 9. Top 10 of IPs visiting.
 
 == Changelog ==
+
+= v0.7 =
+* Set default Regexes buttons to protect you from URI and Payload attacks.
 
 = v0.6 =
 * Securize input and outputs in the backend.
