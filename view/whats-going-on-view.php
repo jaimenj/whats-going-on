@@ -81,7 +81,7 @@ echo $_SERVER['REQUEST_URI'];
             Need help? Ask <a href="https://jnjsite.com/whats-going-on-for-wordpress/" target="_blank"><b>here</b></a>.
         </span>
 
-        <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simple WAF</h1>
+        <h1><span class="dashicons dashicons-shield-alt wgo-icon"></span> What's going on, a simple firewall</h1>
         
         <?php
         if (isset($wgoSms)) {

@@ -118,6 +118,10 @@ class WhatsGoingOnBackendController
                     $wgoSms = $this->_block_continent();
                 } elseif (isset($_REQUEST['submit-unblock-continent'])) {
                     $wgoSms = $this->_unblock_continent();
+                } elseif (isset($_REQUEST['submit-set-default-regexes-uri'])) {
+                    $wgoSms = $this->_set_default_regexes_uri();
+                } elseif (isset($_REQUEST['submit-set-default-regexes-payload'])) {
+                    $wgoSms = $this->_set_default_regexes_payload();
                 } elseif (isset($_REQUEST['submit-install-full-waf'])) {
                     $wgoSms = $this->_install_waf();
                 } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
@@ -384,5 +388,39 @@ class WhatsGoingOnBackendController
         file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/block-countries.php', implode(PHP_EOL, array_diff($current_blocking_countries, $remove_countries)));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Selected countries unblocked ('.implode(', ', $remove_countries).')!</p></div>';
+    }
+
+    private function _set_default_regexes_uri()
+    {
+        $default_regexes = [
+            '<?php/*',
+            '/(\%27)|(\')|(\%23)|(\#)/ix',
+            '/((\%3D)|(=))[^\n]*((\%27)|(\')|(\%3B)|(;))/i',
+            '/\w*((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))/ix',
+            '/((\%27)|(\'))union/ix',
+            '/exec(\s|\+)+(s|x)p\w+/ix',
+            '/((\%3C)|<)((\%2F)|\/)*[a-z0-9\%]+((\%3E)|>)/ix',
+            '/((\%3C)|<)((\%69)|i|(\%49))((\%6D)|m|(\%4D))((\%67)|g|(\%47))[^\n]+((\%3E)|>)/i',
+            '/((\%3C)|<)[^\n]+((\%3E)|>)/i',
+            '/modules\/.*\/vendor\//i',
+            '/modules\/.*.php$/i',
+            '/vendor\/.*.php$/i',
+        ];
+        file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/block-regexes-uri.php', implode(PHP_EOL, $default_regexes));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Default Regexes for uris setted!</p></div>';
+    }
+
+    private function _set_default_regexes_payload()
+    {
+        $default_regexes = [
+            '<?php/*',
+            '/((\%27)|(\'))union/ix',
+            '/exec(\s|\+)+(s|x)p\w+/ix',
+            '/(porn)|(alcohol)|(poker)|(penis)|(casino)|(cialis)|(viagra)|(levitra)/ix',
+        ];
+        file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/block-regexes-payload.php', implode(PHP_EOL, $default_regexes));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Default Regexes for payloads setted!</p></div>';
     }
 }
