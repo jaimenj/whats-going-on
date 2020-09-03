@@ -19,23 +19,6 @@ if (!current_user_can('administrator')) {
     }
 }
 
-// GEOIP
-$isoCountriesFile = file(WGO_PATH.'lib/isoCountriesCodes.csv');
-$isoCountriesArray = [];
-foreach ($isoCountriesFile as $isoItem) {
-    $isoCountriesArray[explode(',', $isoItem)[0]] = str_replace(['"', PHP_EOL], '', explode(',', $isoItem)[1]);
-}
-
-$limit_requests_per_minute = get_option('wgo_limit_requests_per_minute');
-$limit_requests_per_hour = get_option('wgo_limit_requests_per_hour');
-$items_per_page = get_option('wgo_items_per_page');
-$days_to_store = get_option('wgo_days_to_store');
-$im_behind_proxy = get_option('wgo_im_behind_proxy');
-$notification_email = get_option('wgo_notification_email');
-$save_payloads = get_option('wgo_save_payloads');
-$save_payloads_matching_uri_regex = get_option('wgo_save_payloads_matching_uri_regex');
-$save_payloads_matching_payload_regex = get_option('wgo_save_payloads_matching_payload_regex');
-
 /*
  * Listing registers..
  */
