@@ -191,9 +191,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A+SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average + $standard_deviation;
+                                $a_plus_sd = $average + $standard_deviation;
+                                echo $a_plus_sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average + $standard_deviation);
+                                    echo ','.$a_plus_sd;
                                 }
                             }
                         ?>],
@@ -204,9 +205,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A+2SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average + $standard_deviation * 2;
+                                $a_plus_2sd = $average + $standard_deviation * 2;
+                                echo $a_plus_2sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average + $standard_deviation * 2);
+                                    echo ','.$a_plus_2sd;
                                 }
                             }
                         ?>],
@@ -217,9 +219,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A+3SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average + $standard_deviation * 3;
+                                $a_plus_3sd = $average + $standard_deviation * 3;
+                                echo $a_plus_3sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average + $standard_deviation * 3);
+                                    echo ','.$a_plus_3sd;
                                 }
                             }
                         ?>],
@@ -230,9 +233,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A-SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average - $standard_deviation;
+                                $a_minus_sd = $average - $standard_deviation;
+                                echo $a_minus_sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average - $standard_deviation);
+                                    echo ','.$a_minus_sd;
                                 }
                             }
                         ?>],
@@ -243,9 +247,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A-2SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average - $standard_deviation * 2;
+                                $a_minus_2sd = $average - $standard_deviation * 2;
+                                echo $a_minus_2sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average - $standard_deviation * 2);
+                                    echo ','.$a_minus_2sd;
                                 }
                             }
                         ?>],
