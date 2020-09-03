@@ -14,10 +14,6 @@ if (!current_user_can('administrator')) {
          * TTL or processor usage
          * spikes in traffic.
          */
-        $notify_requests_more_than_sd = get_option('wgo_notify_requests_more_than_sd');
-        $notify_requests_more_than_2sd = get_option('wgo_notify_requests_more_than_2sd');
-        $notify_requests_more_than_3sd = get_option('wgo_notify_requests_more_than_3sd');
-        $notify_requests_less_than_x_percent = get_option('wgo_notify_requests_less_than_x_percent');
         ?>
 
         <p>Average (A): <?= $average; ?> - Standard deviation (SD): <?= $standard_deviation; ?> - Variance (V): <?= $variance; ?></p>

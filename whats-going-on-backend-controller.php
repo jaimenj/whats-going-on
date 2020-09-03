@@ -132,6 +132,12 @@ class WhatsGoingOnBackendController
             }
         }
 
+        // Get main options values..
+        $notify_requests_more_than_sd = get_option('wgo_notify_requests_more_than_sd');
+        $notify_requests_more_than_2sd = get_option('wgo_notify_requests_more_than_2sd');
+        $notify_requests_more_than_3sd = get_option('wgo_notify_requests_more_than_3sd');
+        $notify_requests_less_than_x_percent = get_option('wgo_notify_requests_less_than_x_percent');
+
         // Paints the view..
         include WGO_PATH.'view/whats-going-on-view.php';
     }
