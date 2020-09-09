@@ -19,6 +19,7 @@ class WhatsGoingOnBackendController
     {
         add_action('admin_bar_menu', [$this, 'add_admin_bar_menu'], 99);
         add_action('admin_menu', [$this, 'add_admin_page']);
+        add_action('init', [$this, 'wgo_download_current_regexes_controller']);
     }
 
     public function add_admin_bar_menu($admin_bar)
@@ -442,5 +443,53 @@ class WhatsGoingOnBackendController
         file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/block-regexes-payload.php', implode(PHP_EOL, $default_regexes));
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Default Regexes for payloads setted!</p></div>';
+    }
+
+    /**
+     * 
+     */
+    public function wgo_download_current_regexes_controller()
+    {
+        // Check we are submitting..
+        $submitting = false;
+        foreach ($_REQUEST as $key => $value) {
+            if (preg_match('/submit/', $key)) {
+                $submitting = true;
+            }
+        }
+
+        // Security control, is request submitted from WGO backend?
+        if ($submitting) {
+            if (!isset($_REQUEST['wgo_nonce'])) {
+                wp_die('ERROR: nonce field is missing.');
+            } elseif (!wp_verify_nonce($_REQUEST['wgo_nonce'], 'wgojnj')) {
+                wp_die('ERROR: invalid nonce specified.');
+            } else {
+                $type = '';
+                if (isset($_REQUEST['wgo-submit-download-regexes-uri'])) {
+                    $type = 'uri';
+                } elseif (isset($_REQUEST['wgo-submit-download-regexes-payload'])) {
+                    $type = 'payload';
+                }
+
+                if (!empty($type)) {
+                    $current_regexes = explode(PHP_EOL, file_get_contents(wp_upload_dir()['basedir'].'/wgo-things/block-regexes-'.$type.'.php'));
+                    unset($current_regexes[0]);
+
+                    header('Pragma: public');
+                    header('Expires: 0');
+                    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                    header('Content-Type: text/plain');
+                    header('Content-Disposition: attachment; filename=current-regexes-'.$type.'.txt');
+                    $file = fopen('php://output', 'w');
+                    foreach ($current_regexes as $regex) {
+                        fwrite($file, $regex.PHP_EOL);
+                    }
+                    fclose($file);
+
+                    exit();
+                }
+            }
+        }
     }
 }

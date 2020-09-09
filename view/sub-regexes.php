@@ -28,7 +28,7 @@ if (!current_user_can('administrator')) {
                                 for ($i = 1; $i < count($the_file); ++$i) {
                                     echo $i.'.- '.$the_file[$i].'<br>';
                                 }
-                                echo '<input type="submit" name="submit-download-regexes-uri" id="submit-download-regexes-uri" class="button-download-regexes" value="Download these Regexes">';
+                                echo '<input type="submit" name="wgo-submit-download-regexes-uri" id="wgo-submit-download-regexes-uri" class="button-download-regexes" value="Download these Regexes">';
                             } else {
                                 echo '<p>No Regexes found.</p>';
                             }
@@ -61,7 +61,7 @@ if (!current_user_can('administrator')) {
                                 for ($i = 1; $i < count($the_file); ++$i) {
                                     echo $i.'.- '.$the_file[$i].'<br>';
                                 }
-                                echo '<input type="submit" name="submit-download-regexes-payload" id="submit-download-regexes-payload" class="button-download-regexes" value="Download these Regexes">';
+                                echo '<input type="submit" name="wgo-submit-download-regexes-payload" id="wgo-submit-download-regexes-payload" class="button-download-regexes" value="Download these Regexes">';
                             } else {
                                 echo '<p>No Regexes found.</p>';
                             }
