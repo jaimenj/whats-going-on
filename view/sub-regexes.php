@@ -7,7 +7,7 @@ if (!current_user_can('administrator')) {
 <div class="wrap-permanent-regexes">
     <h2>Administration of Regex detections</h2>
 
-    <p>This Regular Expresions are used for detecting requests with exploits, SQL injection, XSS attacks.. searching in full request uri and post data received.</p>
+    <p>This Regular Expresions are used for detecting requests with exploits, SQL injection, XSS attacks.. searching in full request uri and post data received. To upload your Regexes use text files with one Regex per line.</p>
 
     <div class="wrap" id="wrap-block-regexes">
         <table class="wp-list-table widefat fixed striped posts">
@@ -28,6 +28,7 @@ if (!current_user_can('administrator')) {
                                 for ($i = 1; $i < count($the_file); ++$i) {
                                     echo $i.'.- '.$the_file[$i].'<br>';
                                 }
+                                echo '<input type="submit" name="wgo-submit-download-regexes-uri" id="wgo-submit-download-regexes-uri" class="button-download-regexes" value="Download these Regexes">';
                             } else {
                                 echo '<p>No Regexes found.</p>';
                             }
@@ -60,6 +61,7 @@ if (!current_user_can('administrator')) {
                                 for ($i = 1; $i < count($the_file); ++$i) {
                                     echo $i.'.- '.$the_file[$i].'<br>';
                                 }
+                                echo '<input type="submit" name="wgo-submit-download-regexes-payload" id="wgo-submit-download-regexes-payload" class="button-download-regexes" value="Download these Regexes">';
                             } else {
                                 echo '<p>No Regexes found.</p>';
                             }

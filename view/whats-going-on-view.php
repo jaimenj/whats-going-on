@@ -19,23 +19,6 @@ if (!current_user_can('administrator')) {
     }
 }
 
-// GEOIP
-$isoCountriesFile = file(WGO_PATH.'lib/isoCountriesCodes.csv');
-$isoCountriesArray = [];
-foreach ($isoCountriesFile as $isoItem) {
-    $isoCountriesArray[explode(',', $isoItem)[0]] = str_replace(['"', PHP_EOL], '', explode(',', $isoItem)[1]);
-}
-
-$limit_requests_per_minute = get_option('wgo_limit_requests_per_minute');
-$limit_requests_per_hour = get_option('wgo_limit_requests_per_hour');
-$items_per_page = get_option('wgo_items_per_page');
-$days_to_store = get_option('wgo_days_to_store');
-$im_behind_proxy = get_option('wgo_im_behind_proxy');
-$notification_email = get_option('wgo_notification_email');
-$save_payloads = get_option('wgo_save_payloads');
-$save_payloads_matching_uri_regex = get_option('wgo_save_payloads_matching_uri_regex');
-$save_payloads_matching_payload_regex = get_option('wgo_save_payloads_matching_payload_regex');
-
 /*
  * Listing registers..
  */
@@ -149,6 +132,8 @@ echo $_SERVER['REQUEST_URI'];
                                 $i = 0;
                                 if (abs($chart_results[0]->hits - $average) > 3 * $standard_deviation) {
                                     echo "'rgba(255, 0, 0, 1)'";
+                                } elseif ($chart_results[0]->hits < ($average * $notify_requests_less_than_x_percent) / 100 ) {
+                                    echo "'rgba(255, 0, 0, 1)'";
                                 } elseif (abs($chart_results[0]->hits - $average) > 2 * $standard_deviation) {
                                     echo "'rgba(255, 0, 0, 0.7)'";
                                 } elseif (abs($chart_results[0]->hits - $average) > $standard_deviation) {
@@ -158,6 +143,8 @@ echo $_SERVER['REQUEST_URI'];
                                 }
                                 for ($i = 1; $i < count($chart_results); ++$i) {
                                     if (abs($chart_results[$i]->hits - $average) > 3 * $standard_deviation) {
+                                        echo ", 'rgba(255, 0, 0, 1)'";
+                                    } elseif ($chart_results[$i]->hits < ($average * $notify_requests_less_than_x_percent) / 100 ) {
                                         echo ", 'rgba(255, 0, 0, 1)'";
                                     } elseif (abs($chart_results[$i]->hits - $average) > 2 * $standard_deviation) {
                                         echo ", 'rgba(255, 0, 0, 0.7)'";
@@ -187,9 +174,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A+SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average + $standard_deviation;
+                                $a_plus_sd = $average + $standard_deviation;
+                                echo $a_plus_sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average + $standard_deviation);
+                                    echo ','.$a_plus_sd;
                                 }
                             }
                         ?>],
@@ -200,9 +188,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A+2SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average + $standard_deviation * 2;
+                                $a_plus_2sd = $average + $standard_deviation * 2;
+                                echo $a_plus_2sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average + $standard_deviation * 2);
+                                    echo ','.$a_plus_2sd;
                                 }
                             }
                         ?>],
@@ -213,9 +202,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A+3SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average + $standard_deviation * 3;
+                                $a_plus_3sd = $average + $standard_deviation * 3;
+                                echo $a_plus_3sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average + $standard_deviation * 3);
+                                    echo ','.$a_plus_3sd;
                                 }
                             }
                         ?>],
@@ -226,9 +216,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A-SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average - $standard_deviation;
+                                $a_minus_sd = $average - $standard_deviation;
+                                echo $a_minus_sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average - $standard_deviation);
+                                    echo ','.$a_minus_sd;
                                 }
                             }
                         ?>],
@@ -239,9 +230,10 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A-2SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average - $standard_deviation * 2;
+                                $a_minus_2sd = $average - $standard_deviation * 2;
+                                echo $a_minus_2sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average - $standard_deviation * 2);
+                                    echo ','.$a_minus_2sd;
                                 }
                             }
                         ?>],
@@ -252,16 +244,31 @@ echo $_SERVER['REQUEST_URI'];
                         label: '# A-3SD',
                         data: [<?php
                             if (count($chart_results) > 0) {
-                                echo $average - $standard_deviation * 3;
+                                $a_minus_3sd = $average - $standard_deviation * 3;
+                                echo $a_minus_3sd;
                                 for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.($average - $standard_deviation * 3);
+                                    echo ','.$a_minus_3sd;
                                 }
                             }
                         ?>],
                         borderWidth: 1,
                         borderColor: 'rgba(200, 200, 200, 1)',
                         fill: false
-                    }]
+                    }<?php if($notify_requests_less_than_x_percent > 0) { ?>,{
+                        label: '# <?= $notify_requests_less_than_x_percent ?>%A',
+                        data: [<?php
+                            if (count($chart_results) > 0) {
+                                $a_min_percent = $average * $notify_requests_less_than_x_percent / 100;
+                                echo $a_min_percent;
+                                for ($i = 1; $i < count($chart_results); ++$i) {
+                                    echo ','.$a_min_percent;
+                                }
+                            }
+                        ?>],
+                        borderWidth: 1.5,
+                        borderColor: 'rgba(255, 0, 0, 1)',
+                        fill: false
+                    }<?php } ?>]
                 },
                 options: {
                     scales: {

@@ -62,3 +62,11 @@
 #submit-set-default-regexes-payload {
     float: right;
 }
+
+.button-download-regexes {
+    border: none;
+    background: none;
+    text-decoration: underline;
+    margin: 8px;
+    color: blue;
+}

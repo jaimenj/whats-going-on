@@ -477,6 +477,10 @@ class WafGoingOn
             'wgo_save_payloads_matching_payload_regex',
         ];
 
+        foreach($options_to_search as $option){
+            $this->wp_options[$option] = '';
+        }
+        
         $sql = 'SELECT option_name, option_value FROM '.$the_table_full_prefix.'options '
             ."WHERE option_name IN ('"
             .implode("', '", $options_to_search)
