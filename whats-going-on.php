@@ -4,7 +4,7 @@
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
  * License: GPLv2 or later
  * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
- * Version: 0.7
+ * Version: 0.8
  * Author: Jaime Niñoles
  * Author URI: https://jnjsite.com/.
  */
@@ -47,7 +47,7 @@ class WhatsGoingOn
         WhatsGoingOnBackendController::get_instance();
         WhatsGoingOnAjaxController::get_instance();
 
-        WhatsGoingOnDatabase::get_instance()->update_if_needed();
+        WhatsGoingOnDatabase::get_instance();
     }
 
     public function activation()
@@ -87,7 +87,6 @@ class WhatsGoingOn
         add_option('wgo_save_payloads_matching_payload_regex', 0);
 
         WhatsGoingOnDatabase::get_instance()->create_initial_tables();
-        WhatsGoingOnDatabase::get_instance()->update_if_needed();
 
         if (!file_exists(wp_upload_dir()['basedir'].'/wgo-things')) {
             mkdir(wp_upload_dir()['basedir'].'/wgo-things');

@@ -6,7 +6,8 @@ class WhatsGoingOnDatabase
 {
     private static $instance;
 
-    private $current_version;
+    // Last DB update version..
+    private $current_version = 2;
 
     public static function get_instance()
     {
@@ -19,7 +20,7 @@ class WhatsGoingOnDatabase
 
     private function __construct()
     {
-        $this->current_version = 2;
+        $this->update_if_needed();
     }
 
     public function create_initial_tables()
@@ -84,15 +85,17 @@ class WhatsGoingOnDatabase
         global $wpdb;
         $db_version = get_option('wgo_db_version');
 
-        if ($db_version < $this->current_version) {
-            if (1 == $db_version) { // Update for v2..
-                $sql = 'ALTER TABLE '.$wpdb->prefix.'whats_going_on_block '
-                    .'ADD COLUMN block_until DATETIME'
-                    .';';
-                $wpdb->get_results($sql);
-            }
+        // Updates for v2..
+        if ($db_version < $this->current_version
+        and 2 > $db_version) {
+            $sql = 'ALTER TABLE '.$wpdb->prefix.'whats_going_on_block '
+                .'ADD COLUMN block_until DATETIME'
+                .';';
+            $wpdb->get_results($sql);
 
-            update_option('wgo_db_version', $this->current_version);
+            ++$db_version;
         }
+
+        update_option('wgo_db_version', $this->current_version);
     }
 }
