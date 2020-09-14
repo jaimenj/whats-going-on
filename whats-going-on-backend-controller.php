@@ -453,7 +453,7 @@ class WhatsGoingOnBackendController
         // Check we are submitting..
         $submitting = false;
         foreach ($_REQUEST as $key => $value) {
-            if (preg_match('/submit/', $key)) {
+            if (preg_match('/wgo-submit-download-regexes/', $key)) {
                 $submitting = true;
             }
         }
