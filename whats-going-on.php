@@ -4,9 +4,9 @@
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
  * License: GPLv2 or later
  * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
- * Version: 0.8
+ * Version: 0.9
  * Author: Jaime Niñoles
- * Author URI: https://jnjsite.com/.
+ * Author URI: https://jnjsite.com/
  */
 defined('ABSPATH') or die('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
@@ -39,6 +39,8 @@ class WhatsGoingOn
         register_activation_hook(__FILE__, [$this, 'activation']);
         register_deactivation_hook(__FILE__, [$this, 'deactivation']);
 
+        WhatsGoingOnDatabase::get_instance();
+
         // Main actions..
         add_action('template_redirect', [$this, 'save_404s']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css_js']);
@@ -46,14 +48,10 @@ class WhatsGoingOn
         WhatsGoingOnCronjobs::get_instance();
         WhatsGoingOnBackendController::get_instance();
         WhatsGoingOnAjaxController::get_instance();
-
-        WhatsGoingOnDatabase::get_instance();
     }
 
     public function activation()
     {
-        global $wpdb;
-
         register_setting('wgo_options_group', 'wgo_db_version');
         register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
@@ -182,10 +180,10 @@ class WhatsGoingOn
      */
     public function enqueue_admin_css_js($hook)
     {
-        wp_enqueue_style('wgo_custom_style', plugin_dir_url(__FILE__).'lib/wgo.css', false, '0.8');
+        wp_enqueue_style('wgo_custom_style', plugin_dir_url(__FILE__).'lib/wgo.css', false, '0.9');
         wp_enqueue_style('wgo_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
         wp_enqueue_style('wgo_map_style', plugin_dir_url(__FILE__).'lib/svgMap.min.css', false, '1');
-        wp_enqueue_script('wgo_custom_script', plugin_dir_url(__FILE__).'lib/wgo.js', [], '0.8');
+        wp_enqueue_script('wgo_custom_script', plugin_dir_url(__FILE__).'lib/wgo.js', [], '0.9');
         wp_enqueue_script('wgo_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
         wp_enqueue_script('wgo_map_script', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '1');
     }
