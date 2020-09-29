@@ -44,7 +44,6 @@ class WhatsGoingOn
         // Main actions..
         add_action('template_redirect', [$this, 'save_404s']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_css_js']);
-        add_action('in_admin_header', [$this, 'add_admin_header_libraries']);
 
         WhatsGoingOnCronjobs::get_instance();
         WhatsGoingOnBackendController::get_instance();
@@ -181,19 +180,15 @@ class WhatsGoingOn
      */
     public function enqueue_admin_css_js($hook)
     {
-        wp_enqueue_style('wgo_custom_style', plugin_dir_url(__FILE__).'lib/wgo.min.css', false, '0.9');
-        wp_enqueue_script('wgo_custom_script', plugin_dir_url(__FILE__).'lib/wgo.min.js', [], '0.9');
-    }
-
-    public function add_admin_header_libraries()
-    {
-        echo '<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.4/b-colvis-1.6.4/b-flash-1.6.4/b-html5-1.6.4/b-print-1.6.4/cr-1.5.2/fc-3.3.1/r-2.2.6/datatables.min.css"/>'
-            .'<link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v1.5.0/dist/svgMap.min.css" rel="stylesheet">'
-            .'<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>'
-            .'<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>'
-            .'<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.4/b-colvis-1.6.4/b-flash-1.6.4/b-html5-1.6.4/b-print-1.6.4/cr-1.5.2/fc-3.3.1/r-2.2.6/datatables.min.js"></script>'
-            .'<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>'
-            .'<script src="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v1.5.0/dist/svgMap.min.js"></script>';
+        wp_enqueue_style('wgo_style_datatables', plugin_dir_url(__FILE__).'lib/datatables.min.css', false, '0.9');
+        wp_enqueue_style('wgo_style_svgmap', plugin_dir_url(__FILE__).'lib/svgMap.min.css', false, '0.9');
+        wp_enqueue_style('wgo_style_custom', plugin_dir_url(__FILE__).'lib/wgo.min.css', false, '0.9');
+        wp_enqueue_script('wgo_script_pdfmake', plugin_dir_url(__FILE__).'lib/pdfmake.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_vfs_fonts', plugin_dir_url(__FILE__).'lib/vfs_fonts.js', [], '0.9');
+        wp_enqueue_script('wgo_script_datatables', plugin_dir_url(__FILE__).'lib/datatables.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_chart', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_svgmap', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_custom', plugin_dir_url(__FILE__).'lib/wgo.min.js', [], '0.9');
     }
 
     public function is_waf_installed()

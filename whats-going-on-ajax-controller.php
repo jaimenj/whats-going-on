@@ -17,13 +17,48 @@ class WhatsGoingOnAjaxController
 
     private function __construct()
     {
+        add_action('wp_ajax_wgo_show_payloads', [$this, 'wgo_show_payloads']);
+
+        add_action('wp_ajax_wgo_main_server_processing', [$this, 'wgo_main_server_processing']);
+        add_action('wp_ajax_wgo_blocks_server_processing', [$this, 'wgo_blocks_server_processing']);
+        add_action('wp_ajax_wgo_ips_404s_server_processing', [$this, 'wgo_ips_404s_server_processing']);
+        add_action('wp_ajax_wgo_urls_404s_server_processing', [$this, 'wgo_urls_404s_server_processing']);
+        add_action('wp_ajax_wgo_ips_visiting_server_processing', [$this, 'wgo_ips_visiting_server_processing']);
+
+        // deprecated..
         add_action('wp_ajax_wgo_all_ips_and_counters', [$this, 'wgo_all_ips_and_counters']);
         add_action('wp_ajax_wgo_all_ips_404s', [$this, 'wgo_all_ips_404s']);
         add_action('wp_ajax_wgo_all_urls_404s', [$this, 'wgo_all_urls_404s']);
         add_action('wp_ajax_wgo_all_blocks', [$this, 'wgo_all_blocks']);
-        add_action('wp_ajax_wgo_show_payloads', [$this, 'wgo_show_payloads']);
     }
 
+
+    // TODO main Datatables server processing..
+    public function wgo_main_server_processing(){
+
+    }
+
+    // TODO blocks Datatables server processing..
+    public function wgo_blocks_server_processing() {
+
+    }
+
+    // TODO IPs doing 404s Datatables server processing..
+    public function wgo_ips_404s_server_processing() {
+
+    }
+
+    // TODO URLs doing 404s Datatables server processing..
+    public function wgo_urls_404s_server_processing() {
+
+    }
+
+    // TODO IPs visiting Datatables server processing..
+    public function wgo_ips_visiting_server_processing() {
+
+    }
+
+    // Deprecated from here..
     public function wgo_all_ips_and_counters()
     {
         if (!current_user_can('administrator')) {
