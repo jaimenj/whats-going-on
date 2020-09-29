@@ -56,7 +56,10 @@ $maxs_reached = $wpdb->get_results(
 <form method="post" enctype="multipart/form-data" action="<?php
 //echo admin_url('tools.php?page=whats-going-on');
 echo $_SERVER['REQUEST_URI'];
-?>" id="this_form" name="this_form">
+?>"
+id="wgo_form" 
+name="wgo_form"
+data-ajaxurl="<?= admin_url('admin-ajax.php') ?>">
 
     <div class="wrap">
         <span style="float: right">

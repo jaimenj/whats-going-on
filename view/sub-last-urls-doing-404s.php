@@ -12,7 +12,7 @@ $total_urls_doing_404s = $wpdb->get_var($sql_urls_doing_404s);
 ?>
 
 <div class="wrap-permanent-lists">
-    <h2>Top 10 of URLs doing 404s, with a total of <?= $total_urls_doing_404s ?> IPs recorded <a href="javascript:showAllUrls404s()">see all</a></h2></h2>
+    <h2>Top 10 of URLs doing 404s, with a total of <?= $total_urls_doing_404s ?> IPs recorded <a href="javascript:doAjaxPopup('wgo_all_urls_404s')">see all</a></h2></h2>
 
     <div class="wrap" id="wrap-block-404s">
         <table class="wp-list-table widefat fixed striped posts">

@@ -79,7 +79,7 @@ if (!current_user_can('administrator')) {
     </div>
 
     <p>
-        <a href="javascript:showPayloadsLog()" class="button button-primary">Show payloads log</a>
+        <a href="javascript:doAjaxPopup('wgo_show_payloads')" class="button button-primary">Show payloads log</a>
         <input type="submit" name="submit-truncate-payloads-log" id="submit-truncate-payloads-log" class="button button-red" value="Truncate payloads log (current <?php
         if (file_exists(wp_upload_dir()['basedir'].'/wgo-things/waf-payloads.log')) {
             echo number_format(filesize(wp_upload_dir()['basedir'].'/wgo-things/waf-payloads.log') / 1024, 2);
