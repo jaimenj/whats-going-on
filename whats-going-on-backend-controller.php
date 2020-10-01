@@ -129,7 +129,6 @@ class WhatsGoingOnBackendController
         }
         $limit_requests_per_minute = get_option('wgo_limit_requests_per_minute');
         $limit_requests_per_hour = get_option('wgo_limit_requests_per_hour');
-        $items_per_page = get_option('wgo_items_per_page');
         $days_to_store = get_option('wgo_days_to_store');
         $im_behind_proxy = get_option('wgo_im_behind_proxy');
         $notification_email = get_option('wgo_notification_email');
@@ -161,7 +160,6 @@ class WhatsGoingOnBackendController
 
     private function _save_main_configs()
     {
-        update_option('wgo_items_per_page', intval($_REQUEST['items_per_page']));
         update_option('wgo_days_to_store', intval($_REQUEST['days_to_store']));
         update_option('wgo_im_behind_proxy', intval($_REQUEST['im_behind_proxy']));
         update_option('wgo_notification_email', sanitize_email($_REQUEST['notification_email']));

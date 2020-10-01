@@ -28,9 +28,9 @@ class WhatsGoingOnAjaxController
         add_action('wp_ajax_wgo_all_blocks', [$this, 'wgo_all_blocks']);
     }
 
-
     // TODO main Datatables server processing..
-    public function wgo_main_server_processing(){
+    public function wgo_main_server_processing()
+    {
         if (!current_user_can('administrator')) {
             wp_die(__('Sorry, you are not allowed to manage options for this site.'));
         }
@@ -52,7 +52,9 @@ class WhatsGoingOnAjaxController
         if (!empty($_POST['search']['value'])) {
             foreach ($_POST['columns'] as $column) {
                 if (in_array($column['name'], ['remote_port', 'last_minute', 'last_hour'])) {
-                    $where_clauses_or[] = sanitize_text_field($column['name']).' = '.floatval($_POST['search']['value']);
+                    if (is_numeric($_POST['search']['value'])) {
+                        $where_clauses_or[] = sanitize_text_field($column['name']).' = '.floatval($_POST['search']['value']);
+                    }
                 } else {
                     $where_clauses_or[] = sanitize_text_field($column['name'])." LIKE '%".sanitize_text_field($_POST['search']['value'])."%'";
                 }
@@ -62,8 +64,12 @@ class WhatsGoingOnAjaxController
         foreach ($_POST['columns'] as $column) {
             if (!empty($column['search']['value'])) {
                 if (in_array($column['name'], ['remote_port', 'last_minute', 'last_hour'])) {
-                    $where_clauses_and[] = sanitize_text_field($column['name']).' = '.floatval($column['search']['value']);
-                } else {
+                    if (is_numeric($column['search']['value'])) {
+                        $where_clauses_and[] = sanitize_text_field($column['name']).' = '.floatval($column['search']['value']);
+                    }
+                } elseif (in_array($column['name'], ['url'])) {
+                    $where_clauses_and[] = sanitize_text_field($column['name'])." LIKE '%".urlencode(sanitize_text_field($column['search']['value']))."%'";
+                }else{
                     $where_clauses_and[] = sanitize_text_field($column['name'])." LIKE '%".sanitize_text_field($column['search']['value'])."%'";
                 }
             }
@@ -93,7 +99,7 @@ class WhatsGoingOnAjaxController
             $sql_filtered .= 'WHERE '.$where_filtered;
         }
         if (!empty($order_by_clauses)) {
-            $sql .= 'ORDER BY '.implode(', ', $order_by_clauses);
+            $sql .= ' ORDER BY '.implode(', ', $order_by_clauses);
         }
         $sql .= ' LIMIT '.intval($_POST['length']).' OFFSET '.intval($_POST['start']);
         $results = $wpdb->get_results($sql);
@@ -109,7 +115,11 @@ class WhatsGoingOnAjaxController
             //var_dump($key); var_dump($value);
             $tempItem = [];
             foreach ($value as $valueKey => $valueValue) {
-                $tempItem[] = $valueValue;
+                if ('url' == $valueKey) {
+                    $tempItem[] = urldecode($valueValue);
+                } else {
+                    $tempItem[] = $valueValue;
+                }
             }
             $data[] = $tempItem;
         }

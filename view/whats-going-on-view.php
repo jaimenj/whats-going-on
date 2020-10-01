@@ -291,17 +291,6 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
         <p>
             <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save this configs">
 
-            <label for="items_per_page">Items per page</label>
-            <select name="items_per_page" id="items_per_page">
-                <option value="10"<?= (10 == $items_per_page ? ' selected' : ''); ?>>10</option>
-                <option value="20"<?= (20 == $items_per_page ? ' selected' : ''); ?>>20</option>
-                <option value="50"<?= (50 == $items_per_page ? ' selected' : ''); ?>>50</option>
-                <option value="100"<?= (100 == $items_per_page ? ' selected' : ''); ?>>100</option>
-                <option value="250"<?= (250 == $items_per_page ? ' selected' : ''); ?>>250</option>
-                <option value="500"<?= (500 == $items_per_page ? ' selected' : ''); ?>>500</option>
-                <option value="1000"<?= (1000 == $items_per_page ? ' selected' : ''); ?>>1000</option>
-            </select>
-
             <label for="days_to_store">Days to store</label>
             <select name="days_to_store" id="days_to_store">
                 <option value="1"<?= (1 == $days_to_store ? ' selected' : ''); ?>>1</option>

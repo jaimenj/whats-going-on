@@ -56,7 +56,6 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_hour');
-        register_setting('wgo_options_group', 'wgo_items_per_page');
         register_setting('wgo_options_group', 'wgo_days_to_store');
         register_setting('wgo_options_group', 'wgo_im_behind_proxy');
         register_setting('wgo_options_group', 'wgo_notification_email');
@@ -72,7 +71,6 @@ class WhatsGoingOn
         add_option('wgo_waf_installed', 0);
         add_option('wgo_limit_requests_per_minute', -1);
         add_option('wgo_limit_requests_per_hour', -1);
-        add_option('wgo_items_per_page', 10);
         add_option('wgo_days_to_store', 7);
         add_option('wgo_im_behind_proxy', 0);
         add_option('wgo_notification_email', '');
@@ -109,7 +107,6 @@ class WhatsGoingOn
         delete_option('wgo_waf_installed');
         delete_option('wgo_limit_requests_per_minute');
         delete_option('wgo_limit_requests_per_hour');
-        delete_option('wgo_items_per_page');
         delete_option('wgo_days_to_store');
         delete_option('wgo_im_behind_proxy');
         delete_option('wgo_notification_email');
