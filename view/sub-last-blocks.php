@@ -38,7 +38,7 @@ $total_blocks = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_goin
                     <td><?= $result->time; ?></td>
                     <td><?= $result->times; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a>
+                        <?= $result->remote_ip; ?>
                     </td>
                     <td>
                         <?php

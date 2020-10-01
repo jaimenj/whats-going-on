@@ -31,7 +31,7 @@ $results = $wpdb->get_results($sql_most_visited_from);
                 <tr>
                     <td><?= $result->times; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?>
+                        <?= $result->remote_ip; ?>
                     </td>
                     <td>
                         <?php

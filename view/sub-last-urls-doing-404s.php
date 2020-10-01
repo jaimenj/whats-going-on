@@ -31,7 +31,7 @@ $total_urls_doing_404s = $wpdb->get_var($sql_urls_doing_404s);
                 <tr>
                     <td><?= $result->times; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= urldecode($result->url); ?>
+                        <?= urldecode($result->url); ?>
                     </td>
                     <td>
                         <?php

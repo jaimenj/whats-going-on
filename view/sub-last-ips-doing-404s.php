@@ -31,7 +31,7 @@ $total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
                 <tr>
                     <td><?= $result->times; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?>
+                        <?= $result->remote_ip; ?>
                     </td>
                     <td>
                         <?php
