@@ -56,7 +56,6 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_waf_installed');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_minute');
         register_setting('wgo_options_group', 'wgo_limit_requests_per_hour');
-        register_setting('wgo_options_group', 'wgo_items_per_page');
         register_setting('wgo_options_group', 'wgo_days_to_store');
         register_setting('wgo_options_group', 'wgo_im_behind_proxy');
         register_setting('wgo_options_group', 'wgo_notification_email');
@@ -72,7 +71,6 @@ class WhatsGoingOn
         add_option('wgo_waf_installed', 0);
         add_option('wgo_limit_requests_per_minute', -1);
         add_option('wgo_limit_requests_per_hour', -1);
-        add_option('wgo_items_per_page', 10);
         add_option('wgo_days_to_store', 7);
         add_option('wgo_im_behind_proxy', 0);
         add_option('wgo_notification_email', '');
@@ -109,7 +107,6 @@ class WhatsGoingOn
         delete_option('wgo_waf_installed');
         delete_option('wgo_limit_requests_per_minute');
         delete_option('wgo_limit_requests_per_hour');
-        delete_option('wgo_items_per_page');
         delete_option('wgo_days_to_store');
         delete_option('wgo_im_behind_proxy');
         delete_option('wgo_notification_email');
@@ -180,12 +177,15 @@ class WhatsGoingOn
      */
     public function enqueue_admin_css_js($hook)
     {
-        wp_enqueue_style('wgo_custom_style', plugin_dir_url(__FILE__).'lib/wgo.css', false, '0.9');
-        wp_enqueue_style('wgo_chart_style', plugin_dir_url(__FILE__).'lib/Chart.min.css', false, '1');
-        wp_enqueue_style('wgo_map_style', plugin_dir_url(__FILE__).'lib/svgMap.min.css', false, '1');
-        wp_enqueue_script('wgo_custom_script', plugin_dir_url(__FILE__).'lib/wgo.js', [], '0.9');
-        wp_enqueue_script('wgo_chart_script', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '1');
-        wp_enqueue_script('wgo_map_script', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '1');
+        wp_enqueue_style('wgo_style_datatables', plugin_dir_url(__FILE__).'lib/datatables.min.css', false, '0.9');
+        wp_enqueue_style('wgo_style_svgmap', plugin_dir_url(__FILE__).'lib/svgMap.min.css', false, '0.9');
+        wp_enqueue_style('wgo_style_custom', plugin_dir_url(__FILE__).'lib/wgo.min.css', false, '0.9');
+        wp_enqueue_script('wgo_script_pdfmake', plugin_dir_url(__FILE__).'lib/pdfmake.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_vfs_fonts', plugin_dir_url(__FILE__).'lib/vfs_fonts.js', [], '0.9');
+        wp_enqueue_script('wgo_script_datatables', plugin_dir_url(__FILE__).'lib/datatables.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_chart', plugin_dir_url(__FILE__).'lib/Chart.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_svgmap', plugin_dir_url(__FILE__).'lib/svgMap.min.js', [], '0.9');
+        wp_enqueue_script('wgo_script_custom', plugin_dir_url(__FILE__).'lib/wgo.min.js', [], '0.9');
     }
 
     public function is_waf_installed()

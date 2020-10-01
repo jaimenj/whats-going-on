@@ -21,7 +21,7 @@ if (!current_user_can('administrator')) {
         <tr>
             <td><?= $result->times; ?></td>
             <td>
-                <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= urldecode($result->url); ?>
+                <?= urldecode($result->url); ?>
             </td>
             <td>
                 <?php

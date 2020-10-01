@@ -24,10 +24,10 @@ if (!current_user_can('administrator')) {
         <tr>
             <td><?= $result->time; ?></td>
             <td>
-                <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= urldecode($result->url); ?>
+                <?= urldecode($result->url); ?>
             </td>
             <td>
-                <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a>
+                <?= $result->remote_ip; ?>
             </td>
             <td>
                 <?php

@@ -6,7 +6,7 @@ if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 } else {
     if ('--127.0.0.1' != WhatsGoingOn::get_instance()->current_remote_ips()) {
-        // Remove administrator IP from records..
+        // Remove administrator IP from records to prevent auto-blocking..
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
             ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
         $results = $wpdb->get_results($sql);
@@ -23,9 +23,7 @@ if (!current_user_can('administrator')) {
  * Listing registers..
  */
 global $wpdb;
-global $current_page;
 $total_sql = 'SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on';
-$main_sql = 'SELECT * FROM '.$wpdb->prefix.'whats_going_on ';
 $maxs_reached_sql = 'SELECT max(last_minute) max_hits_minute_reached, max(last_hour) max_hits_hour_reached FROM '.$wpdb->prefix.'whats_going_on';
 
 $add_sql = '';
@@ -37,16 +35,9 @@ if (isset($_GET['filter-url'])) {
     $add_sql .= " WHERE method = '".sanitize_text_field($_GET['filter-method'])."'";
 }
 $total_sql .= $add_sql;
-$main_sql .= $add_sql;
 $maxs_reached_sql .= $add_sql;
 
 $total_registers = $wpdb->get_var($total_sql);
-
-$offset = ($current_page - 1) * $items_per_page;
-
-$main_sql .= 'ORDER BY time DESC LIMIT '.$items_per_page.' OFFSET '.$offset;
-$results = $wpdb->get_results($main_sql);
-//var_export($result);
 
 $maxs_reached = $wpdb->get_results(
     $maxs_reached_sql
@@ -56,7 +47,10 @@ $maxs_reached = $wpdb->get_results(
 <form method="post" enctype="multipart/form-data" action="<?php
 //echo admin_url('tools.php?page=whats-going-on');
 echo $_SERVER['REQUEST_URI'];
-?>" id="this_form" name="this_form">
+?>"
+id="wgo_form" 
+name="wgo_form"
+data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
 
     <div class="wrap">
         <span style="float: right">
@@ -297,17 +291,6 @@ echo $_SERVER['REQUEST_URI'];
         <p>
             <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save this configs">
 
-            <label for="items_per_page">Items per page</label>
-            <select name="items_per_page" id="items_per_page">
-                <option value="10"<?= (10 == $items_per_page ? ' selected' : ''); ?>>10</option>
-                <option value="20"<?= (20 == $items_per_page ? ' selected' : ''); ?>>20</option>
-                <option value="50"<?= (50 == $items_per_page ? ' selected' : ''); ?>>50</option>
-                <option value="100"<?= (100 == $items_per_page ? ' selected' : ''); ?>>100</option>
-                <option value="250"<?= (250 == $items_per_page ? ' selected' : ''); ?>>250</option>
-                <option value="500"<?= (500 == $items_per_page ? ' selected' : ''); ?>>500</option>
-                <option value="1000"<?= (1000 == $items_per_page ? ' selected' : ''); ?>>1000</option>
-            </select>
-
             <label for="days_to_store">Days to store</label>
             <select name="days_to_store" id="days_to_store">
                 <option value="1"<?= (1 == $days_to_store ? ' selected' : ''); ?>>1</option>
@@ -327,69 +310,41 @@ echo $_SERVER['REQUEST_URI'];
             <label for="notification_email">Notification email</label>
             <input type="text" name="notification_email" id="notification_email" class="regular-text" value="<?= $notification_email; ?>">
             <input type="submit" name="submit-check-email" id="submit-check-email" class="button button-green" value="Check email">
-
-            <span class="span-pagination"><?php
-
-            if ($current_page > 1) {
-                ?>
-                <input type="submit" name="submit-previous-page" id="submit-previous-page" class="button button-primary" value="<<">
-                <?php
-            }
-
-            ?>
-            <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>">Page <?= $current_page; ?> with total <?= $total_registers; ?> items</a>
-            <?php
-
-            if ($current_page * $items_per_page < $total_registers) {
-                ?>
-                <input type="submit" name="submit-next-page" id="submit-next-page" class="button button-primary" value=">>">
-                <?php
-            }
-
-            ?>
-            </span>
-            <input type="hidden" name="current-page" id="current-page" value="<?= $current_page; ?>">
         </p>
 
-        <table class="wp-list-table widefat fixed striped posts">
-            <thead>
-                <tr>
-                    <td>Time</td>
-                    <td>URL method</td>
-                    <td>Remote IP : Port</td>
-                    <td>Country</td>
-                    <td>User Agent</td>
-                    <td>Hits minute / hour (max <?= $maxs_reached[0]->max_hits_minute_reached; ?> / <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
-                </tr>
-            </thead>
-            <tbody>
-            <?php
-            foreach ($results as $key => $result) {
-                ?>
-
-                <tr>
-                    <td><?= $result->time; ?></td>
-                    <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-url=<?= urlencode($result->url); ?>"><?= urldecode($result->url); ?></a>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-method=<?= urlencode($result->method); ?>"><?= $result->method; ?></a></td>
-                    <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?></a> : <?= $result->remote_port; ?>
-                    </td>
-                    <td>
-                        <?php
-                        if (!empty($result->country_code)) {
-                            echo $result->country_code.'::'.(isset($isoCountriesArray[$result->country_code]) ? $isoCountriesArray[$result->country_code] : '');
-                        } ?>
-                    </td>
-                    <td><?= $result->user_agent; ?></td>
-                    <td><?= $result->last_minute; ?> / <?= $result->last_hour; ?></td>
-                </tr>
-
-                <?php
-            }
-            ?>
-            </tbody>
-        </table>
+        <div class="table-responsive" id="wgo-datatable-container">
+            <table 
+            class="records_list table table-striped table-bordered table-hover" 
+            id="wgo-datatable" 
+            width="100%">
+                <thead>
+                    <tr>
+                        <td>Time</td>
+                        <td>URL method</td>
+                        <td>Remote IP</td>
+                        <td>Port</td>
+                        <td>Country</td>
+                        <td>User Agent</td>
+                        <td>Method</td>
+                        <td>Hits minute (max <?= $maxs_reached[0]->max_hits_minute_reached; ?>)</td>
+                        <td>Hits hour (max <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
         <p>
             <input type="submit" name="submit-remove-old" id="submit-remove-old" class="button button-primary" value="Remove records of more than one week">
@@ -440,3 +395,7 @@ echo $_SERVER['REQUEST_URI'];
 <p>This plugin includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.</p>
 
 <?php include WGO_PATH.'view/sub-popup-info.php'; ?>
+
+<script>
+    let weAreInWhatsGoingOn = true
+</script>

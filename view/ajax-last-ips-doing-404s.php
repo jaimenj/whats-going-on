@@ -21,7 +21,7 @@ if (!current_user_can('administrator')) {
         <tr>
             <td><?= $result->times; ?></td>
             <td>
-                <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?>
+                <?= $result->remote_ip; ?>
             </td>
             <td>
                 <?php

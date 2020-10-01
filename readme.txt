@@ -33,6 +33,12 @@ Features:
 
 == Installation ==
 
+1. Search it in the WordPress admin ection of plugins.
+2. Click install when you find it.
+3. Click activate it when installed.
+
+Alternative install uploading manually the files to the server:
+
 1. Copy the files in the directory /wp-content/plugins/whats-going-on/ like others plugins.
 2. Activate the plugin in the WordPress backend menu of plugins.
 3. Got to the admin section of What’s going on.

@@ -43,6 +43,12 @@ WordPress plugin page: \
 
 ## Installation
 
+1. Search it in the WordPress admin ection of plugins.
+2. Click install when you find it.
+3. Click activate it when installed.
+
+Alternative install uploading manually the files to the server:
+
 1. Copy the files in the directory /wp-content/plugins/whats-going-on/ like others plugins.
 2. Activate the plugin in the WordPress backend menu of plugins.
 3. Got to the admin section of What’s going on.
@@ -60,7 +66,7 @@ With SSH you can stay up to date using the normal git pull command.
 ## Uninstall
 
 1. Uninstall .user.ini file.
-2. Deactivate the plugin into the Plugins menu in the admin panel of Wordpress.
+2. Deactivate the plugin into the Plugins menu in the admin panel of WordPress.
 3. Delete into the Plugins menu.
 
 All the options configured into the plugin are removed when plugin is deleted, not when plugin is deactivated. All the database tables are removed when plugin is deactivated. So if you want to remove the plugin and all data stored, first deactivate the plugin and then remove it from the plugin admin zone into the WordPress backend.

@@ -12,7 +12,7 @@ $results = $wpdb->get_results($sql_most_visited_from);
 ?>
 
 <div class="wrap-permanent-lists">
-    <h2>Top 10 of IPs visiting <a href="javascript:showAllIpsAndCounters()">see all</a></h2>
+    <h2>Top 10 of IPs visiting <a href="javascript:doAjaxPopup('wgo_all_ips_and_counters')">see all</a></h2>
 
     <div class="wrap" id="wrap-block-404s">
         <table class="wp-list-table widefat fixed striped posts">
@@ -31,7 +31,7 @@ $results = $wpdb->get_results($sql_most_visited_from);
                 <tr>
                     <td><?= $result->times; ?></td>
                     <td>
-                        <a href="<?= admin_url('tools.php?page=whats-going-on'); ?>&filter-ip=<?= urlencode($result->remote_ip); ?>"><?= $result->remote_ip; ?>
+                        <?= $result->remote_ip; ?>
                     </td>
                     <td>
                         <?php
