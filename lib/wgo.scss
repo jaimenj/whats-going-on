@@ -70,3 +70,45 @@
     margin: 8px;
     color: blue;
 }
+
+#wgo-datatable-container {
+    padding: 5px;
+    margin: 0px;
+    box-shadow: 3px 3px 5px;
+
+
+    #wgo-datatable {
+        tfoot {
+            display: table-header-group !important;
+
+            input {
+                width: 100% !important;
+            }
+        }
+    }
+
+    .dataTables_wrapper {
+
+        .dataTables_length,
+        .dt-buttons {
+            padding-top: .25em;
+
+            select {
+                height: 32px;
+                width: 80px;
+                margin: 0px 5px;
+                line-height: 18px;
+            }
+        }
+
+        .dt-buttons {
+            padding-left: 10px;
+        }
+
+        .dataTables_filter {
+            input {
+                height: 32px;
+            }
+        }
+    }
+}

@@ -59,7 +59,7 @@ echo $_SERVER['REQUEST_URI'];
 ?>"
 id="wgo_form" 
 name="wgo_form"
-data-ajaxurl="<?= admin_url('admin-ajax.php') ?>">
+data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
 
     <div class="wrap">
         <span style="float: right">
@@ -354,6 +354,40 @@ data-ajaxurl="<?= admin_url('admin-ajax.php') ?>">
             <input type="hidden" name="current-page" id="current-page" value="<?= $current_page; ?>">
         </p>
 
+        <div class="table-responsive" id="wgo-datatable-container">
+            <table 
+            class="records_list table table-striped table-bordered table-hover" 
+            id="wgo-datatable" 
+            width="100%">
+                <thead>
+                    <tr>
+                        <td>Time</td>
+                        <td>URL method</td>
+                        <td>Remote IP</td>
+                        <td>Port</td>
+                        <td>Country</td>
+                        <td>User Agent</td>
+                        <td>Method</td>
+                        <td>Hits minute (max <?= $maxs_reached[0]->max_hits_minute_reached; ?>)</td>
+                        <td>Hits hour (max <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                        <th>Filter..</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
@@ -443,3 +477,7 @@ data-ajaxurl="<?= admin_url('admin-ajax.php') ?>">
 <p>This plugin includes GeoLite2 data created by MaxMind, available from <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.</p>
 
 <?php include WGO_PATH.'view/sub-popup-info.php'; ?>
+
+<script>
+    let weAreInWhatsGoingOn = true
+</script>
