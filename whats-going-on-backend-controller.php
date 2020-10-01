@@ -55,14 +55,6 @@ class WhatsGoingOnBackendController
     public function wgo_main_admin_controller()
     {
         global $wpdb;
-        global $current_page;
-
-        if (isset($_REQUEST['current-page'])) {
-            $current_page = intval($_REQUEST['current-page']);
-        } else {
-            $current_page = 1;
-        }
-        //var_dump($current_page);
 
         $submitting = false;
         foreach ($_REQUEST as $key => $value) {
@@ -81,11 +73,7 @@ class WhatsGoingOnBackendController
                 /*
                  * Handling actions..
                  */
-                if (isset($_REQUEST['submit-previous-page'])) {
-                    --$current_page;
-                } elseif (isset($_REQUEST['submit-next-page'])) {
-                    ++$current_page;
-                } elseif (isset($_REQUEST['btn-submit'])) {
+                if (isset($_REQUEST['btn-submit'])) {
                     $wgoSms = $this->_save_main_configs();
                 } elseif (isset($_REQUEST['submit-check-email'])) {
                     $wgoSms = $this->_check_email();
