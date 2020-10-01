@@ -18,17 +18,14 @@ class WhatsGoingOnAjaxController
     private function __construct()
     {
         add_action('wp_ajax_wgo_show_payloads', [$this, 'wgo_show_payloads']);
-
-        // TODO
         add_action('wp_ajax_wgo_main_server_processing', [$this, 'wgo_main_server_processing']);
-
         add_action('wp_ajax_wgo_all_ips_and_counters', [$this, 'wgo_all_ips_and_counters']);
         add_action('wp_ajax_wgo_all_ips_404s', [$this, 'wgo_all_ips_404s']);
         add_action('wp_ajax_wgo_all_urls_404s', [$this, 'wgo_all_urls_404s']);
         add_action('wp_ajax_wgo_all_blocks', [$this, 'wgo_all_blocks']);
     }
 
-    // TODO main Datatables server processing..
+    // Main Datatables server processing..
     public function wgo_main_server_processing()
     {
         if (!current_user_can('administrator')) {
@@ -55,6 +52,8 @@ class WhatsGoingOnAjaxController
                     if (is_numeric($_POST['search']['value'])) {
                         $where_clauses_or[] = sanitize_text_field($column['name']).' = '.floatval($_POST['search']['value']);
                     }
+                } elseif (in_array($column['name'], ['url'])) {
+                    $where_clauses_or[] = sanitize_text_field($column['name'])." LIKE '%".urlencode(sanitize_text_field($_POST['search']['value']))."%'";
                 } else {
                     $where_clauses_or[] = sanitize_text_field($column['name'])." LIKE '%".sanitize_text_field($_POST['search']['value'])."%'";
                 }
@@ -69,7 +68,7 @@ class WhatsGoingOnAjaxController
                     }
                 } elseif (in_array($column['name'], ['url'])) {
                     $where_clauses_and[] = sanitize_text_field($column['name'])." LIKE '%".urlencode(sanitize_text_field($column['search']['value']))."%'";
-                }else{
+                } else {
                     $where_clauses_and[] = sanitize_text_field($column['name'])." LIKE '%".sanitize_text_field($column['search']['value'])."%'";
                 }
             }
