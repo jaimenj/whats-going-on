@@ -28,12 +28,25 @@ class WhatsGoingOnAjaxController
     // Main Datatables server processing..
     public function wgo_main_server_processing()
     {
-        if (!current_user_can('administrator')) {
-            wp_die(__('Sorry, you are not allowed to manage options for this site.'));
-        }
-
         // Request data to the DB..
         global $wpdb;
+
+        if (!current_user_can('administrator')) {
+            wp_die(__('Sorry, you are not allowed to manage options for this site.'));
+        } else {
+            if ('--127.0.0.1' != WhatsGoingOn::get_instance()->current_remote_ips()) {
+                // Remove administrator IP from records to prevent auto-blocking..
+                $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
+                    ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
+                $results = $wpdb->get_results($sql);
+                $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
+                    ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
+                $results = $wpdb->get_results($sql);
+                $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
+                    ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
+                $results = $wpdb->get_results($sql);
+            }
+        }
 
         // Main query..
         $sql = 'SELECT * ';
