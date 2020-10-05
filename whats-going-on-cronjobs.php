@@ -123,7 +123,7 @@ class WhatsGoingOnCronjobs
         $tableNames = ['whats_going_on', 'whats_going_on_block', 'whats_going_on_404s'];
 
         foreach ($tableNames as $tableName) {
-            $sql = 'SELECT * FROM '.$wpdb->prefix.$tableName.' WHERE country_code IS NULL LIMIT 100;';
+            $sql = 'SELECT * FROM '.$wpdb->prefix.$tableName.' WHERE country_code IS NULL ORDER BY rand() DESC LIMIT 100;';
             $results = $wpdb->get_results($sql);
             foreach ($results as $result) {
                 echo $result->remote_ip.'.. ';
