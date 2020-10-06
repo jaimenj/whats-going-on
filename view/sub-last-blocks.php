@@ -12,10 +12,11 @@ $results = $wpdb->get_results($block_sql);
 
 // Total blocks
 $total_blocks = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_block');
+$total_block_ips = $wpdb->get_var('SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_block');
 ?>
 
 <div class="wrap-last-blocked">
-    <h2>Last blocks reasons and times blocked, <?= $total_blocks ?> total blocks, with a total of <?= count($results); ?> IPs recorded <a href="javascript:doAjaxPopup('wgo_all_blocks')">see all</a></h2>
+    <h2>Last blocks reasons and times blocked, <?= $total_blocks ?> total blocks, with a total of <?= $total_block_ips ?> IPs recorded <a href="javascript:doAjaxPopup('wgo_all_blocks')">see all</a></h2>
 
     <div class="wrap" id="block-last-blocks">
         <table class="wp-list-table widefat fixed striped posts">
