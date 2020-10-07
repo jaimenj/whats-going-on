@@ -43,13 +43,17 @@ WordPress plugin page: \
 
 ## Installation
 
-1. Search it in the WordPress admin ection of plugins.
+1. Search it in the WordPress admin section of plugins.
 2. Click install when you find it.
-3. Click activate it when installed.
+3. Activate the plugin in the WordPress backend menu of plugins.
+4. Got to the admin section of What’s going on.
+5. Install in front of every single request to PHP files, by clicking on the button that says ‘Install .user.ini’.
+6. See how it works and play with it configs, fully personalizable of what to allow or not.
+7. Enjoy.. 🙂
 
 Alternative install uploading manually the files to the server:
 
-1. Copy the files in the directory /wp-content/plugins/whats-going-on/ like others plugins.
+1. Copy the files in the directory /wp-content/plugins/whats-going-on/ like others plugins, or upload it it the admin section into a .zip file.
 2. Activate the plugin in the WordPress backend menu of plugins.
 3. Got to the admin section of What’s going on.
 4. Install in front of every single request to PHP files, by clicking on the button that says ‘Install .user.ini’.
