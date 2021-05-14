@@ -40,7 +40,6 @@ class WhatsGoingOn
         register_activation_hook(__FILE__, [$this, 'activation']);
         register_deactivation_hook(__FILE__, [$this, 'deactivation']);
 
-        WhatsGoingOnDatabase::get_instance()->create_initial_tables();
         WhatsGoingOnDatabase::get_instance()->update_if_needed();
 
         // Main actions..

@@ -84,6 +84,8 @@ class WhatsGoingOnDatabase
         global $wpdb;
         $db_version = get_option('wgo_db_version');
 
+        if($db_version < 1) return;
+        
         // Updates for v2..
         if ($db_version < 2) {
             $sql = 'ALTER TABLE '.$wpdb->prefix.'whats_going_on_block '
