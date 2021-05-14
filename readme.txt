@@ -4,7 +4,7 @@ Tags: wordpress, security, waf, firewall
 Requires at least: 5.0
 Tested up to: 5.6
 Requires PHP: 7.2
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 Repository URL: https://github.com/jaimenj/whats-going-on
 Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/

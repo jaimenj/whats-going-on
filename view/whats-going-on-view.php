@@ -65,6 +65,10 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
             echo $wgoSms;
         }
 
+        foreach(WhatsGoingOnMessages::get_instance()->get_messages() as $message) {
+            echo '<div id="message" class="notice notice-success is-dismissible"><p>'.$message.'</p></div>';
+        }
+
         ////////////////
         /////////////////////////////// START CHART
         $chart_sql = "SELECT count(*) hits, DATE_FORMAT(wgo.time, '%Hh') the_hour FROM ".$wpdb->prefix.'whats_going_on wgo'

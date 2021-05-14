@@ -4,9 +4,9 @@
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
  * License: GPLv2 or later
  * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
- * Version: 1.0
+ * Version: 1.1
  * Author: Jaime Niñoles
- * Author URI: https://jnjsite.com/
+ * Author URI: https://jnjsite.com/.
  */
 defined('ABSPATH') or die('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
@@ -15,6 +15,7 @@ include_once WGO_PATH.'whats-going-on-database.php';
 include_once WGO_PATH.'whats-going-on-cronjobs.php';
 include_once WGO_PATH.'whats-going-on-backend-controller.php';
 include_once WGO_PATH.'whats-going-on-ajax-controller.php';
+include_once WGO_PATH.'whats-going-on-messages.php';
 
 class WhatsGoingOn
 {
@@ -39,7 +40,8 @@ class WhatsGoingOn
         register_activation_hook(__FILE__, [$this, 'activation']);
         register_deactivation_hook(__FILE__, [$this, 'deactivation']);
 
-        WhatsGoingOnDatabase::get_instance();
+        WhatsGoingOnDatabase::get_instance()->create_initial_tables();
+        WhatsGoingOnDatabase::get_instance()->update_if_needed();
 
         // Main actions..
         add_action('template_redirect', [$this, 'save_404s']);
@@ -48,6 +50,7 @@ class WhatsGoingOn
         WhatsGoingOnCronjobs::get_instance();
         WhatsGoingOnBackendController::get_instance();
         WhatsGoingOnAjaxController::get_instance();
+        WhatsGoingOnMessages::get_instance();
     }
 
     public function activation()
@@ -67,7 +70,7 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_uri_regex');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_payload_regex');
 
-        add_option('wgo_db_version', 1);
+        add_option('wgo_db_version', 0);
         add_option('wgo_waf_installed', 0);
         add_option('wgo_limit_requests_per_minute', -1);
         add_option('wgo_limit_requests_per_hour', -1);
@@ -97,6 +100,7 @@ class WhatsGoingOn
     public function deactivation()
     {
         WhatsGoingOnDatabase::get_instance()->remove_tables();
+        update_option('wgo_db_version', 0);
 
         $this->uninstall_waf();
     }
