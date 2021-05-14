@@ -306,8 +306,7 @@ class WhatsGoingOnBackendController
 
     private function _add_countries_to_block()
     {
-        $add_countries = sanitize_text_field($_REQUEST['select_block_countries']);
-
+        $add_countries = $_REQUEST['select_block_countries'];
         if (file_exists(wp_upload_dir()['basedir'].'/wgo-things/block-countries.php')) {
             $current_blocking_countries = explode(PHP_EOL, file_get_contents(wp_upload_dir()['basedir'].'/wgo-things/block-countries.php'));
         } else {
@@ -315,7 +314,7 @@ class WhatsGoingOnBackendController
             $current_blocking_countries[] = '<?php/*';
         }
         foreach ($add_countries as $country_to_block) {
-            $current_blocking_countries[] = $country_to_block;
+            $current_blocking_countries[] = sanitize_text_field($country_to_block);
         }
         file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/block-countries.php', implode(PHP_EOL, $current_blocking_countries));
 
@@ -324,7 +323,7 @@ class WhatsGoingOnBackendController
 
     private function _remove_countries_to_block()
     {
-        $remove_countries = sanitize_text_field($_REQUEST['select_unblock_countries']);
+        $remove_countries = $_REQUEST['select_unblock_countries'];
 
         if (file_exists(wp_upload_dir()['basedir'].'/wgo-things/block-countries.php')) {
             $current_blocking_countries = explode(PHP_EOL, file_get_contents(wp_upload_dir()['basedir'].'/wgo-things/block-countries.php'));

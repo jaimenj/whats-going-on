@@ -51,7 +51,7 @@ class WhatsGoingOnAjaxController
         // Main query..
         $sql = 'SELECT * ';
         $sql_filtered = 'SELECT count(*) ';
-        $from_sentence .= ' FROM '.$wpdb->prefix.'whats_going_on ';
+        $from_sentence = ' FROM '.$wpdb->prefix.'whats_going_on ';
         $sql .= $from_sentence;
         $sql_filtered .= $from_sentence;
 
