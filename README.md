@@ -12,7 +12,7 @@ A simple Web Application Firewall for WordPress.
 * Tested up to: 5.6
 * Requires PHP: 7.2
 * Stable tag: 1.1
-* License: GPLv2 or later
+* License: MIT
 * Repository URL: https://github.com/jaimenj/whats-going-on
 * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
 

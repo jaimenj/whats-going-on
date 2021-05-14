@@ -2,7 +2,7 @@
 /**
  * Plugin Name: What's going on
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
- * License: GPLv2 or later
+ * License: MIT
  * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
  * Version: 1.1
  * Author: Jaime Niñoles
