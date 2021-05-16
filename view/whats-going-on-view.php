@@ -383,25 +383,38 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
     </div>
 
     <hr>
-    <?php include WGO_PATH.'view/sub-unique-ips.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-dos.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-ddos.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-regexes.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-regexes-errors.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-countries-continents.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-last-blocks.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-last-ips-doing-404s.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-last-urls-doing-404s.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-most-visited-from.php'; ?>
+
+    <h2>Administration Zone!</h2> 
+    <button type="button" class="button button-green" id="wgo-btn-show-ban-rules">Ban rules</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-ips">IPs</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-dos-and-ddos">DoS and DDoS</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-regexes">Regexes</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-countries">Countries</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-lasts">Last blocks and 404s</button>
+
+    <div class="wgo-box wgo-box-ban-rules wgo-d-none">
+        <?php include WGO_PATH.'view/sub-ban-rules.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-ips wgo-d-none">
+        <?php include WGO_PATH.'view/sub-unique-ips.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-dos-and-ddos wgo-d-none">
+        <?php include WGO_PATH.'view/sub-dos.php'; ?>
+        <?php include WGO_PATH.'view/sub-ddos.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-regexes wgo-d-none">
+        <?php include WGO_PATH.'view/sub-regexes.php'; ?>
+        <?php include WGO_PATH.'view/sub-regexes-errors.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-countries wgo-d-none">
+        <?php include WGO_PATH.'view/sub-countries-continents.php'; ?>
+        <?php include WGO_PATH.'view/sub-most-visited-from.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-lasts wgo-d-none">
+        <?php include WGO_PATH.'view/sub-last-blocks.php'; ?>
+        <?php include WGO_PATH.'view/sub-last-ips-doing-404s.php'; ?>
+        <?php include WGO_PATH.'view/sub-last-urls-doing-404s.php'; ?>
+    </div>
 
 </form>
 <hr>

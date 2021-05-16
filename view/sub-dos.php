@@ -6,7 +6,7 @@ if (!current_user_can('administrator')) {
 ?>
 <div class="wrap-dos">
 
-    <h2>Administration of DoS detections</h2>
+    <h2>DoS detections</h2>
 
     <label for="limit_requests_per_minute">Max requests per minute</label>
     <select name="limit_requests_per_minute" id="limit_requests_per_minute">

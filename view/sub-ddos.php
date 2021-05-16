@@ -5,7 +5,7 @@ if (!current_user_can('administrator')) {
 }
 ?>
 <div class="wrap-ddos">
-    <h2>Administration of DDoS detections</h2>
+    <h2>DDoS detections</h2>
     
     <div class="wrap">
         <?php

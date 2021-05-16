@@ -5,7 +5,7 @@ if (!current_user_can('administrator')) {
 }
 ?>
 <div class="wrap-permanent-lists">
-    <h2>Administration of unique IPs</h2>
+    <h2>Unique IPs</h2>
 
     <p>The format of IPs recorded is: HTTP_X_FORWARDED_FOR-HTTP_CLIENT_IP-REMOTE_ADDR
     If you see something like --123.123.123.123 it's because the web is not behind a proxy.<br>

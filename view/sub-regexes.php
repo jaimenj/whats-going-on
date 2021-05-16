@@ -5,7 +5,7 @@ if (!current_user_can('administrator')) {
 }
 ?>
 <div class="wrap-permanent-regexes">
-    <h2>Administration of Regex detections</h2>
+    <h2>Regex detections</h2>
 
     <p>This Regular Expresions are used for detecting requests with exploits, SQL injection, XSS attacks.. searching in full request uri and post data received. To upload your Regexes use text files with one Regex per line.</p>
 
