@@ -295,6 +295,16 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
         <p>
             <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save this configs">
 
+            <label for="autoreload_datatables">Auto-reload</label>
+            <select name="autoreload_datatables" id="autoreload_datatables">
+                <option value="-1"<?= (-1 == $autoreload_datatables ? ' selected' : ''); ?>>No</option>
+                <option value="5"<?= (5 == $autoreload_datatables ? ' selected' : ''); ?>>5s</option>
+                <option value="10"<?= (10 == $autoreload_datatables ? ' selected' : ''); ?>>10s</option>
+                <option value="30"<?= (30 == $autoreload_datatables ? ' selected' : ''); ?>>30s</option>
+                <option value="60"<?= (60 == $autoreload_datatables ? ' selected' : ''); ?>>60s</option>
+                <option value="120"<?= (120 == $autoreload_datatables ? ' selected' : ''); ?>>120s</option>
+            </select>
+
             <label for="days_to_store">Days to store</label>
             <select name="days_to_store" id="days_to_store">
                 <option value="1"<?= (1 == $days_to_store ? ' selected' : ''); ?>>1</option>

@@ -139,6 +139,7 @@ class WhatsGoingOnBackendController
         $notify_requests_more_than_2sd = get_option('wgo_notify_requests_more_than_2sd');
         $notify_requests_more_than_3sd = get_option('wgo_notify_requests_more_than_3sd');
         $notify_requests_less_than_x_percent = get_option('wgo_notify_requests_less_than_x_percent');
+        $autoreload_datatables = get_option('wgo_autoreload_datatables');
 
         // Paints the view..
         include WGO_PATH.'view/whats-going-on-view.php';
@@ -163,6 +164,7 @@ class WhatsGoingOnBackendController
         update_option('wgo_days_to_store', intval($_REQUEST['days_to_store']));
         update_option('wgo_im_behind_proxy', intval($_REQUEST['im_behind_proxy']));
         update_option('wgo_notification_email', sanitize_email($_REQUEST['notification_email']));
+        update_option('wgo_autoreload_datatables', intval($_REQUEST['autoreload_datatables']));
 
         return  '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
     }
@@ -200,9 +202,7 @@ class WhatsGoingOnBackendController
     {
         global $wpdb;
 
-        $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on;');
-        $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on_block;');
-        $wpdb->get_results('TRUNCATE '.$wpdb->prefix.'whats_going_on_404s;');
+        WhatsGoingOnDatabase::get_instance()->remove_all_data();
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>All records removed!</p></div>';
     }

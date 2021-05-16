@@ -68,6 +68,7 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_save_payloads');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_uri_regex');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_payload_regex');
+        register_setting('tsm_options_group', 'wgo_autoreload_datatables');
 
         add_option('wgo_db_version', 0);
         add_option('wgo_waf_installed', 0);
@@ -83,6 +84,7 @@ class WhatsGoingOn
         add_option('wgo_save_payloads', 0);
         add_option('wgo_save_payloads_matching_uri_regex', 0);
         add_option('wgo_save_payloads_matching_payload_regex', 0);
+        add_option('wgo_autoreload_datatables', -1);
 
         WhatsGoingOnDatabase::get_instance()->create_initial_tables();
 
