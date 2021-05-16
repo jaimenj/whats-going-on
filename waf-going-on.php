@@ -72,7 +72,7 @@ class WafGoingOn
         if ($this->debug) {
             $time_end = microtime(true);
             $time_consumed = $time_end - $time_start;
-            echo 'Time consumed: '.number_format($time_consumed, 9).' secs<br><br>';
+            echo '<br>Time consumed: '.number_format($time_consumed, 9).' secs<br><br>';
             die('Die, we are debugging..');
         }
     }
@@ -134,6 +134,7 @@ class WafGoingOn
                 echo $item.'<br>';
             }
             echo '<br>';
+            echo 'Comments: '.$comments.'<br>';
         }
 
         // Save Regexes errors to review..
@@ -152,6 +153,7 @@ class WafGoingOn
                     echo $item.'<br>';
                 }
                 echo '<br>';
+                echo 'Bypassed: '.($bypassed ? 'true' : 'false').'<br>';
             }
 
             $this->_save_the_blocking($mysql_connection, $comments, $the_table_full_prefix);
