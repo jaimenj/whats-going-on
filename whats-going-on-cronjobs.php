@@ -93,7 +93,7 @@ class WhatsGoingOnCronjobs
         foreach (WhatsGoingOnDatabase::get_instance()->get_table_names() as $tableName) {
             $sql = 'DELETE FROM '.$wpdb->prefix.$tableName
                .' WHERE time < NOW() - INTERVAL '.$days.' DAY;';
-            $results = $wpdb->get_results($sql);
+            $wpdb->get_results($sql);
         }
     }
 
