@@ -23,6 +23,7 @@ class WhatsGoingOnAjaxController
         add_action('wp_ajax_wgo_all_ips_404s', [$this, 'wgo_all_ips_404s']);
         add_action('wp_ajax_wgo_all_urls_404s', [$this, 'wgo_all_urls_404s']);
         add_action('wp_ajax_wgo_all_blocks', [$this, 'wgo_all_blocks']);
+        add_action('wp_ajax_wgo_main_chart', [$this, 'wgo_main_chart']);
     }
 
     // Main Datatables server processing..
@@ -273,6 +274,13 @@ class WhatsGoingOnAjaxController
         }
 
         echo '<pre>'.$waf_payloads_log.'</pre>';
+
+        wp_die();
+    }
+
+    public function wgo_main_chart()
+    {
+        include WGO_PATH.'view/sub-main-chart.php';
 
         wp_die();
     }
