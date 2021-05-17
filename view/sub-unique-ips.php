@@ -80,6 +80,38 @@ if (!current_user_can('administrator')) {
                 </tbody>
             </table> 
         </div>
+
+        <div class="wrap" id="wrap-no-track-list">
+            <table class="wp-list-table widefat fixed striped posts">
+                <thead>
+                    <tr>
+                        <td>No track list, one per line</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <textarea name="txt_no_track_list" id="txt_no_track_list" class="waf-textarea-config"><?php
+                            $file_path = wp_upload_dir()['basedir'].'/wgo-things/no-track-list.php';
+                            if (file_exists($file_path)) {
+                                $the_file = file($file_path);
+                                if (count($the_file) > 1) {
+                                    for ($i = 1; $i < count($the_file); ++$i) {
+                                        echo esc_textarea($the_file[$i]);
+                                    }
+                                }
+                            }
+                            ?></textarea>
+                            <?php
+                            if (empty($the_file)) {
+                                echo '<p>No IPs found.</p>';
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table> 
+        </div>
     </div>
 
     <p>

@@ -235,8 +235,9 @@ class WhatsGoingOnBackendController
     {
         $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_block_list']), wp_upload_dir()['basedir'].'/wgo-things/block-list.php');
         $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_allow_list']), wp_upload_dir()['basedir'].'/wgo-things/allow-list.php');
+        $this->_save_clean_file(sanitize_textarea_field($_REQUEST['txt_no_track_list']), wp_upload_dir()['basedir'].'/wgo-things/no-track-list.php');
 
-        return '<div id="message" class="notice notice-success is-dismissible"><p>Block lists saved!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>IPs lists saved!</p></div>';
     }
 
     private function _save_regexes_uri()

@@ -10,9 +10,6 @@ $block_sql = 'SELECT max(wgob.time) time, count(*) times, wgob.remote_ip, wgob.c
 .' GROUP BY remote_ip ORDER BY time DESC LIMIT 10';
 $results = $wpdb->get_results($block_sql);
 
-// Total blocks
-$total_blocks = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_block');
-$total_block_ips = $wpdb->get_var('SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_block');
 ?>
 
 <div class="wrap-last-blocked">
