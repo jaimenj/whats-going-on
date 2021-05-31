@@ -111,10 +111,14 @@ class WhatsGoingOnBackendController
                     $wgoSms = $this->_set_default_regexes_uri();
                 } elseif (isset($_REQUEST['submit-set-default-regexes-payload'])) {
                     $wgoSms = $this->_set_default_regexes_payload();
+                } elseif (isset($_REQUEST['submit-set-default-ban-rules'])) {
+                    $wgoSms = $this->_set_default_ban_rules();
                 } elseif (isset($_REQUEST['submit-install-full-waf'])) {
                     $wgoSms = $this->_install_waf();
                 } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
                     $wgoSms = $this->_uninstall_waf();
+                } elseif (isset($_REQUEST['submit-save-ban-rules'])) {
+                    $wgoSms = $this->_save_ban_rules();
                 } else {
                     $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Cannot understand submitting!</p></div>';
                 }
@@ -149,7 +153,7 @@ class WhatsGoingOnBackendController
     {
         WhatsGoingOn::get_instance()->install_waf();
 
-        return  '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Installed!</p></div>';
     }
 
     private function _uninstall_waf()
@@ -166,7 +170,7 @@ class WhatsGoingOnBackendController
         update_option('wgo_notification_email', sanitize_email($_REQUEST['notification_email']));
         update_option('wgo_autoreload_datatables', intval($_REQUEST['autoreload_datatables']));
 
-        return  '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Configurations saved!</p></div>';
     }
 
     private function _check_email()
@@ -177,7 +181,7 @@ class WhatsGoingOnBackendController
             'This is a check for testing that email is working.'
         );
 
-        return  '<div id="message" class="notice notice-success is-dismissible"><p>Email sent!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Email sent!</p></div>';
     }
 
     private function _save_dos_configs()
@@ -195,7 +199,7 @@ class WhatsGoingOnBackendController
         update_option('wgo_notify_requests_more_than_3sd', intval($_REQUEST['notify_requests_more_than_3sd']));
         update_option('wgo_notify_requests_less_than_x_percent', intval($_REQUEST['notify_requests_less_than_x_percent']));
 
-        return  '<div id="message" class="notice notice-success is-dismissible"><p>DDoS configs saved!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>DDoS configs saved!</p></div>';
     }
 
     private function _remove_all_data()
@@ -286,7 +290,7 @@ class WhatsGoingOnBackendController
     {
         unlink(wp_upload_dir()['basedir'].'/wgo-things/waf-errors.log');
 
-        return  '<div id="message" class="notice notice-success is-dismissible"><p>Log file with errors removed!</p></div>';
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Log file with errors removed!</p></div>';
     }
 
     private function _save_clean_file($txt_regexes_block, $file_path)
@@ -431,9 +435,6 @@ class WhatsGoingOnBackendController
         return '<div id="message" class="notice notice-success is-dismissible"><p>Default Regexes for payloads setted!</p></div>';
     }
 
-    /**
-     * 
-     */
     public function wgo_download_current_regexes_controller()
     {
         // Check we are submitting..
@@ -477,5 +478,29 @@ class WhatsGoingOnBackendController
                 }
             }
         }
+    }
+
+    private function _save_ban_rules()
+    {
+        // Save Regexes
+        if (!empty($_FILES['file_ban_rule']['tmp_name'])) {
+            $this->_save_clean_file(file_get_contents($_FILES['file_ban_rule']['tmp_name']), wp_upload_dir()['basedir'].'/wgo-things/ban-rules.php');
+            $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Ban rules saved!</p></div>';
+        } else {
+            $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';
+        }
+
+        return $wgoSms;
+    }
+
+    private function _set_default_ban_rules()
+    {
+        $default_ban_rules = [
+            '<?php/*',
+            '($total404s > 1000) => 3600',
+        ];
+        file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/ban-rules.php', implode(PHP_EOL, $default_ban_rules));
+
+        return '<div id="message" class="notice notice-success is-dismissible"><p>Default ban rules setted!</p></div>';
     }
 }
