@@ -173,17 +173,21 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
 
     <h2>Administration Zone!</h2> 
     <button type="button" class="button button-green" id="wgo-btn-show-ban-rules">Ban rules</button>
-    <button type="button" class="button button-green" id="wgo-btn-show-ips">IPs</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-banned-ips">Banned IPs</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-ip-lists">IP lists</button>
     <button type="button" class="button button-green" id="wgo-btn-show-dos-and-ddos">DoS and DDoS</button>
     <button type="button" class="button button-green" id="wgo-btn-show-regexes">Regexes</button>
     <button type="button" class="button button-green" id="wgo-btn-show-countries">Countries</button>
     <button type="button" class="button" id="wgo-btn-show-last-blocks">Last blocks</button>
     <button type="button" class="button" id="wgo-btn-show-suspicious-behaviors">Suspicious behaviors</button>
 
-    <div class="wgo-box wgo-box-ban-rules wgo-d-none">
+    <div class="wgo-box wgo-box-ban-rules">
         <?php include WGO_PATH.'view/sub-ban-rules.php'; ?>
     </div>
-    <div class="wgo-box wgo-box-ips wgo-d-none">
+    <div class="wgo-box wgo-box-banned-ips wgo-d-none">
+        <?php include WGO_PATH.'view/sub-banned-ips.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-ip-lists wgo-d-none">
         <?php include WGO_PATH.'view/sub-unique-ips.php'; ?>
     </div>
     <div class="wgo-box wgo-box-dos-and-ddos wgo-d-none">
