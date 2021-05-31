@@ -9,7 +9,7 @@
 #wrap-countries-continents-allowed,#wrap-countries-continents-blocked{width:50%}
 .waf-select-area-config,.waf-textarea-config{width:100%;max-width:none!important}
 #submit-set-default-regexes-payload,#submit-set-default-regexes-uri{float:right}
-.button-download-regexes{border:none;background:0 0;text-decoration:underline;margin:8px;color:#00f}
+.button-download-ban-rules,.button-download-regexes{border:none;background:0 0;text-decoration:underline;margin:8px;color:#00f;cursor:pointer}
 #wgo-datatable-container{padding:5px;margin:0;box-shadow:2px 2px 3px;border-radius:3px}
 #wgo-datatable-container #wgo-datatable tfoot{display:table-header-group!important}
 #wgo-datatable-container #wgo-datatable tfoot input{width:100%!important}

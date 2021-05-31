@@ -19,7 +19,7 @@ class WhatsGoingOnBackendController
     {
         add_action('admin_bar_menu', [$this, 'add_admin_bar_menu'], 99);
         add_action('admin_menu', [$this, 'add_admin_page']);
-        add_action('init', [$this, 'wgo_download_current_regexes_controller']);
+        add_action('init', [$this, 'wgo_download_files_controller']);
     }
 
     public function add_admin_bar_menu($admin_bar)
@@ -93,6 +93,8 @@ class WhatsGoingOnBackendController
                     $wgoSms = $this->_save_regexes_uri();
                 } elseif (isset($_REQUEST['submit-save-regexes-payload'])) {
                     $wgoSms = $this->_save_regexes_payload();
+                } elseif (isset($_REQUEST['submit-save-ban-rules'])) {
+                    $wgoSms = $this->_save_ban_rules();
                 } elseif (isset($_REQUEST['submit-truncate-payloads-log'])) {
                     $wgoSms = $this->_truncate_payloads_log();
                 } elseif (isset($_REQUEST['submit-regexes-configs'])) {
@@ -117,8 +119,6 @@ class WhatsGoingOnBackendController
                     $wgoSms = $this->_install_waf();
                 } elseif (isset($_REQUEST['submit-uninstall-full-waf'])) {
                     $wgoSms = $this->_uninstall_waf();
-                } elseif (isset($_REQUEST['submit-save-ban-rules'])) {
-                    $wgoSms = $this->_save_ban_rules();
                 } else {
                     $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Cannot understand submitting!</p></div>';
                 }
@@ -435,12 +435,12 @@ class WhatsGoingOnBackendController
         return '<div id="message" class="notice notice-success is-dismissible"><p>Default Regexes for payloads setted!</p></div>';
     }
 
-    public function wgo_download_current_regexes_controller()
+    public function wgo_download_files_controller()
     {
         // Check we are submitting..
         $submitting = false;
         foreach ($_REQUEST as $key => $value) {
-            if (preg_match('/wgo-submit-download-regexes/', $key)) {
+            if (preg_match('/wgo-submit-download/', $key)) {
                 $submitting = true;
             }
         }
@@ -452,25 +452,28 @@ class WhatsGoingOnBackendController
             } elseif (!wp_verify_nonce($_REQUEST['wgo_nonce'], 'wgojnj')) {
                 wp_die('ERROR: invalid nonce specified.');
             } else {
-                $type = '';
+                // Download Regexes..
+                $type_download = '';
                 if (isset($_REQUEST['wgo-submit-download-regexes-uri'])) {
-                    $type = 'uri';
+                    $type_download = 'block-regexes-uri';
                 } elseif (isset($_REQUEST['wgo-submit-download-regexes-payload'])) {
-                    $type = 'payload';
+                    $type_download = 'block-regexes-payload';
+                } elseif (isset($_REQUEST['wgo-submit-download-ban-rules'])) {
+                    $type_download = 'ban-rules';
                 }
 
-                if (!empty($type)) {
-                    $current_regexes = explode(PHP_EOL, file_get_contents(wp_upload_dir()['basedir'].'/wgo-things/block-regexes-'.$type.'.php'));
-                    unset($current_regexes[0]);
+                if (!empty($type_download)) {
+                    $current_content = explode(PHP_EOL, file_get_contents(wp_upload_dir()['basedir'].'/wgo-things/'.$type_download.'.php'));
+                    unset($current_content[0]);
 
                     header('Pragma: public');
                     header('Expires: 0');
                     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
                     header('Content-Type: text/plain');
-                    header('Content-Disposition: attachment; filename=current-regexes-'.$type.'.txt');
+                    header('Content-Disposition: attachment; filename=current-regexes-'.$type_download.'.txt');
                     $file = fopen('php://output', 'w');
-                    foreach ($current_regexes as $regex) {
-                        fwrite($file, $regex.PHP_EOL);
+                    foreach ($current_content as $line) {
+                        fwrite($file, $line.PHP_EOL);
                     }
                     fclose($file);
 
@@ -483,8 +486,8 @@ class WhatsGoingOnBackendController
     private function _save_ban_rules()
     {
         // Save Regexes
-        if (!empty($_FILES['file_ban_rule']['tmp_name'])) {
-            $this->_save_clean_file(file_get_contents($_FILES['file_ban_rule']['tmp_name']), wp_upload_dir()['basedir'].'/wgo-things/ban-rules.php');
+        if (!empty($_FILES['file_ban_rules']['tmp_name'])) {
+            $this->_save_clean_file(file_get_contents($_FILES['file_ban_rules']['tmp_name']), wp_upload_dir()['basedir'].'/wgo-things/ban-rules.php');
             $wgoSms = '<div id="message" class="notice notice-success is-dismissible"><p>Ban rules saved!</p></div>';
         } else {
             $wgoSms = '<div id="message" class="notice notice-error is-dismissible"><p>ERROR: no file selected.</p></div>';

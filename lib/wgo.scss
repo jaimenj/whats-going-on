@@ -60,12 +60,14 @@
     float: right;
 }
 
-.button-download-regexes {
+.button-download-regexes,
+.button-download-ban-rules {
     border: none;
     background: none;
     text-decoration: underline;
     margin: 8px;
     color: blue;
+    cursor: pointer;
 }
 
 #wgo-datatable-container {

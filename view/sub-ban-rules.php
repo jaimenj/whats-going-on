@@ -5,7 +5,7 @@ if (!current_user_can('administrator')) {
 }
 ?>
 <div class="wrap-permanent-lists">
-    <h2>Ban rules @TODO</h2>
+    <h2>Ban rules</h2>
 
     <div class="wrap" id="wrap-block-rules">
         <table class="wp-list-table widefat fixed striped posts">
@@ -28,7 +28,7 @@ if (!current_user_can('administrator')) {
                                 }
                                 echo '<input type="submit" name="wgo-submit-download-ban-rules" id="wgo-submit-download-ban-rules" class="button-download-ban-rules" value="Download ban rules">';
                             } else {
-                                echo '<p>No Regexes found.</p>';
+                                echo '<p>No ban rules found.</p>';
                             }
                         } else {
                             echo '<p>No Regexes found.</p>';
