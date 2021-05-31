@@ -8,7 +8,7 @@
  * Author: Jaime Niñoles
  * Author URI: https://jnjsite.com/.
  */
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
 
 include_once WGO_PATH.'whats-going-on-database.php';

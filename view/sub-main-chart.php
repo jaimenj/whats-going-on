@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
@@ -236,6 +236,21 @@ function paintMainChart() {
 }
 </script>
 <canvas id="mainChart" width="148" height="24"></canvas>
+<?php
+
+    $total_requests = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on');
+    $total_requests_blocked = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_block');
+    $total_percent_blocked = $total_requests_blocked / ($total_requests_blocked + $total_requests) * 100;
+
+?>
+<div class="wgo-progress-bar-border">
+    <span class="wgo-progress-queue-text" id="wgo-progress-queue-text">
+        Total <?= $total_requests ?> requests, <?= $total_requests_blocked ?> blocked (<?= number_format($total_percent_blocked, 4) ?>%)..
+    </span>
+    <div class="wgo-progress-queue-content" 
+    id="wgo-progress-queue-content" 
+    style="width:<?= 100 - $total_percent_blocked ?>%;"></div>
+</div>
 <p>A: Average. SD: Stardard Deviation. 2SD: Twice the Standard Deviation. 3SD.. (DB v<?= get_option('wgo_db_version') ?>)</p>
 <?php
 /////////////////////// END CHART
