@@ -5,17 +5,23 @@ const { parallel } = require("gulp")
 const sass = require("gulp-sass")
 const cleanCss = require("gulp-clean-css")
 const concat = require('gulp-concat')
-const uglify = require('gulp-uglify-es').default
-const sourcemaps = require('gulp-sourcemaps')
+const terser = require('gulp-terser');
+const strip = require('gulp-strip-comments');
+const removeEmptyLines = require('gulp-remove-empty-lines');
+const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
+const gulpif = require('gulp-if');
+
+const useSourceMaps = false;
+const useMaximumCompress = false;
 
 function css() {
     return gulp.src('./lib/wgo.scss')
-        .pipe(sourcemaps.init())
+        .pipe(gulpif(useSourceMaps, sourcemaps.init()))
         .pipe(sass())
         .pipe(cleanCss())
         .pipe(rename('wgo.min.css'))
-        .pipe(sourcemaps.write())
+        .pipe(gulpif(useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./lib'))
 }
 
@@ -25,10 +31,12 @@ function watchCss() {
 
 function js() {
     return gulp.src('./lib/wgo.js')
-        .pipe(sourcemaps.init())
-        .pipe(uglify())
+        .pipe(gulpif(useSourceMaps, sourcemaps.init()))
+        .pipe(strip())
+        .pipe(removeEmptyLines())
+        .pipe(gulpif(useMaximumCompress, terser()))
         .pipe(concat('wgo.min.js'))
-        .pipe(sourcemaps.write())
+        .pipe(gulpif(useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./lib'))
 }
 
