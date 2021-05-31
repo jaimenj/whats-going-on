@@ -19,7 +19,7 @@ function css() {
     return gulp.src('./lib/wgo.scss')
         .pipe(gulpif(useSourceMaps, sourcemaps.init()))
         .pipe(sass())
-        .pipe(cleanCss())
+        .pipe(cleanCss({ format: 'keep-breaks' }))
         .pipe(rename('wgo.min.css'))
         .pipe(gulpif(useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./lib'))
