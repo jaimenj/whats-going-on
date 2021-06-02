@@ -11,7 +11,7 @@ if (!current_user_can('administrator')) {
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
-                    <td>Ban Rules, one per line, use this format: &lt;criteria&gt; =&gt; &lt;timeToBanInSeconds&gt;</td>
+                    <td>Ban Rules, one per line, use this format: (&lt;criteria&gt;) =&gt; &lt;timeToBanInSeconds&gt;</td>
                 </tr>
             </thead>
             <tbody>
@@ -39,14 +39,13 @@ if (!current_user_can('administrator')) {
             </tbody>
             <tfoot>
                 <tr>
-                    <td>In the rules, you can use every sentence written in PHP. Every rule must be in the format: (rule) => seconds.<br>
-                    Available vars:<br>
-                    $totalRequests = total request of the current IP.
-                    $total404s = total of 404s done.
-                    $maxRequestsPerMinuteAchieved = the max requests per minute achieved.
-                    $maxRequestsPerHourAchieved = 
-                    $totalRegexForPayloadBlocks = 
-                    $totalRegexForQueryStringBlocks = 
+                    <td>In the rules, you can use any kind of sentence written in PHP. Available vars foreach IP studied are:<br>
+                    <b>$totalRequests</b> = number of request of the current IP.<br>
+                    <b>$total404s</b> = number of 404s done.<br>
+                    <b>$maxRequestsPerMinuteAchieved</b> = the maximum requests per minute achieved.<br>
+                    <b>$maxRequestsPerHourAchieved</b> = the maximum requests per hour achieved.<br>
+                    <b>$totalRegexForPayloadBlocks</b> = the number of blocks done by a regex for payload.<br>
+                    <b>$totalRegexForQueryStringBlocks</b> = the number of blocks done by a regex for query string.
                     </td>
                 </tr>
             </tfoot>

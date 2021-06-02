@@ -284,67 +284,104 @@ class WhatsGoingOnCronjobs
         arsort($distinct_ips);
 
         // Prepare variables..
-        $array_totalRequests = [];
-        $array_total404s = [];
-        $array_maxRequestsPerMinuteAchieved = [];
-        $array_maxRequestsPerHourAchieved = [];
-        $array_totalRegexForPayloadBlocks = [];
-        $array_totalRegexForQueryStringBlocks = [];
+        $array_total_requests = [];
+        $array_total_404s = [];
+        $array_max_requests_per_minute_achieved = [];
+        $array_max_requests_per_hour_achieved = [];
+        $array_total_regex_for_payload_blocks = [];
+        $array_total_regex_for_query_string_blocks = [];
         $result = $wpdb->get_results('SELECT remote_ip, count(*) total FROM '.$wpdb->prefix.'whats_going_on GROUP BY remote_ip;');
         foreach ($result as $item) {
-            $array_totalRequests[$item->remote_ip] = $item->total;
+            $array_total_requests[$item->remote_ip] = $item->total;
         }
-        $result = $wpdb->get_results('SELECT remote_ip, count(*) total FROM '.$wpdb->prefix."whats_going_on_404s GROUP BY remote_ip;");
+        $result = $wpdb->get_results('SELECT remote_ip, count(*) total FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip;');
         foreach ($result as $item) {
-            $array_total404s[$item->remote_ip] = $item->total;
+            $array_total_404s[$item->remote_ip] = $item->total;
         }
-        $result = $wpdb->get_results('SELECT remote_ip, max(last_minute) total FROM '.$wpdb->prefix."whats_going_on GROUP BY remote_ip;");
+        $result = $wpdb->get_results('SELECT remote_ip, max(last_minute) total FROM '.$wpdb->prefix.'whats_going_on GROUP BY remote_ip;');
         foreach ($result as $item) {
-            $array_maxRequestsPerMinuteAchieved[$item->remote_ip] = $item->total;
+            $array_max_requests_per_minute_achieved[$item->remote_ip] = $item->total;
         }
-        $result = $wpdb->get_results('SELECT remote_ip, max(last_hour) total FROM '.$wpdb->prefix."whats_going_on GROUP BY remote_ip;");
+        $result = $wpdb->get_results('SELECT remote_ip, max(last_hour) total FROM '.$wpdb->prefix.'whats_going_on GROUP BY remote_ip;');
         foreach ($result as $item) {
-            $array_maxRequestsPerHourAchieved[$item->remote_ip] = $item->total;
+            $array_max_requests_per_hour_achieved[$item->remote_ip] = $item->total;
         }
         $result = $wpdb->get_results('SELECT remote_ip, count(*) total FROM '.$wpdb->prefix."whats_going_on_block WHERE comments LIKE '%Regex for payload%' GROUP BY remote_ip;");
         foreach ($result as $item) {
-            $array_totalRegexForPayloadBlocks[$item->remote_ip] = $item->total;
+            $array_total_regex_for_payload_blocks[$item->remote_ip] = $item->total;
         }
         $result = $wpdb->get_results('SELECT remote_ip, count(*) total FROM '.$wpdb->prefix."whats_going_on_block WHERE comments LIKE '%Regex for query string%' GROUP BY remote_ip;");
         foreach ($result as $item) {
-            $array_totalRegexForQueryStringBlocks[$item->remote_ip] = $item->total;
+            $array_total_regex_for_query_string_blocks[$item->remote_ip] = $item->total;
+        }
+
+        // Load the rules..
+        $file_path = wp_upload_dir()['basedir'].'/wgo-things/ban-rules.php';
+        $array_rules = [];
+        if (file_exists($file_path)) {
+            $the_file = file($file_path);
+
+            if (count($the_file) > 1) {
+                for ($i = 1; $i < count($the_file); ++$i) {
+                    $array_rules[] = [
+                        'criteria' => trim(explode('=>', $the_file[$i])[0]),
+                        'seconds_to_ban' => trim(explode('=>', $the_file[$i])[1]),
+                    ];
+                }
+            }
         }
 
         // Process each IP, adding to the ban list if necessary..
-        $totalProcessed = 0;
+        $total_processed = 0;
+        $ips_to_block = [];
         foreach ($distinct_ips as $ip => $total) {
-            $totalRequests = $array_totalRequests[$ip];
-            $total404s = $array_total404s[$ip];
-            $maxRequestsPerMinuteAchieved = $array_maxRequestsPerMinuteAchieved;
-            $maxRequestsPerHourAchieved = $array_maxRequestsPerHourAchieved;
-            $totalRegexForPayloadBlocks = $array_totalRegexForPayloadBlocks;
-            $totalRegexForQueryStringBlocks = $array_totalRegexForQueryStringBlocks;
+            $totalRequests = intval($array_total_requests[$ip]);
+            $total404s = intval($array_total_404s[$ip]);
+            $maxRequestsPerMinuteAchieved = intval($array_max_requests_per_minute_achieved[$ip]);
+            $maxRequestsPerHourAchieved = intval($array_max_requests_per_hour_achieved[$ip]);
+            $totalRegexForPayloadBlocks = intval($array_total_regex_for_payload_blocks[$ip]);
+            $totalRegexForQueryStringBlocks = intval($array_total_regex_for_query_string_blocks[$ip]);
 
-            if ($debug and $ip) {
+            if ($debug) {
                 echo 'IP: '.$ip.PHP_EOL
-                    .'Total requests: '.$totalRequests.PHP_EOL
+                    .'Total requests: '.$totalRequests.' == '.$total.PHP_EOL
                     .'Total 404s: '.$total404s.PHP_EOL
                     .'Max requests per minute achieved: '.$maxRequestsPerMinuteAchieved.PHP_EOL
                     .'Max requests per hour achieved: '.$maxRequestsPerHourAchieved.PHP_EOL
                     .'Total regex for payload blocks: '.$totalRegexForPayloadBlocks.PHP_EOL
-                    .'Total regex for query string blocks: '.$totalRegexForQueryStringBlocks.PHP_EOL
-                    .PHP_EOL;
+                    .'Total regex for query string blocks: '.$totalRegexForQueryStringBlocks.PHP_EOL;
             }
-            ++$totalProcessed;
+
+            foreach ($array_rules as $rule) {
+                $matchesTheCriteria = eval('return '.$rule['criteria'].';');
+                if ($debug) {
+                    echo 'Matches the criteria ? '.$rule['criteria'].' '.($matchesTheCriteria ? 'true' : 'false').PHP_EOL;
+                }
+                if ($matchesTheCriteria) {
+                    $ips_to_block[$ip] = $rule['seconds_to_ban'];
+                    break;
+                }
+            }
+
+            if ($debug) {
+                echo PHP_EOL;
+            }
+
+            ++$total_processed;
         }
+        var_dump($ips_to_block);
 
         // Add to the block list if necessary..
+
+        // Add to the bans into DB if necessary..
         $result_bans = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.'whats_going_on_bans');
 
         // Remove from the block list if necessary..
 
+
         if ($debug) {
             echo 'Total distinct IPs: '.count($distinct_ips).PHP_EOL
+                .'Total IPs processed: '.$total_processed.PHP_EOL
                 .'Total processing time: '.(microtime(true) - $start_time).'secs'.PHP_EOL;
         }
     }
