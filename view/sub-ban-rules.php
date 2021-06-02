@@ -37,6 +37,19 @@ if (!current_user_can('administrator')) {
                     </td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td>In the rules, you can use every sentence written in PHP. Every rule must be in the format: (rule) => seconds.<br>
+                    Available vars:<br>
+                    $totalRequests = total request of the current IP.
+                    $total404s = total of 404s done.
+                    $maxRequestsPerMinuteAchieved = the max requests per minute achieved.
+                    $maxRequestsPerHourAchieved = 
+                    $totalRegexForPayloadBlocks = 
+                    $totalRegexForQueryStringBlocks = 
+                    </td>
+                </tr>
+            </tfoot>
         </table>
         <input type="file" name="file_ban_rules" id="file_ban_rules">
         <input type="submit" name="submit-save-ban-rules" id="submit-save-ban-rules" class="button button-green" value="Upload ban rules">
