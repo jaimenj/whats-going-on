@@ -3,6 +3,7 @@
 defined('ABSPATH') or exit('No no no');
 
 include_once WGO_PATH.'lib/geoip2.phar';
+
 use GeoIp2\Database\Reader;
 
 class WhatsGoingOnCronjobs
@@ -91,9 +92,11 @@ class WhatsGoingOnCronjobs
         }
 
         foreach (WhatsGoingOnDatabase::get_instance()->get_table_names() as $tableName) {
-            $sql = 'DELETE FROM '.$wpdb->prefix.$tableName
-               .' WHERE time < NOW() - INTERVAL '.$days.' DAY;';
-            $wpdb->get_results($sql);
+            if ('whats_going_on_bans' != $tableName) {
+                $sql = 'DELETE FROM '.$wpdb->prefix.$tableName
+                    .' WHERE time < NOW() - INTERVAL '.$days.' DAY;';
+                $wpdb->get_results($sql);
+            }
         }
     }
 
