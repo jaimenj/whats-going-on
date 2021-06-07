@@ -11,7 +11,7 @@ if (!current_user_can('administrator')) {
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
-                    <td>Ban Rules, one per line, use this format: (&lt;criteria&gt;) =&gt; &lt;timeToBanInSeconds&gt;</td>
+                    <td>Ban Rules, one per line, use this format: (&lt;criteria&gt;) =&gt; &lt;timeToBanInDays&gt;</td>
                 </tr>
             </thead>
             <tbody>

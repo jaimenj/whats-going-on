@@ -16,6 +16,7 @@ include_once WGO_PATH.'whats-going-on-cronjobs.php';
 include_once WGO_PATH.'whats-going-on-backend-controller.php';
 include_once WGO_PATH.'whats-going-on-ajax-controller.php';
 include_once WGO_PATH.'whats-going-on-messages.php';
+include_once WGO_PATH.'whats-going-on-ia-ban-rules.php';
 
 class WhatsGoingOn
 {
