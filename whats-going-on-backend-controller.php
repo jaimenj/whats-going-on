@@ -500,7 +500,7 @@ class WhatsGoingOnBackendController
     {
         $default_ban_rules = [
             '<?php/*',
-            '($total404s > 1000) => 3600',
+            '($total404s > 100) => 3',
         ];
         file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/ban-rules.php', implode(PHP_EOL, $default_ban_rules));
 
