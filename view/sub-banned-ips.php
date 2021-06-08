@@ -7,7 +7,7 @@ if (!current_user_can('administrator')) {
 // Results for blocks..
 $block_sql = 'SELECT * '
 .' FROM '.$wpdb->prefix.'whats_going_on_bans wgob'
-.' ORDER BY time DESC LIMIT 10';
+.' ORDER BY time DESC';
 $results = $wpdb->get_results($block_sql);
 
 ?>
