@@ -81,7 +81,10 @@ class WhatsGoingOnIaBanRules
                     echo $key.' ? '.$rule['criteria'].' '.($matchesTheCriteria ? 'true' : 'false').PHP_EOL;
                 }
                 if ($matchesTheCriteria) {
-                    $ips_to_block[$ip] = $rule['seconds_to_ban'];
+                    $ips_to_block[$ip] = [
+                        'days' => $rule['seconds_to_ban'],
+                        'comments' => 'Ban rule '.$key,
+                    ];
                     break;
                 }
             }
@@ -89,16 +92,14 @@ class WhatsGoingOnIaBanRules
             ++$total_processed;
         }
 
-        $block_list_to_save = $this->_add_to_the_block_list($ips_to_block);
+        $block_list = $this->_add_to_the_block_list($ips_to_block);
 
-        // Add to the bans into DB if necessary..
-        $result_bans = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.'whats_going_on_bans');
-
-        // Remove from the block list if necessary..
+        $this->_add_update_or_remove_the_bans($ips_to_block, $block_list);
 
         // Save new block list..
-        var_dump($block_list_to_save);
-        file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/block-list.php', $block_list_to_save);
+        //var_dump($ips_to_block);
+        //var_dump($block_list);
+        file_put_contents(wp_upload_dir()['basedir'].'/wgo-things/block-list.php', $block_list);
 
         if ($debug) {
             echo 'Total distinct IPs: '.count($distinct_ips).PHP_EOL
@@ -171,12 +172,43 @@ class WhatsGoingOnIaBanRules
                 }
             }
         }
-        foreach ($ips_to_block as $ip_to_block => $time_to_block) {
+        foreach ($ips_to_block as $ip_to_block => $value) {
             if (!in_array($ip_to_block.PHP_EOL, $block_list)) {
                 $block_list[] = $ip_to_block.PHP_EOL;
             }
         }
 
         return $block_list;
+    }
+
+    private function _add_update_or_remove_the_bans($ips_to_block, &$block_list)
+    {
+        global $wpdb;
+
+        $result_bans = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.'whats_going_on_bans');
+
+        // Update..
+        foreach ($result_bans as $ban) {
+            if (isset($ips_to_block[$ban->remote_ip])) {
+                $sql_update = 'UPDATE '.$wpdb->prefix.'whats_going_on_bans '
+                    .'SET time = now(), '
+                    .'time_until = now() + INTERVAL '.$ips_to_block[$ban->remote_ip]['days'].' DAY, '
+                    ."comments = '".$ips_to_block[$ban->remote_ip]['comments']."'"
+                    ."WHERE remote_ip = '".$ban->remote_ip."';";
+                echo $sql_update.PHP_EOL;
+                $wpdb->get_results($sql_update);
+                unset($ips_to_block[$ban->remote_ip]);
+            }
+        }
+
+        // Add..
+        foreach ($ips_to_block as $ip => $value) {
+            $sql_insert = 'INSERT INTO '.$wpdb->prefix.'whats_going_on_bans (time, time_until, remote_ip, comments) '
+                .'VALUES (now(), now() + INTERVAL '.$value['days']." DAY, '".$ip."', '".$value['comments']."');";
+            echo $sql_insert.PHP_EOL;
+            $wpdb->get_results($sql_insert);
+        }
+
+        // Remove..
     }
 }
