@@ -47,6 +47,12 @@ class WhatsGoingOnCronjobs
         if (!wp_next_scheduled('wgo_cron_notify_ddos_hook')) {
             wp_schedule_event(time(), 'half-hour', 'wgo_cron_notify_ddos_hook');
         }
+
+         // Job for processing the ban rules..
+         add_action('wgo_cron_process_ban_rules_hook', [$this, 'process_ban_rules']);
+         if (!wp_next_scheduled('wgo_cron_process_ban_rules_hook')) {
+             wp_schedule_event(time(), 'ten-minutes', 'wgo_cron_process_ban_rules_hook');
+         }
     }
 
     public function check_waf_install()
