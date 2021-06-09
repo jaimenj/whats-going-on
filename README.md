@@ -123,6 +123,15 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 
 ## Changelog
 
+### v1.1
+
+* Administration zone improved.
+* Autoreload main graph, main table content.
+* New section for suspicious behaviours.
+* New section for ban rules administration, IA/SBR working in background in a cronjob.
+* New section for IPs banned.
+* Some other small fixes, styles and Javascript changes.
+
 ### v1.0
 
 * Datatables for showing the main data.
