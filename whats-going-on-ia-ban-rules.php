@@ -90,7 +90,7 @@ class WhatsGoingOnIaBanRules
                 if ($matchesTheCriteria) {
                     $ips_to_block[$ip] = [
                         'days' => $rule['seconds_to_ban'],
-                        'comments' => 'Ban rule '.$key,
+                        'comments' => 'Ban rule '.($key + 1),
                     ];
                     break;
                 }
