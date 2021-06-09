@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
@@ -10,9 +10,6 @@ $block_sql = 'SELECT max(wgob.time) time, count(*) times, wgob.remote_ip, wgob.c
 .' GROUP BY remote_ip ORDER BY time DESC LIMIT 10';
 $results = $wpdb->get_results($block_sql);
 
-// Total blocks
-$total_blocks = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_block');
-$total_block_ips = $wpdb->get_var('SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_block');
 ?>
 
 <div class="wrap-last-blocked">

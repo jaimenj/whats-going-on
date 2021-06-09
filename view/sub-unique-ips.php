@@ -1,11 +1,11 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
 ?>
 <div class="wrap-permanent-lists">
-    <h2>Administration of unique IPs</h2>
+    <h2>Unique IPs</h2>
 
     <p>The format of IPs recorded is: HTTP_X_FORWARDED_FOR-HTTP_CLIENT_IP-REMOTE_ADDR
     If you see something like --123.123.123.123 it's because the web is not behind a proxy.<br>
@@ -61,6 +61,38 @@ if (!current_user_can('administrator')) {
                         <td>
                             <textarea name="txt_allow_list" id="txt_allow_list" class="waf-textarea-config"><?php
                             $file_path = wp_upload_dir()['basedir'].'/wgo-things/allow-list.php';
+                            if (file_exists($file_path)) {
+                                $the_file = file($file_path);
+                                if (count($the_file) > 1) {
+                                    for ($i = 1; $i < count($the_file); ++$i) {
+                                        echo esc_textarea($the_file[$i]);
+                                    }
+                                }
+                            }
+                            ?></textarea>
+                            <?php
+                            if (empty($the_file)) {
+                                echo '<p>No IPs found.</p>';
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table> 
+        </div>
+
+        <div class="wrap" id="wrap-no-track-list">
+            <table class="wp-list-table widefat fixed striped posts">
+                <thead>
+                    <tr>
+                        <td>No track list, one per line</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <textarea name="txt_no_track_list" id="txt_no_track_list" class="waf-textarea-config"><?php
+                            $file_path = wp_upload_dir()['basedir'].'/wgo-things/no-track-list.php';
                             if (file_exists($file_path)) {
                                 $the_file = file($file_path);
                                 if (count($the_file) > 1) {

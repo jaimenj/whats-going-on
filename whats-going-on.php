@@ -8,7 +8,7 @@
  * Author: Jaime Niñoles
  * Author URI: https://jnjsite.com/.
  */
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 define('WGO_PATH', plugin_dir_path(__FILE__));
 
 include_once WGO_PATH.'whats-going-on-database.php';
@@ -16,6 +16,7 @@ include_once WGO_PATH.'whats-going-on-cronjobs.php';
 include_once WGO_PATH.'whats-going-on-backend-controller.php';
 include_once WGO_PATH.'whats-going-on-ajax-controller.php';
 include_once WGO_PATH.'whats-going-on-messages.php';
+include_once WGO_PATH.'whats-going-on-ia-ban-rules.php';
 
 class WhatsGoingOn
 {
@@ -68,6 +69,7 @@ class WhatsGoingOn
         register_setting('wgo_options_group', 'wgo_save_payloads');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_uri_regex');
         register_setting('wgo_options_group', 'wgo_save_payloads_matching_payload_regex');
+        register_setting('tsm_options_group', 'wgo_autoreload_datatables');
 
         add_option('wgo_db_version', 0);
         add_option('wgo_waf_installed', 0);
@@ -83,6 +85,7 @@ class WhatsGoingOn
         add_option('wgo_save_payloads', 0);
         add_option('wgo_save_payloads_matching_uri_regex', 0);
         add_option('wgo_save_payloads_matching_payload_regex', 0);
+        add_option('wgo_autoreload_datatables', -1);
 
         WhatsGoingOnDatabase::get_instance()->create_initial_tables();
 

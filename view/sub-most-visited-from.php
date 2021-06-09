@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
@@ -12,7 +12,7 @@ $results = $wpdb->get_results($sql_most_visited_from);
 ?>
 
 <div class="wrap-permanent-lists">
-    <h2>Top 10 of IPs visiting <a href="javascript:doAjaxPopup('wgo_all_ips_and_counters')">see all</a></h2>
+    <h2>Most visited from, top 10 of IPs and countries <a href="javascript:doAjaxPopup('wgo_all_ips_and_counters')">see all</a></h2>
 
     <div class="wrap" id="wrap-block-404s">
         <table class="wp-list-table widefat fixed striped posts">

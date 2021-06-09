@@ -1,8 +1,9 @@
 <?php
 
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 
 include_once WGO_PATH.'lib/geoip2.phar';
+
 use GeoIp2\Database\Reader;
 
 class WhatsGoingOnCronjobs
@@ -46,6 +47,12 @@ class WhatsGoingOnCronjobs
         if (!wp_next_scheduled('wgo_cron_notify_ddos_hook')) {
             wp_schedule_event(time(), 'half-hour', 'wgo_cron_notify_ddos_hook');
         }
+
+         // Job for processing the ban rules..
+         add_action('wgo_cron_process_ban_rules_hook', [$this, 'process_ban_rules']);
+         if (!wp_next_scheduled('wgo_cron_process_ban_rules_hook')) {
+             wp_schedule_event(time(), 'ten-minutes', 'wgo_cron_process_ban_rules_hook');
+         }
     }
 
     public function check_waf_install()
@@ -90,15 +97,13 @@ class WhatsGoingOnCronjobs
             $days = get_option('wgo_days_to_store');
         }
 
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-            .'WHERE time < NOW() - INTERVAL '.$days.' DAY;';
-        $results = $wpdb->get_results($sql);
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-            .'WHERE time < NOW() - INTERVAL '.$days.' DAY;';
-        $results = $wpdb->get_results($sql);
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-            .'WHERE time < NOW() - INTERVAL '.$days.' DAY;';
-        $results = $wpdb->get_results($sql);
+        foreach (WhatsGoingOnDatabase::get_instance()->get_table_names() as $tableName) {
+            if ('whats_going_on_bans' != $tableName) {
+                $sql = 'DELETE FROM '.$wpdb->prefix.$tableName
+                    .' WHERE time < NOW() - INTERVAL '.$days.' DAY;';
+                $wpdb->get_results($sql);
+            }
+        }
     }
 
     /**
@@ -120,9 +125,7 @@ class WhatsGoingOnCronjobs
         $reader = new Reader(WGO_PATH.'lib/GeoLite2-Country.mmdb');
         $im_behind_proxy = get_option('wgo_im_behind_proxy');
 
-        $tableNames = ['whats_going_on', 'whats_going_on_block', 'whats_going_on_404s'];
-
-        foreach ($tableNames as $tableName) {
+        foreach (WhatsGoingOnDatabase::get_instance()->get_table_names() as $tableName) {
             $sql = 'SELECT * FROM '.$wpdb->prefix.$tableName.' WHERE country_code IS NULL ORDER BY rand() DESC LIMIT 100;';
             $results = $wpdb->get_results($sql);
             foreach ($results as $result) {
@@ -248,5 +251,10 @@ class WhatsGoingOnCronjobs
                 }
             }
         }
+    }
+
+    public function process_ban_rules($debug = false)
+    {
+        WhatsGoingOnIaBanRules::get_instance()->process_ban_rules($debug);
     }
 }

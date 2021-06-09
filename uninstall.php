@@ -1,6 +1,6 @@
 <?php
 
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!defined('WP_UNINSTALL_PLUGIN')) {
     die;
 }

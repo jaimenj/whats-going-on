@@ -1,11 +1,11 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
 ?>
 <div class="wrap-permanent-regexes">
-    <h2>Administration of Regex detections</h2>
+    <h2>Regex detections</h2>
 
     <p>This Regular Expresions are used for detecting requests with exploits, SQL injection, XSS attacks.. searching in full request uri and post data received. To upload your Regexes use text files with one Regex per line.</p>
 

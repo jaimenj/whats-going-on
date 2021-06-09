@@ -1,12 +1,12 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
 ?>
 <div class="wrap-dos">
 
-    <h2>Administration of DoS detections</h2>
+    <h2>DoS detections</h2>
 
     <label for="limit_requests_per_minute">Max requests per minute</label>
     <select name="limit_requests_per_minute" id="limit_requests_per_minute">

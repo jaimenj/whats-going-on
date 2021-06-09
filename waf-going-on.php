@@ -72,8 +72,8 @@ class WafGoingOn
         if ($this->debug) {
             $time_end = microtime(true);
             $time_consumed = $time_end - $time_start;
-            echo 'Time consumed: '.number_format($time_consumed, 9).' secs<br><br>';
-            die('Die, we are debugging..');
+            echo '<br>Time consumed: '.number_format($time_consumed, 9).' secs<br><br>';
+            exit('Die, we are debugging..');
         }
     }
 
@@ -83,7 +83,7 @@ class WafGoingOn
         $mysql_connection = new mysqli(WGO_DB_HOST, WGO_DB_USER, WGO_DB_PASSWORD);
         $the_table_full_prefix = WGO_DB_NAME.'.'.WGO_TABLE_PREFIX;
         if ($mysql_connection->connect_error) {
-            die('Connection failed: '.$mysql_connection->connect_error);
+            exit('Connection failed: '.$mysql_connection->connect_error);
         }
 
         $this->_get_options($mysql_connection, $the_table_full_prefix);
@@ -134,6 +134,7 @@ class WafGoingOn
                 echo $item.'<br>';
             }
             echo '<br>';
+            echo 'Comments: '.$comments.'<br>';
         }
 
         // Save Regexes errors to review..
@@ -152,6 +153,7 @@ class WafGoingOn
                     echo $item.'<br>';
                 }
                 echo '<br>';
+                echo 'Bypassed: '.($bypassed ? 'true' : 'false').'<br>';
             }
 
             $this->_save_the_blocking($mysql_connection, $comments, $the_table_full_prefix);
@@ -160,7 +162,7 @@ class WafGoingOn
             if (!$bypassed) {
                 header('HTTP/1.1 429 Too Many Requests');
                 header('Retry-After: '.$this->retry_time);
-                die('You are not allowed to access this file.');
+                exit('You are not allowed to access this file.');
             }
         }
 

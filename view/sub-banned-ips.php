@@ -1,26 +1,29 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
 
-// Results for 404s..
-$sql_404s = 'SELECT count(*) as times, remote_ip, country_code FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC LIMIT 10';
-$results = $wpdb->get_results($sql_404s);
-$sql_ips_doing_404s = 'SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_404s;';
-$total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
+// Results for blocks..
+$block_sql = 'SELECT * '
+.' FROM '.$wpdb->prefix.'whats_going_on_bans wgob'
+.' ORDER BY time DESC';
+$results = $wpdb->get_results($block_sql);
+
 ?>
 
-<div class="wrap-permanent-lists">
-    <h2>Top 10 of IPs doing 404s, with a total of <?= $total_ips_doing_404s ?> IPs recorded <a href="javascript:doAjaxPopup('wgo_all_ips_404s')">see all</a></h2></h2>
+<div class="wrap-last-blocked">
+    <h2>Current banned IPs (<?= count($results) ?>)</h2>
 
-    <div class="wrap" id="wrap-block-404s">
+    <div class="wrap" id="block-last-blocks">
         <table class="wp-list-table widefat fixed striped posts">
             <thead>
                 <tr>
-                    <td>Times</td>
+                    <td>Time</td>
+                    <td>Time until</td>
                     <td>Remote IP</td>
                     <td>Country</td>
+                    <td>Comments</td>
                 </tr>
             </thead>
             <tbody>
@@ -29,10 +32,9 @@ $total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
                 ?>
 
                 <tr>
-                    <td><?= $result->times; ?></td>
-                    <td>
-                        <?= $result->remote_ip; ?>
-                    </td>
+                    <td><?= $result->time; ?></td>
+                    <td><?= $result->time_until; ?></td>
+                    <td><?= $result->remote_ip; ?></td>
                     <td>
                         <?php
                         if (!empty($result->country_code)) {
@@ -40,9 +42,10 @@ $total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
                         }
                         ?>
                     </td>
+                    <td><?= $result->comments; ?></td></td>
                 </tr>
 
-                <?php
+            <?php
             }
             ?>
             </tbody>

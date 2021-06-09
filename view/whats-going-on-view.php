@@ -1,21 +1,17 @@
 <style>hr{margin-top: 30px;}</style>
 <?php
 
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 } else {
+    // Remove administrator IP from records to prevent auto-blocking..
     if ('--127.0.0.1' != WhatsGoingOn::get_instance()->current_remote_ips()) {
-        // Remove administrator IP from records to prevent auto-blocking..
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on '
-            ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
-        $results = $wpdb->get_results($sql);
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
-            ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
-        $results = $wpdb->get_results($sql);
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-            ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
-        $results = $wpdb->get_results($sql);
+        foreach (WhatsGoingOnDatabase::get_instance()->get_table_names() as $tableName) {
+            $sql = 'DELETE FROM '.$wpdb->prefix.$tableName.' '
+                ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
+            $wpdb->get_results($sql);
+        }
     }
 }
 
@@ -42,6 +38,10 @@ $total_registers = $wpdb->get_var($total_sql);
 $maxs_reached = $wpdb->get_results(
     $maxs_reached_sql
 );
+
+// Current total blocks
+$total_blocks = $wpdb->get_var('SELECT count(*) FROM '.$wpdb->prefix.'whats_going_on_block');
+$total_block_ips = $wpdb->get_var('SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_block');
 ?>
 
 <form method="post" enctype="multipart/form-data" action="<?php
@@ -68,224 +68,11 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
         foreach(WhatsGoingOnMessages::get_instance()->get_messages() as $message) {
             echo '<div id="message" class="notice notice-success is-dismissible"><p>'.$message.'</p></div>';
         }
-
-        ////////////////
-        /////////////////////////////// START CHART
-        $chart_sql = "SELECT count(*) hits, DATE_FORMAT(wgo.time, '%Hh') the_hour FROM ".$wpdb->prefix.'whats_going_on wgo'
-            .' GROUP BY year(wgo.time), month(wgo.time), day(wgo.time), hour(wgo.time)';
-        $chart_results = $wpdb->get_results($chart_sql);
-        //var_dump($chart_results);
-
-        // Apply mathematics..
-        $average = 0;
-        $standard_deviation = 0;
-        if (count($chart_results) > 0) {
-            foreach ($chart_results as $key => $item) {
-                $average += $item->hits;
-            }
-            $average = $average / count($chart_results);
-            foreach ($chart_results as $key => $item) {
-                $standard_deviation += pow(($item->hits - $average), 2);
-            }
-            $standard_deviation = sqrt($standard_deviation / count($chart_results));
-        }
-        $variance = pow($standard_deviation, 2);
         ?>
 
-        <script>
-        function paintMainChart() {
-            var ctx = document.getElementById('mainChart').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [<?php
-                            if (count($chart_results) > 0) {
-                                echo "'".$chart_results[0]->the_hour."'";
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ", '".$chart_results[$i]->the_hour."'";
-                                }
-                            }
-                        ?>],
-                    datasets: [{
-                        type: 'bar',
-                        label: '# of requests per hour in the last <?php
-                            if ($days_to_store > 1) {
-                                echo $days_to_store.' days';
-                            } else {
-                                echo 'day';
-                            }
-                            echo ' (~'.($days_to_store * 24).' hours)';
-                            ?>',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                echo $chart_results[0]->hits;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$chart_results[$i]->hits;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        backgroundColor: [<?php
-                            if (count($chart_results) > 0) {
-                                $i = 0;
-                                if (abs($chart_results[0]->hits - $average) > 3 * $standard_deviation) {
-                                    echo "'rgba(255, 0, 0, 1)'";
-                                } elseif ($chart_results[0]->hits < ($average * $notify_requests_less_than_x_percent) / 100 ) {
-                                    echo "'rgba(255, 0, 0, 1)'";
-                                } elseif (abs($chart_results[0]->hits - $average) > 2 * $standard_deviation) {
-                                    echo "'rgba(255, 0, 0, 0.7)'";
-                                } elseif (abs($chart_results[0]->hits - $average) > $standard_deviation) {
-                                    echo "'rgba(255, 0, 0, 0.5)'";
-                                } else {
-                                    echo "'rgba(20, 20, 20, 0.3)'";
-                                }
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    if (abs($chart_results[$i]->hits - $average) > 3 * $standard_deviation) {
-                                        echo ", 'rgba(255, 0, 0, 1)'";
-                                    } elseif ($chart_results[$i]->hits < ($average * $notify_requests_less_than_x_percent) / 100 ) {
-                                        echo ", 'rgba(255, 0, 0, 1)'";
-                                    } elseif (abs($chart_results[$i]->hits - $average) > 2 * $standard_deviation) {
-                                        echo ", 'rgba(255, 0, 0, 0.7)'";
-                                    } elseif (abs($chart_results[$i]->hits - $average) > $standard_deviation) {
-                                        echo ", 'rgba(255, 0, 0, 0.5)'";
-                                    } else {
-                                        echo ", 'rgba(20, 20, 20, 0.3)'";
-                                    }
-                                }
-                            }
-                        ?>],
-                        borderColor: 'rgba(255, 0, 0, 0.3)'
-                    },{
-                        label: '# average hits per hour',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                echo $average;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$average;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1.5,
-                        borderColor: 'rgba(0, 0, 0, 1)',
-                        fill: false
-                    },{
-                        label: '# A+SD',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                $a_plus_sd = $average + $standard_deviation;
-                                echo $a_plus_sd;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$a_plus_sd;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        borderColor: 'rgba(100, 100, 100, 1)',
-                        fill: false
-                    },{
-                        label: '# A+2SD',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                $a_plus_2sd = $average + $standard_deviation * 2;
-                                echo $a_plus_2sd;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$a_plus_2sd;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        borderColor: 'rgba(150, 150, 150, 1)',
-                        fill: false
-                    },{
-                        label: '# A+3SD',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                $a_plus_3sd = $average + $standard_deviation * 3;
-                                echo $a_plus_3sd;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$a_plus_3sd;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        borderColor: 'rgba(200, 200, 200, 1)',
-                        fill: false
-                    },{
-                        label: '# A-SD',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                $a_minus_sd = $average - $standard_deviation;
-                                echo $a_minus_sd;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$a_minus_sd;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        borderColor: 'rgba(100, 100, 100, 1)',
-                        fill: false
-                    },{
-                        label: '# A-2SD',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                $a_minus_2sd = $average - $standard_deviation * 2;
-                                echo $a_minus_2sd;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$a_minus_2sd;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        borderColor: 'rgba(150, 150, 150, 1)',
-                        fill: false
-                    },{
-                        label: '# A-3SD',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                $a_minus_3sd = $average - $standard_deviation * 3;
-                                echo $a_minus_3sd;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$a_minus_3sd;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1,
-                        borderColor: 'rgba(200, 200, 200, 1)',
-                        fill: false
-                    }<?php if($notify_requests_less_than_x_percent > 0) { ?>,{
-                        label: '# <?= $notify_requests_less_than_x_percent ?>%A',
-                        data: [<?php
-                            if (count($chart_results) > 0) {
-                                $a_min_percent = $average * $notify_requests_less_than_x_percent / 100;
-                                echo $a_min_percent;
-                                for ($i = 1; $i < count($chart_results); ++$i) {
-                                    echo ','.$a_min_percent;
-                                }
-                            }
-                        ?>],
-                        borderWidth: 1.5,
-                        borderColor: 'rgba(255, 0, 0, 1)',
-                        fill: false
-                    }<?php } ?>]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                }
-            });
-        }
-        </script>
-        <canvas id="mainChart" width="148" height="24"></canvas>
-        <p>A: Average. SD: Stardard Deviation. 2SD: Twice the Standard Deviation. 3SD.. (DB v<?= get_option('wgo_db_version') ?>)</p>
-        <?php
-        /////////////////////// END CHART
-        ////////////////////////////////////////////////////////
-        ?>
+        <div class="wgo-box-main-chart">
+            <?php include WGO_PATH.'view/sub-main-chart.php'; ?>
+        </div>
 
         <?php settings_fields('wgo_options_group'); ?>
         <?php do_settings_sections('wgo_options_group'); ?>
@@ -294,6 +81,16 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
 
         <p>
             <input type="submit" name="btn-submit" id="btn-submit" class="button button-green" value="Save this configs">
+
+            <label for="autoreload_datatables">Auto-reload</label>
+            <select name="autoreload_datatables" id="autoreload_datatables">
+                <option value="-1"<?= (-1 == $autoreload_datatables ? ' selected' : ''); ?>>No</option>
+                <option value="5"<?= (5 == $autoreload_datatables ? ' selected' : ''); ?>>5s</option>
+                <option value="10"<?= (10 == $autoreload_datatables ? ' selected' : ''); ?>>10s</option>
+                <option value="30"<?= (30 == $autoreload_datatables ? ' selected' : ''); ?>>30s</option>
+                <option value="60"<?= (60 == $autoreload_datatables ? ' selected' : ''); ?>>60s</option>
+                <option value="120"<?= (120 == $autoreload_datatables ? ' selected' : ''); ?>>120s</option>
+            </select>
 
             <label for="days_to_store">Days to store</label>
             <select name="days_to_store" id="days_to_store">
@@ -373,25 +170,44 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
     </div>
 
     <hr>
-    <?php include WGO_PATH.'view/sub-unique-ips.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-dos.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-ddos.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-regexes.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-regexes-errors.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-countries-continents.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-last-blocks.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-last-ips-doing-404s.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-last-urls-doing-404s.php'; ?>
-    <hr>
-    <?php include WGO_PATH.'view/sub-most-visited-from.php'; ?>
+
+    <h2>Administration Zone!</h2> 
+    <button type="button" class="button button-green" id="wgo-btn-show-ban-rules">Ban rules</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-banned-ips">Banned IPs</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-ip-lists">IP lists</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-dos-and-ddos">DoS and DDoS</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-regexes">Regexes</button>
+    <button type="button" class="button button-green" id="wgo-btn-show-countries">Countries</button>
+    <button type="button" class="button" id="wgo-btn-show-last-blocks">Last blocks</button>
+    <button type="button" class="button" id="wgo-btn-show-suspicious-behaviors">Suspicious behaviors</button>
+
+    <div class="wgo-box wgo-box-ban-rules">
+        <?php include WGO_PATH.'view/sub-ban-rules.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-banned-ips wgo-d-none">
+        <?php include WGO_PATH.'view/sub-banned-ips.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-ip-lists wgo-d-none">
+        <?php include WGO_PATH.'view/sub-unique-ips.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-dos-and-ddos wgo-d-none">
+        <?php include WGO_PATH.'view/sub-dos.php'; ?>
+        <?php include WGO_PATH.'view/sub-ddos.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-regexes wgo-d-none">
+        <?php include WGO_PATH.'view/sub-regexes.php'; ?>
+        <?php include WGO_PATH.'view/sub-regexes-errors.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-countries wgo-d-none">
+        <?php include WGO_PATH.'view/sub-countries-continents.php'; ?>
+        <?php include WGO_PATH.'view/sub-most-visited-from.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-last-blocks wgo-d-none">
+        <?php include WGO_PATH.'view/sub-last-blocks.php'; ?>
+    </div>
+    <div class="wgo-box wgo-box-suspicious-behaviors wgo-d-none">
+        <?php include WGO_PATH.'view/sub-suspicious-behaviors.php'; ?>
+    </div>
 
 </form>
 <hr>

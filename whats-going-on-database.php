@@ -1,10 +1,11 @@
 <?php
 
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 
 class WhatsGoingOnDatabase
 {
     private static $instance;
+    private $tableNames;
 
     public static function get_instance()
     {
@@ -17,6 +18,17 @@ class WhatsGoingOnDatabase
 
     private function __construct()
     {
+        $this->tableNames = [
+            'whats_going_on',
+            'whats_going_on_block',
+            'whats_going_on_404s',
+            'whats_going_on_bans',
+        ];
+    }
+
+    public function get_table_names()
+    {
+        return $this->tableNames;
     }
 
     public function create_initial_tables()
@@ -67,16 +79,22 @@ class WhatsGoingOnDatabase
         }
     }
 
+    public function remove_all_data()
+    {
+        global $wpdb;
+
+        foreach ($this->tableNames as $tableName) {
+            $wpdb->get_results('TRUNCATE '.$wpdb->prefix.$tableName.';');
+        }
+    }
+
     public function remove_tables()
     {
         global $wpdb;
 
-        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on;';
-        $wpdb->get_results($sql);
-        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_block;';
-        $wpdb->get_results($sql);
-        $sql = 'DROP TABLE '.$wpdb->prefix.'whats_going_on_404s;';
-        $wpdb->get_results($sql);
+        foreach ($this->tableNames as $tableName) {
+            $wpdb->get_results('DROP TABLE '.$wpdb->prefix.$tableName.';');
+        }
     }
 
     public function update_if_needed()
@@ -84,8 +102,10 @@ class WhatsGoingOnDatabase
         global $wpdb;
         $db_version = get_option('wgo_db_version');
 
-        if($db_version < 1) return;
-        
+        if ($db_version < 1) {
+            return;
+        }
+
         // Updates for v2..
         if ($db_version < 2) {
             $sql = 'ALTER TABLE '.$wpdb->prefix.'whats_going_on_block '
@@ -118,6 +138,23 @@ class WhatsGoingOnDatabase
             $db_version = 3;
 
             WhatsGoingOnMessages::get_instance()->add_message('Updated DB to v3.');
+        }
+
+        // Updates for v4..
+        if ($db_version < 4) {
+            // Temporarily bans table..
+            $sql = 'CREATE TABLE IF NOT EXISTS '.$wpdb->prefix.'whats_going_on_bans ('
+                .'time DATETIME NOT NULL,'
+                .'time_until DATETIME NOT NULL,'
+                .'remote_ip VARCHAR(64) NOT NULL,'
+                .'country_code VARCHAR(2),'
+                .'comments VARCHAR(256)'
+                .');';
+            $wpdb->get_results($sql);
+
+            $db_version = 4;
+
+            WhatsGoingOnMessages::get_instance()->add_message('Updated DB to v4.');
         }
 
         update_option('wgo_db_version', $db_version);

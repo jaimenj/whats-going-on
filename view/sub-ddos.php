@@ -1,11 +1,11 @@
 <?php
-defined('ABSPATH') or die('No no no');
+defined('ABSPATH') or exit('No no no');
 if (!current_user_can('administrator')) {
     wp_die(__('Sorry, you are not allowed to manage options for this site.'));
 }
 ?>
 <div class="wrap-ddos">
-    <h2>Administration of DDoS detections</h2>
+    <h2>DDoS detections</h2>
     
     <div class="wrap">
         <?php
@@ -16,7 +16,7 @@ if (!current_user_can('administrator')) {
          */
         ?>
 
-        <p>Average (A): <?= $average; ?> - Standard deviation (SD): <?= $standard_deviation; ?> - Variance (V): <?= $variance; ?></p>
+        <p>Average (A): <?= $average; ?> - Standard deviation (SD): <?= $standard_deviation; ?></p>
 
         <label for="notify_requests_more_than_sd">Notify by email if requests are gone out of A±SD</label>
         <select name="notify_requests_more_than_sd" id="notify_requests_more_than_sd">
