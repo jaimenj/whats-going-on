@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') or exit('No no no');
+
 class WhatsGoingOnIaBanRules
 {
     private static $instance;
