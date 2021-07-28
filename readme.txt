@@ -83,9 +83,9 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 4. DoS detection and prevention, DDoS detection and notification.
 5. Countries and continents administration.
 6. Last blocks reasons and times blocked.
-7. Top 10 of IPs doing 404s.
-8. Top 10 of URLs doing 404s.
-9. Top 10 of IPs visiting.
+7. Suspicious behaviours.
+8. Administration of the ban rules.
+9. Current banned IPs and rules that banned them.
 
 == Changelog ==
 
