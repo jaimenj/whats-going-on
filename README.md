@@ -9,7 +9,7 @@ A simple Web Application Firewall for WordPress.
 * Contributors: jaimenj
 * Tags: wordpress, security, waf, firewall
 * Requires at least: 5.0
-* Tested up to: 5.6
+* Tested up to: 5.8
 * Requires PHP: 7.2
 * Stable tag: 1.1
 * License: MIT
