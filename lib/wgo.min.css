@@ -7,7 +7,7 @@
 .wrap-block-and-allow-countries,.wrap-block-and-allow-lists{display:flex}
 #wrap-allow-list,#wrap-block-list,#wrap-no-track-list{width:33.33%}
 #wrap-countries-continents-allowed,#wrap-countries-continents-blocked{width:50%}
-.waf-select-area-config,.waf-textarea-config{width:100%;max-width:none!important}
+.waf-select-area-config,.waf-textarea-config{width:100%;max-width:none!important;min-height:400px}
 #submit-set-default-regexes-payload,#submit-set-default-regexes-uri{float:right}
 .button-download-ban-rules,.button-download-regexes{border:none;background:0 0;text-decoration:underline;margin:8px;color:#00f;cursor:pointer}
 #wgo-datatable-container{padding:5px;margin:0;box-shadow:2px 2px 3px;border-radius:3px}
