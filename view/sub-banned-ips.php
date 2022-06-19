@@ -15,6 +15,8 @@ $results = $wpdb->get_results($block_sql);
 <div class="wrap-last-blocked">
     <h2>Current banned IPs (<?= count($results) ?>)</h2>
 
+    <p>This section works using the <strong>block list</strong> of the section <strong>IP lists</strong>. When an IP is banned, is added to the block list, and later removed.</p>
+
     <div class="wrap" id="block-last-blocks">
         <table class="wp-list-table widefat fixed striped posts">
             <thead>

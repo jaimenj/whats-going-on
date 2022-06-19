@@ -9,9 +9,9 @@ A simple Web Application Firewall for WordPress.
 * Contributors: jaimenj
 * Tags: wordpress, security, waf, firewall
 * Requires at least: 5.0
-* Tested up to: 5.6
-* Requires PHP: 7.2
-* Stable tag: 1.1
+* Tested up to: 6.0
+* Requires PHP: 7.4
+* Stable tag: 1.2
 * License: MIT
 * Repository URL: https://github.com/jaimenj/whats-going-on
 * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
@@ -89,6 +89,8 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 
 1. The main view into the admin panel.
 
+![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-1.png)
+
 2. Administration of unique IPs.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-2.png)
@@ -109,19 +111,25 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-6.png)
 
-7. Top 10 of IPs doing 404s.
+7. Suspicious behaviours.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-7.png)
 
-8. Top 10 of URLs doing 404s.
+8. Administration of the ban rules.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-8.png)
 
-9. Top 10 of IPs visiting.
+9. Current banned IPs and rules that banned them.
 
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-9.png)
 
 ## Changelog
+
+### v1.2
+
+* Tested up with WP6.0.
+* Some style changes.
+* Usability changes for banned, blocks and suspicious section.
 
 ### v1.1
 

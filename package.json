@@ -1,0 +1,35 @@
+{
+  "name": "whats-going-on",
+  "version": "1.0.0",
+  "description": "What's going on package file",
+  "main": "gulpfile.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaimenj/whats-going-on.git"
+  },
+  "author": "Jaime Niñoles",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jaimenj/whats-going-on/issues"
+  },
+  "homepage": "https://github.com/jaimenj/whats-going-on#readme",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^3.0.0",
+    "gulp-remove-empty-lines": "^0.1.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^5.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-strip-comments": "^2.5.2",
+    "gulp-terser": "^2.1.0",
+    "sass": "^1.52.3"
+  }
+}

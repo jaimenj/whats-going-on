@@ -2,9 +2,9 @@
 Contributors: jaimenj
 Tags: wordpress, security, waf, firewall
 Requires at least: 5.0
-Tested up to: 5.6
-Requires PHP: 7.2
-Stable tag: 1.1
+Tested up to: 6.0
+Requires PHP: 7.4
+Stable tag: 1.2
 License: MIT
 Repository URL: https://github.com/jaimenj/whats-going-on
 Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
@@ -83,11 +83,16 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 4. DoS detection and prevention, DDoS detection and notification.
 5. Countries and continents administration.
 6. Last blocks reasons and times blocked.
-7. Top 10 of IPs doing 404s.
-8. Top 10 of URLs doing 404s.
-9. Top 10 of IPs visiting.
+7. Suspicious behaviours.
+8. Administration of the ban rules.
+9. Current banned IPs and rules that banned them.
 
 == Changelog ==
+
+= v1.2 =
+* Tested up with WP6.0.
+* Some style changes.
+* Usability changes for banned, blocks and suspicious section.
 
 = v1.1 =
 * Administration zone improved.

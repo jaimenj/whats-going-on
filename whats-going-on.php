@@ -4,7 +4,7 @@
  * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
  * License: MIT
  * Description: A tiny WAF, a tool for control and showing what kind of requests are being made to your WordPress.
- * Version: 1.1
+ * Version: 1.2
  * Author: Jaime Niñoles
  * Author URI: https://jnjsite.com/.
  */
