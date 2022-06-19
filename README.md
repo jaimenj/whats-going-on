@@ -9,9 +9,9 @@ A simple Web Application Firewall for WordPress.
 * Contributors: jaimenj
 * Tags: wordpress, security, waf, firewall
 * Requires at least: 5.0
-* Tested up to: 5.8
-* Requires PHP: 7.2
-* Stable tag: 1.1
+* Tested up to: 6.0
+* Requires PHP: 7.4
+* Stable tag: 1.2
 * License: MIT
 * Repository URL: https://github.com/jaimenj/whats-going-on
 * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
@@ -124,6 +124,12 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-9.png)
 
 ## Changelog
+
+### v1.2
+
+* Tested up with WP6.0.
+* Some style changes.
+* Usability changes for banned, blocks and suspicious section.
 
 ### v1.1
 
