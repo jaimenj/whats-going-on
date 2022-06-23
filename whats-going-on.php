@@ -164,16 +164,16 @@ class WhatsGoingOn
                 .(!in_array($_SERVER['SERVER_PORT'], [80, 443]) ? ':'.$_SERVER['SERVER_PORT'] : '')
                 .$_SERVER['REQUEST_URI'];
 
-            $sql = 'INSERT INTO '.$wpdb->prefix.'whats_going_on_404s '
-                .'(time, url, remote_ip, remote_port, user_agent, method) '
+            $sql = 'INSERT INTO '.$wpdb->prefix.'whats_going_on '
+                .'(time, url, remote_ip, remote_port, user_agent, method, is_404) '
                 .'VALUES ('
                 ."now(), '"
                 .urlencode(substr($url, 0, 255))."', '"
                 .$this->current_remote_ips()."', '"
                 .$_SERVER['REMOTE_PORT']."', '"
                 .(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '')."','"
-                .$_SERVER['REQUEST_METHOD']."'"
-                .');';
+                .$_SERVER['REQUEST_METHOD']."', "
+                .'true);';
             $wpdb->get_results($sql);
         }
     }
