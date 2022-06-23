@@ -228,9 +228,6 @@ class WhatsGoingOnBackendController
         $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
             ."WHERE remote_ip = '".sanitize_text_field($_REQUEST['txt_this_ip'])."';";
         $results = $wpdb->get_results($sql);
-        $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-            ."WHERE remote_ip = '".sanitize_text_field($_REQUEST['txt_this_ip'])."';";
-        $results = $wpdb->get_results($sql);
 
         return '<div id="message" class="notice notice-success is-dismissible"><p>Records with IP '.sanitize_text_field($_REQUEST['txt_this_ip']).' removed!</p></div>';
     }
