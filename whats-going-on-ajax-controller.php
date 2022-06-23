@@ -79,6 +79,13 @@ class WhatsGoingOnAjaxController
                     }
                 } elseif (in_array($column['name'], ['url'])) {
                     $where_clauses_and[] = sanitize_text_field($column['name'])." LIKE '%".urlencode(sanitize_text_field($column['search']['value']))."%'";
+                } elseif (in_array($column['name'], ['is_404'])) {
+                    if(strtolower($column['search']['value']) == 'yes') {
+                        $filter404 = 'true';
+                    } else {
+                        $filter404 = 'false';
+                    }
+                    $where_clauses_and[] = sanitize_text_field($column['name'])." = ".$filter404;
                 } else {
                     $where_clauses_and[] = sanitize_text_field($column['name'])." LIKE '%".sanitize_text_field($column['search']['value'])."%'";
                 }
