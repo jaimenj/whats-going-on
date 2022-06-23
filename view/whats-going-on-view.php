@@ -129,10 +129,12 @@ data-wgo_ajax_url="<?= admin_url('admin-ajax.php') ?>">
                         <td>Method</td>
                         <td>Hits minute (max <?= $maxs_reached[0]->max_hits_minute_reached; ?>)</td>
                         <td>Hits hour (max <?= $maxs_reached[0]->max_hits_hour_reached; ?>)</td>
+                        <td>Is 404</td>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
+                        <th>Filter..</th>
                         <th>Filter..</th>
                         <th>Filter..</th>
                         <th>Filter..</th>

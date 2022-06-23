@@ -34,7 +34,7 @@ class WhatsGoingOnIaBanRules
         $array_max_requests_per_hour_achieved = [];
         $array_total_regex_for_payload_blocks = [];
         $array_total_regex_for_query_string_blocks = [];
-        $result = $wpdb->get_results('SELECT remote_ip, count(*) total FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip;');
+        $result = $wpdb->get_results('SELECT remote_ip, count(*) total FROM '.$wpdb->prefix.'whats_going_on WHERE is_404 = true GROUP BY remote_ip;');
         foreach ($result as $item) {
             $array_total_404s[$item->remote_ip] = $item->total;
         }
@@ -124,14 +124,6 @@ class WhatsGoingOnIaBanRules
         // Getting distinct IPs..
         $distinct_ips = [];
         $result = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.'whats_going_on');
-        foreach ($result as $item) {
-            if (isset($distinct_ips[$item->remote_ip])) {
-                ++$distinct_ips[$item->remote_ip];
-            } else {
-                $distinct_ips[$item->remote_ip] = 1;
-            }
-        }
-        $result = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.'whats_going_on_404s');
         foreach ($result as $item) {
             if (isset($distinct_ips[$item->remote_ip])) {
                 ++$distinct_ips[$item->remote_ip];
