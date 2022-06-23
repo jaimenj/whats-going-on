@@ -11,7 +11,7 @@ A simple Web Application Firewall for WordPress.
 * Requires at least: 5.0
 * Tested up to: 6.0
 * Requires PHP: 7.4
-* Stable tag: 1.2
+* Stable tag: 1.3
 * License: MIT
 * Repository URL: https://github.com/jaimenj/whats-going-on
 * Plugin URI: https://jnjsite.com/whats-going-on-for-wordpress/
@@ -124,6 +124,11 @@ If something is broken because of this WAF, edit and empty the files /waf-going-
 ![Plugin image](https://raw.githubusercontent.com/jaimenj/whats-going-on/master/assets/screenshot-9.png)
 
 ## Changelog
+
+### v1.3
+
+* Join main table with the 404's table.
+* Show 404's info in the main view and all needed changes.
 
 ### v1.2
 
