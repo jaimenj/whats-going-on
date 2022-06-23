@@ -43,9 +43,6 @@ class WhatsGoingOnAjaxController
                 $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_block '
                     ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
                 $results = $wpdb->get_results($sql);
-                $sql = 'DELETE FROM '.$wpdb->prefix.'whats_going_on_404s '
-                    ."WHERE remote_ip = '".WhatsGoingOn::get_instance()->current_remote_ips()."';";
-                $results = $wpdb->get_results($sql);
             }
         }
 
@@ -125,11 +122,17 @@ class WhatsGoingOnAjaxController
         // Return data..
         $data = [];
         foreach ($results as $key => $value) {
-            //var_dump($key); var_dump($value);
+            // var_dump($key); var_dump($value);
             $tempItem = [];
             foreach ($value as $valueKey => $valueValue) {
                 if ('url' == $valueKey) {
                     $tempItem[] = urldecode($valueValue);
+                } elseif ('is_404' == $valueKey) {
+                    if ($valueValue) {
+                        $tempItem[] = 'Yes';
+                    } else {
+                        $tempItem[] = 'No';
+                    }
                 } else {
                     $tempItem[] = $valueValue;
                 }
@@ -192,9 +195,9 @@ class WhatsGoingOnAjaxController
 
         // Results for 404s..
         $sql_404s = 'SELECT count(*) as times, remote_ip, country_code '
-            .'FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY remote_ip ORDER BY times DESC';
+            .'FROM '.$wpdb->prefix.'whats_going_on WHERE is_404 = true GROUP BY remote_ip ORDER BY times DESC';
         $results = $wpdb->get_results($sql_404s);
-        $sql_ips_doing_404s = 'SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on_404s;';
+        $sql_ips_doing_404s = 'SELECT count(DISTINCT remote_ip) FROM '.$wpdb->prefix.'whats_going_on WHERE is_404 = true;';
         $total_ips_doing_404s = $wpdb->get_var($sql_ips_doing_404s);
 
         // Paints the view..
@@ -219,9 +222,9 @@ class WhatsGoingOnAjaxController
         }
 
         // Results for 404s..
-        $sql_urls = 'SELECT count(*) as times, url, country_code FROM '.$wpdb->prefix.'whats_going_on_404s GROUP BY url ORDER BY times DESC';
+        $sql_urls = 'SELECT count(*) as times, url, country_code FROM '.$wpdb->prefix.'whats_going_on WHERE is_404 = true GROUP BY url ORDER BY times DESC';
         $results = $wpdb->get_results($sql_urls);
-        $sql_urls_doing_404s = 'SELECT count(DISTINCT url) FROM '.$wpdb->prefix.'whats_going_on_404s;';
+        $sql_urls_doing_404s = 'SELECT count(DISTINCT url) FROM '.$wpdb->prefix.'whats_going_on WHERE is_404 = true;';
         $total_urls_doing_404s = $wpdb->get_var($sql_urls_doing_404s);
 
         // Paints the view..
