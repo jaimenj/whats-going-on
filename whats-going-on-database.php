@@ -21,7 +21,6 @@ class WhatsGoingOnDatabase
         $this->tableNames = [
             'whats_going_on',
             'whats_going_on_block',
-            'whats_going_on_404s',
             'whats_going_on_bans',
         ];
     }
@@ -155,6 +154,22 @@ class WhatsGoingOnDatabase
             $db_version = 4;
 
             WhatsGoingOnMessages::get_instance()->add_message('Updated DB to v4.');
+        }
+
+        // Updates for v5..
+        if ($db_version < 5) {
+            // Drop 404s table..
+            $sql = 'DROP TABLE IF EXISTS '.$wpdb->prefix.'whats_going_on_404s;';
+            $wpdb->get_results($sql);
+
+            // Drop 404s table..
+            $sql = 'ALTER TABLE '.$wpdb->prefix.'whats_going_on '
+                .'ADD COLUMN is_404 BOOL;';
+            $wpdb->get_results($sql);
+
+            $db_version = 5;
+
+            WhatsGoingOnMessages::get_instance()->add_message('Updated DB to v5.');
         }
 
         update_option('wgo_db_version', $db_version);
